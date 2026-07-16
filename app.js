@@ -289,15 +289,11 @@ const App = {
         this.animateNumber('statPG', pg);
         this.animateNumber('statJournal', journals);
         this.animateNumber('statConference', conferences);
-
-        // Hero stats
-        this.animateNumber('heroTotal', total);
-        this.animateNumber('heroJournals', journals);
-        this.animateNumber('heroConferences', conferences);
     },
 
     animateNumber(elementId, target) {
         const el = document.getElementById(elementId);
+        if (!el) return;
         const start = parseInt(el.textContent) || 0;
         const duration = 600;
         const startTime = performance.now();
@@ -577,29 +573,35 @@ const App = {
         } else {
             empty.style.display = 'none';
             table.style.display = '';
-            tbody.innerHTML = pageData.map(p => `
-                <tr>
-                    <td><strong>${this.escapeHtml(p.roll_no)}</strong></td>
-                    <td>${this.escapeHtml(p.name)}</td>
-                    <td><span class="badge badge-${p.program.toLowerCase()}">${p.program}</span></td>
-                    <td>${this.escapeHtml(p.branch)}</td>
-                    <td title="${this.escapeHtml(p.article_title)}">${this.escapeHtml(this.truncate(p.article_title, 35))}</td>
-                    <td><span class="badge badge-${p.publication_type.toLowerCase()}">${p.publication_type}</span></td>
-                    <td><span class="badge badge-indexing">${this.escapeHtml(p.indexing || '—')}</span></td>
-                    <td title="${this.escapeHtml(p.journal_conference_title || '')}">${this.escapeHtml(this.truncate(p.journal_conference_title || '—', 25))}</td>
-                    <td>${this.escapeHtml(p.sponsorship || '—')}</td>
-                    <td>
-                        <div class="actions-cell">
-                            <button class="act-btn edit" onclick="App.openEditModal('${p.id}')" title="Edit">
-                                <i class="ri-edit-line"></i>
-                            </button>
-                            <button class="act-btn delete" onclick="App.openDeleteModal('${p.id}')" title="Delete">
-                                <i class="ri-delete-bin-line"></i>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            `).join('');
+            tbody.innerHTML = pageData.map(p => {
+                const titleHtml = p.paper_link 
+                    ? `<a href="${p.paper_link}" target="_blank" style="color: var(--accent-light, #2196f3); text-decoration: none; font-weight: 500;" class="paper-link" title="View Publication">${this.escapeHtml(this.truncate(p.article_title, 35))} <i class="ri-external-link-line" style="font-size: 11px;"></i></a>`
+                    : this.escapeHtml(this.truncate(p.article_title, 35));
+                return `
+                    <tr>
+                        <td><strong>${this.escapeHtml(p.roll_no)}</strong></td>
+                        <td>${this.escapeHtml(p.name)}</td>
+                        <td><span class="badge badge-${p.program.toLowerCase()}">${p.program}</span></td>
+                        <td>${this.escapeHtml(p.branch)}</td>
+                        <td title="${this.escapeHtml(p.article_title)}">${titleHtml}</td>
+                        <td><span class="badge badge-${p.publication_type.toLowerCase()}">${p.publication_type}</span></td>
+                        <td><span class="badge badge-indexing">${this.escapeHtml(p.indexing || '—')}</span></td>
+                        <td title="${this.escapeHtml(p.journal_conference_title || '')}">${this.escapeHtml(this.truncate(p.journal_conference_title || '—', 25))}</td>
+                        <td>${this.escapeHtml(p.sponsorship || '—')}</td>
+                        <td>${this.escapeHtml(p.mentor_name || '—')}</td>
+                        <td>
+                            <div class="actions-cell">
+                                <button class="act-btn edit" onclick="App.openEditModal('${p.id}')" title="Edit">
+                                    <i class="ri-edit-line"></i>
+                                </button>
+                                <button class="act-btn delete" onclick="App.openDeleteModal('${p.id}')" title="Delete">
+                                    <i class="ri-delete-bin-line"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
         }
 
         // Pagination
@@ -624,6 +626,8 @@ const App = {
         document.getElementById('editIndexing').value = pub.indexing || '';
         document.getElementById('editJournalTitle').value = pub.journal_conference_title || '';
         document.getElementById('editSponsorship').value = pub.sponsorship || '';
+        document.getElementById('editMentorName').value = pub.mentor_name || '';
+        document.getElementById('editPaperLink').value = pub.paper_link || '';
 
         this.openModal('editModal');
     },
@@ -686,7 +690,7 @@ const App = {
             return;
         }
 
-        const headers = ['Roll No', 'Name', 'Program', 'Branch', 'Article Title', 'Type (J/C)', 'Indexing', 'Journal/Conference Title', 'Sponsorship'];
+        const headers = ['Roll No', 'Name', 'Program', 'Branch', 'Article Title', 'Type (J/C)', 'Indexing', 'Journal/Conference Title', 'Sponsorship', 'Mentor / Guide', 'Paper Link / DOI'];
         const rows = State.publications.map(p => [
             p.roll_no,
             p.name,
@@ -696,7 +700,9 @@ const App = {
             p.publication_type,
             p.indexing || '',
             p.journal_conference_title || '',
-            p.sponsorship || ''
+            p.sponsorship || '',
+            p.mentor_name || '',
+            p.paper_link || ''
         ]);
 
         let csv = headers.join(',') + '\n';
@@ -719,7 +725,9 @@ const App = {
                 'Type': p.publication_type,
                 'Indexing': p.indexing || '',
                 'Journal/Conference Title': p.journal_conference_title || '',
-                'Sponsorship': p.sponsorship || ''
+                'Sponsorship': p.sponsorship || '',
+                'Mentor / Guide': p.mentor_name || '',
+                'Paper Link / DOI': p.paper_link || ''
             }));
             const wb = XLSX.utils.book_new();
             const ws = XLSX.utils.json_to_sheet(wsData);
@@ -800,7 +808,9 @@ const App = {
                 publication_type: document.querySelector('#typeToggle .pill.active').dataset.value,
                 indexing: document.getElementById('indexing').value,
                 journal_conference_title: document.getElementById('journalTitle').value.trim(),
-                sponsorship: document.getElementById('sponsorship').value.trim() || null
+                sponsorship: document.getElementById('sponsorship').value.trim() || null,
+                mentor_name: document.getElementById('mentorName').value.trim(),
+                paper_link: document.getElementById('paperLink').value.trim() || null
             };
 
             await this.addPublication(formData);
@@ -818,7 +828,9 @@ const App = {
                 publication_type: document.getElementById('editType').value,
                 indexing: document.getElementById('editIndexing').value,
                 journal_conference_title: document.getElementById('editJournalTitle').value.trim(),
-                sponsorship: document.getElementById('editSponsorship').value.trim() || null
+                sponsorship: document.getElementById('editSponsorship').value.trim() || null,
+                mentor_name: document.getElementById('editMentorName').value.trim(),
+                paper_link: document.getElementById('editPaperLink').value.trim() || null
             };
 
             await this.updatePublication(State.editingId, formData);

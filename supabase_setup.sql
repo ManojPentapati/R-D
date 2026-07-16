@@ -16,6 +16,8 @@ CREATE TABLE IF NOT EXISTS publications (
     indexing TEXT,
     journal_conference_title TEXT,
     sponsorship TEXT,
+    paper_link TEXT,
+    mentor_name TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
