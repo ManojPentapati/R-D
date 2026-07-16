@@ -1260,6 +1260,10 @@ const Toast = {
     }
 };
 
+// Expose App and Toast globally for inline HTML events
+window.App = App;
+window.Toast = Toast;
+
 // ─── Initialize on DOM Ready ───
 document.addEventListener('DOMContentLoaded', () => {
     App.init();
