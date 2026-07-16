@@ -67,8 +67,7 @@ const App = {
         const images = [
             'assets/Ablock.jpg.jpeg',
             'assets/H block.jpg.jpeg',
-            'assets/u block.jpg.jpeg',
-            'assets/ublock2.jpg.jpeg'
+            'assets/u block.jpg.jpeg'
         ];
         let currentIndex = 0;
         const bg1 = document.getElementById('hero-bg-1');
