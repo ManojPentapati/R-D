@@ -273,7 +273,7 @@ body {
 }
 
 .hero-title {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Amazon Ember', 'Inter', -apple-system, sans-serif;
     font-size: 48px;
     font-weight: 800;
     color: #fff;
