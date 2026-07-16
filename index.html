@@ -30,16 +30,16 @@
             </a>
 
             <div class="nav-links" id="navLinks">
-                <a href="#" class="nav-link active" data-view="dashboard" id="nav-dashboard">
+                <a href="#" class="nav-link active super-admin-only" data-view="dashboard" id="nav-dashboard">
                     <i class="ri-dashboard-3-line"></i> Dashboard
                 </a>
-                <a href="#" class="nav-link" data-view="add" id="nav-add">
+                <a href="#" class="nav-link admin-only" data-view="add" id="nav-add">
                     <i class="ri-add-circle-line"></i> Add Publication
                 </a>
                 <a href="#" class="nav-link" data-view="publications" id="nav-publications">
                     <i class="ri-file-list-3-line"></i> Publications
                 </a>
-                <a href="#" class="nav-link" data-view="export" id="nav-export">
+                <a href="#" class="nav-link admin-only" data-view="export" id="nav-export">
                     <i class="ri-download-cloud-2-line"></i> Export
                 </a>
             </div>
@@ -49,6 +49,9 @@
                     <div class="conn-dot"></div>
                     <span>Connecting</span>
                 </div>
+                <button class="btn btn-outline btn-sm" id="authBtn" onclick="App.handleAuthClick()" style="margin-left: 12px; padding: 6px 14px; border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; background: rgba(255,255,255,0.05); color: #fff; display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 13px; font-weight: 500; transition: all 0.2s;">
+                    <i class="ri-login-box-line"></i> <span id="authBtnText">Admin Login</span>
+                </button>
                 <button class="nav-toggle" id="navToggle">
                     <i class="ri-menu-line"></i>
                 </button>
@@ -337,6 +340,13 @@
                                 <input type="url" id="paperLink" name="paper_link" placeholder="e.g. https://doi.org/... or IEEE link">
                             </div>
                         </div>
+                        <div class="field">
+                            <label for="fundingAmount">Funding / Reg. Fee Amount (₹) <span class="text-muted">(optional)</span></label>
+                            <div class="field-input">
+                                <i class="ri-money-rupee-circle-line"></i>
+                                <input type="number" id="fundingAmount" name="funding_amount" placeholder="e.g. 5000 (Private details)" min="0">
+                            </div>
+                        </div>
                     </div>
 
                     <div class="form-actions">
@@ -420,7 +430,8 @@
                                 <th>Journal / Conference</th>
                                 <th>Sponsorship</th>
                                 <th>Mentor / Guide</th>
-                                <th>Actions</th>
+                                <th class="super-admin-only">Funding Amount (₹)</th>
+                                <th class="admin-only">Actions</th>
                             </tr>
                         </thead>
                         <tbody id="pubTableBody"></tbody>
@@ -561,6 +572,10 @@
                         <label for="editPaperLink">Paper Link / DOI</label>
                         <div class="field-input"><input type="url" id="editPaperLink" placeholder="e.g. https://doi.org/... or IEEE link (Optional)"></div>
                     </div>
+                    <div class="field full-span">
+                        <label for="editFundingAmount">Funding / Reg. Fee Amount (₹)</label>
+                        <div class="field-input"><input type="number" id="editFundingAmount" min="0" placeholder="e.g. 5000 (Private details)"></div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-ghost" id="modalCancelBtn">Cancel</button>
@@ -585,6 +600,36 @@
                 <button class="btn btn-ghost" id="deleteCancelBtn">Cancel</button>
                 <button class="btn btn-danger" id="deleteConfirmBtn"><i class="ri-delete-bin-line"></i> Delete</button>
             </div>
+        </div>
+    <!-- ========== LOGIN MODAL ========== -->
+    <div class="modal-overlay" id="loginModal">
+        <div class="modal card modal-sm">
+            <div class="modal-header">
+                <h3><i class="ri-lock-line"></i> Admin Login</h3>
+                <button class="modal-close" id="loginModalClose" onclick="App.closeModal('loginModal')"><i class="ri-close-line"></i></button>
+            </div>
+            <form id="loginForm" class="modal-body" autocomplete="on">
+                <div class="field" style="margin-bottom: 20px;">
+                    <label for="loginEmail">Email Address</label>
+                    <div class="field-input">
+                        <i class="ri-mail-line"></i>
+                        <input type="email" id="loginEmail" required autocomplete="email" placeholder="email@vignan.ac.in">
+                    </div>
+                </div>
+                <div class="field" style="margin-bottom: 24px;">
+                    <label for="loginPassword">Password</label>
+                    <div class="field-input">
+                        <i class="ri-key-line"></i>
+                        <input type="password" id="loginPassword" required autocomplete="current-password" placeholder="••••••••">
+                    </div>
+                </div>
+                <div class="modal-footer" style="padding-top: 0; padding-bottom: 0;">
+                    <button type="button" class="btn btn-ghost" onclick="App.closeModal('loginModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="loginSubmitBtn">
+                        <i class="ri-login-box-line"></i> Login
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 

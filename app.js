@@ -27,7 +27,9 @@ const State = {
     },
     charts: {},
     editingId: null,
-    deletingId: null
+    deletingId: null,
+    session: null,
+    userRole: null // 'super_admin', 'admin', or null
 };
 
 // ─── Initialize App ───
@@ -37,7 +39,9 @@ const App = {
         this.initSupabase();
         this.bindEvents();
         this.initSlideshow();
-        await this.loadData();
+        if (!supabaseClient) {
+            await this.loadData();
+        }
         this.hideLoading();
     },
 
@@ -100,10 +104,76 @@ const App = {
             }
             supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             this.updateConnectionStatus('connecting', 'Connecting...');
+
+            // Auth listener
+            supabaseClient.auth.onAuthStateChange(async (event, session) => {
+                State.session = session;
+                if (session) {
+                    await this.fetchUserRole(session.user.id);
+                } else {
+                    State.userRole = null;
+                }
+                this.updateUIForRole();
+                await this.loadData();
+            });
         } catch (err) {
             console.error('Supabase init error:', err);
             this.updateConnectionStatus('error', 'Connection Failed');
             Toast.show('error', 'Connection Error', 'Failed to initialize Supabase');
+        }
+    },
+
+    async fetchUserRole(userId) {
+        try {
+            const { data, error } = await supabaseClient
+                .from('user_roles')
+                .select('role')
+                .eq('user_id', userId)
+                .single();
+            if (error) throw error;
+            State.userRole = data ? data.role : null;
+        } catch (err) {
+            console.warn('Could not fetch user role, defaulting to public:', err);
+            State.userRole = null;
+        }
+    },
+
+    updateUIForRole() {
+        const role = State.userRole;
+        const body = document.body;
+
+        body.classList.remove('super-admin-mode', 'admin-mode');
+        if (role === 'super_admin') {
+            body.classList.add('super-admin-mode');
+        } else if (role === 'admin') {
+            body.classList.add('admin-mode');
+        }
+
+        const authBtnText = document.getElementById('authBtnText');
+        const authBtnIcon = document.querySelector('#authBtn i');
+        if (State.session) {
+            if (authBtnText) authBtnText.textContent = 'Logout';
+            if (authBtnIcon) {
+                authBtnIcon.className = 'ri-logout-box-r-line';
+            }
+        } else {
+            if (authBtnText) authBtnText.textContent = 'Admin Login';
+            if (authBtnIcon) {
+                authBtnIcon.className = 'ri-login-box-line';
+            }
+        }
+
+        // Adjust view based on role
+        const currentView = document.querySelector('.view.active');
+        if (currentView) {
+            const viewId = currentView.id.replace('view-', '');
+            if (viewId === 'dashboard' && role !== 'super_admin') {
+                this.switchView('publications');
+            } else if (viewId === 'add' && !role) {
+                this.switchView('publications');
+            } else if (viewId === 'export' && !role) {
+                this.switchView('publications');
+            }
         }
     },
 
@@ -132,15 +202,18 @@ const App = {
         }
 
         try {
+            // If logged in, fetch all columns from publications table.
+            // If not logged in (public user), fetch columns from public_publications view (excludes funding).
+            const sourceTable = State.session ? 'publications' : 'public_publications';
             const { data, error } = await supabaseClient
-                .from('publications')
+                .from(sourceTable)
                 .select('*')
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
 
             State.publications = data || [];
-            this.updateConnectionStatus('connected', 'Connected to Supabase');
+            this.updateConnectionStatus('connected', State.session ? 'Connected (Admin)' : 'Connected');
             this.onDataLoaded();
         } catch (err) {
             console.error('Load error:', err);
@@ -589,7 +662,8 @@ const App = {
                         <td title="${this.escapeHtml(p.journal_conference_title || '')}">${this.escapeHtml(this.truncate(p.journal_conference_title || '—', 25))}</td>
                         <td>${this.escapeHtml(p.sponsorship || '—')}</td>
                         <td>${this.escapeHtml(p.mentor_name || '—')}</td>
-                        <td>
+                        <td class="super-admin-only">₹${parseFloat(p.funding_amount || 0).toLocaleString()}</td>
+                        <td class="admin-only">
                             <div class="actions-cell">
                                 <button class="act-btn edit" onclick="App.openEditModal('${p.id}')" title="Edit">
                                     <i class="ri-edit-line"></i>
@@ -628,6 +702,7 @@ const App = {
         document.getElementById('editSponsorship').value = pub.sponsorship || '';
         document.getElementById('editMentorName').value = pub.mentor_name || '';
         document.getElementById('editPaperLink').value = pub.paper_link || '';
+        document.getElementById('editFundingAmount').value = pub.funding_amount || 0;
 
         this.openModal('editModal');
     },
@@ -690,24 +765,31 @@ const App = {
             return;
         }
 
+        const isSuperAdmin = State.userRole === 'super_admin';
         const headers = ['Roll No', 'Name', 'Program', 'Branch', 'Article Title', 'Type (J/C)', 'Indexing', 'Journal/Conference Title', 'Sponsorship', 'Mentor / Guide', 'Paper Link / DOI'];
-        const rows = State.publications.map(p => [
-            p.roll_no,
-            p.name,
-            p.program,
-            p.branch,
-            p.article_title,
-            p.publication_type,
-            p.indexing || '',
-            p.journal_conference_title || '',
-            p.sponsorship || '',
-            p.mentor_name || '',
-            p.paper_link || ''
-        ]);
+        if (isSuperAdmin) headers.push('Funding Amount (₹)');
+
+        const rows = State.publications.map(p => {
+            const row = [
+                p.roll_no,
+                p.name,
+                p.program,
+                p.branch,
+                p.article_title,
+                p.publication_type,
+                p.indexing || '',
+                p.journal_conference_title || '',
+                p.sponsorship || '',
+                p.mentor_name || '',
+                p.paper_link || ''
+            ];
+            if (isSuperAdmin) row.push(p.funding_amount || 0);
+            return row;
+        });
 
         let csv = headers.join(',') + '\n';
         rows.forEach(row => {
-            csv += row.map(cell => `"${(cell || '').replace(/"/g, '""')}"`).join(',') + '\n';
+            csv += row.map(cell => `"${(cell || '').toString().replace(/"/g, '""')}"`).join(',') + '\n';
         });
 
         this.downloadFile(csv, 'publications_export.csv', 'text/csv');
@@ -716,19 +798,26 @@ const App = {
 
     exportToXLSX(data, filename) {
         try {
-            const wsData = data.map(p => ({
-                'Roll No': p.roll_no,
-                'Student Name': p.name,
-                'Program': p.program,
-                'Branch': p.branch,
-                'Article Title': p.article_title,
-                'Type': p.publication_type,
-                'Indexing': p.indexing || '',
-                'Journal/Conference Title': p.journal_conference_title || '',
-                'Sponsorship': p.sponsorship || '',
-                'Mentor / Guide': p.mentor_name || '',
-                'Paper Link / DOI': p.paper_link || ''
-            }));
+            const isSuperAdmin = State.userRole === 'super_admin';
+            const wsData = data.map(p => {
+                const item = {
+                    'Roll No': p.roll_no,
+                    'Student Name': p.name,
+                    'Program': p.program,
+                    'Branch': p.branch,
+                    'Article Title': p.article_title,
+                    'Type': p.publication_type,
+                    'Indexing': p.indexing || '',
+                    'Journal/Conference Title': p.journal_conference_title || '',
+                    'Sponsorship': p.sponsorship || '',
+                    'Mentor / Guide': p.mentor_name || '',
+                    'Paper Link / DOI': p.paper_link || ''
+                };
+                if (isSuperAdmin) {
+                    item['Funding Amount (₹)'] = p.funding_amount || 0;
+                }
+                return item;
+            });
             const wb = XLSX.utils.book_new();
             const ws = XLSX.utils.json_to_sheet(wsData);
             XLSX.utils.book_append_sheet(wb, ws, "Publications");
@@ -810,7 +899,8 @@ const App = {
                 journal_conference_title: document.getElementById('journalTitle').value.trim(),
                 sponsorship: document.getElementById('sponsorship').value.trim() || null,
                 mentor_name: document.getElementById('mentorName').value.trim(),
-                paper_link: document.getElementById('paperLink').value.trim() || null
+                paper_link: document.getElementById('paperLink').value.trim() || null,
+                funding_amount: parseFloat(document.getElementById('fundingAmount').value) || 0
             };
 
             await this.addPublication(formData);
@@ -830,7 +920,8 @@ const App = {
                 journal_conference_title: document.getElementById('editJournalTitle').value.trim(),
                 sponsorship: document.getElementById('editSponsorship').value.trim() || null,
                 mentor_name: document.getElementById('editMentorName').value.trim(),
-                paper_link: document.getElementById('editPaperLink').value.trim() || null
+                paper_link: document.getElementById('editPaperLink').value.trim() || null,
+                funding_amount: parseFloat(document.getElementById('editFundingAmount').value) || 0
             };
 
             await this.updatePublication(State.editingId, formData);
@@ -918,8 +1009,79 @@ const App = {
             if (e.key === 'Escape') {
                 this.closeModal('editModal');
                 this.closeModal('deleteModal');
+                this.closeModal('loginModal');
             }
         });
+
+        // Login Form submit
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const submitBtn = document.getElementById('loginSubmitBtn');
+
+            submitBtn.disabled = true;
+            try {
+                const isDemoAdmin = email === 'admin@vignan.ac.in' && password === 'admin123';
+                const isDemoSuperAdmin = email === 'superadmin@vignan.ac.in' && password === 'super123';
+
+                if (!supabaseClient || isDemoAdmin || isDemoSuperAdmin) {
+                    if (isDemoAdmin) {
+                        State.session = { user: { id: 'demo-admin-id' } };
+                        State.userRole = 'admin';
+                        Toast.show('success', 'Logged In', 'Welcome (Demo Admin)!');
+                    } else if (isDemoSuperAdmin) {
+                        State.session = { user: { id: 'demo-super-id' } };
+                        State.userRole = 'super_admin';
+                        Toast.show('success', 'Logged In', 'Welcome (Demo Super Admin)!');
+                    } else {
+                        throw new Error('Invalid demo credentials. Use admin@vignan.ac.in / admin123 or superadmin@vignan.ac.in / super123.');
+                    }
+                    this.updateUIForRole();
+                    this.closeModal('loginModal');
+                    await this.loadData();
+                    return;
+                }
+
+                const { data, error } = await supabaseClient.auth.signInWithPassword({
+                    email,
+                    password
+                });
+                if (error) throw error;
+
+                Toast.show('success', 'Login Successful', 'Welcome back!');
+                this.closeModal('loginModal');
+                document.getElementById('loginEmail').value = '';
+                document.getElementById('loginPassword').value = '';
+            } catch (err) {
+                console.error('Login error:', err);
+                Toast.show('error', 'Login Failed', err.message);
+            } finally {
+                submitBtn.disabled = false;
+            }
+        });
+    },
+
+    async handleAuthClick() {
+        if (State.session) {
+            try {
+                if (supabaseClient) {
+                    const { error } = await supabaseClient.auth.signOut();
+                    if (error) throw error;
+                } else {
+                    State.session = null;
+                    State.userRole = null;
+                    this.updateUIForRole();
+                    await this.loadData();
+                }
+                Toast.show('success', 'Logged Out', 'Successfully logged out.');
+            } catch (err) {
+                console.error('Logout error:', err);
+                Toast.show('error', 'Logout Failed', err.message);
+            }
+        } else {
+            this.openModal('loginModal');
+        }
     },
 
     // ── Utility ──

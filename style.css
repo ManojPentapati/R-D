@@ -1285,3 +1285,28 @@ body {
     to { transform: rotate(360deg); }
 }
 
+/* ============ ROLE-BASED ACCESS CONTROL VISIBILITY ============ */
+.super-admin-only, .admin-only, .auth-only {
+    display: none !important;
+}
+
+body.super-admin-mode .super-admin-only {
+    display: table-cell !important;
+}
+
+body.super-admin-mode .auth-only,
+body.admin-mode .auth-only {
+    display: flex !important;
+}
+
+body.super-admin-mode .admin-only,
+body.admin-mode .admin-only {
+    display: table-cell !important;
+}
+
+body.super-admin-mode .nav-link.super-admin-only,
+body.super-admin-mode .nav-link.admin-only,
+body.admin-mode .nav-link.admin-only {
+    display: flex !important;
+}
+
