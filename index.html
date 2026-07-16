@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vignan R&D — Student Publication Tracker</title>
+    <meta name="description" content="Vignan's Foundation for Science, Technology & Research — R&D Student Publication Management System">
+    <link rel="icon" href="assets/vignan logo.png" type="image/png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/amazon-fonts@1.0.1/fonts/stylesheet.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ========== TOP NAVBAR ========== -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="#" class="nav-brand" onclick="App.switchView('dashboard')">
+                <img src="assets/vignan logo.png" alt="Vignan R&D" class="nav-logo">
+                <div class="nav-brand-text">
+                    <span class="nav-brand-name">Vignan R&D</span>
+                    <span class="nav-brand-sub">Publication Tracker</span>
+                </div>
+            </a>
+
+            <div class="nav-links" id="navLinks">
+                <a href="#" class="nav-link active" data-view="dashboard" id="nav-dashboard">
+                    <i class="ri-dashboard-3-line"></i> Dashboard
+                </a>
+                <a href="#" class="nav-link" data-view="add" id="nav-add">
+                    <i class="ri-add-circle-line"></i> Add Publication
+                </a>
+                <a href="#" class="nav-link" data-view="publications" id="nav-publications">
+                    <i class="ri-file-list-3-line"></i> Publications
+                </a>
+                <a href="#" class="nav-link" data-view="export" id="nav-export">
+                    <i class="ri-download-cloud-2-line"></i> Export
+                </a>
+            </div>
+
+            <div class="nav-right">
+                <div class="connection-badge" id="connectionStatus">
+                    <div class="conn-dot"></div>
+                    <span>Connecting</span>
+                </div>
+                <button class="nav-toggle" id="navToggle">
+                    <i class="ri-menu-line"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ========== HERO SECTION ========== -->
+    <section class="hero-section" id="heroSection">
+        <div class="hero-bg">
+            <img src="assets/Ablock.jpg.jpeg" alt="Vignan University" class="hero-img" id="hero-bg-1" style="opacity: 1;">
+            <img src="assets/H block.jpg.jpeg" alt="Vignan University" class="hero-img" id="hero-bg-2" style="opacity: 0;">
+            <div class="hero-overlay"></div>
+        </div>
+        <div class="hero-content">
+            <h1 class="hero-title">Research & Development</h1>
+            <p class="hero-subtitle">Student Publication Management System — Vignan's Foundation for Science, Technology & Research</p>
+            <div class="hero-stats" id="heroStats">
+                <div class="hero-stat">
+                    <span class="hero-stat-num" id="heroTotal">0</span>
+                    <span class="hero-stat-label">Total Publications</span>
+                </div>
+                <div class="hero-stat-divider"></div>
+                <div class="hero-stat">
+                    <span class="hero-stat-num" id="heroJournals">0</span>
+                    <span class="hero-stat-label">Journals</span>
+                </div>
+                <div class="hero-stat-divider"></div>
+                <div class="hero-stat">
+                    <span class="hero-stat-num" id="heroConferences">0</span>
+                    <span class="hero-stat-label">Conferences</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== MAIN CONTENT ========== -->
+    <main class="main-wrapper">
+
+        <!-- ==================== DASHBOARD VIEW ==================== -->
+        <section class="view active" id="view-dashboard">
+
+            <!-- Quick Stat Cards -->
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-card-icon icon-total">
+                        <i class="ri-article-line"></i>
+                    </div>
+                    <div class="stat-card-body">
+                        <span class="stat-card-value" id="statTotal">0</span>
+                        <span class="stat-card-label">Total Publications</span>
+                    </div>
+                    <div class="stat-card-accent accent-total"></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-icon icon-ug">
+                        <i class="ri-graduation-cap-line"></i>
+                    </div>
+                    <div class="stat-card-body">
+                        <span class="stat-card-value" id="statUG">0</span>
+                        <span class="stat-card-label">UG Students</span>
+                    </div>
+                    <div class="stat-card-accent accent-ug"></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-icon icon-pg">
+                        <i class="ri-book-open-line"></i>
+                    </div>
+                    <div class="stat-card-body">
+                        <span class="stat-card-value" id="statPG">0</span>
+                        <span class="stat-card-label">PG Students</span>
+                    </div>
+                    <div class="stat-card-accent accent-pg"></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-icon icon-journal">
+                        <i class="ri-newspaper-line"></i>
+                    </div>
+                    <div class="stat-card-body">
+                        <span class="stat-card-value" id="statJournal">0</span>
+                        <span class="stat-card-label">Journals</span>
+                    </div>
+                    <div class="stat-card-accent accent-journal"></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-icon icon-conf">
+                        <i class="ri-presentation-line"></i>
+                    </div>
+                    <div class="stat-card-body">
+                        <span class="stat-card-value" id="statConference">0</span>
+                        <span class="stat-card-label">Conferences</span>
+                    </div>
+                    <div class="stat-card-accent accent-conf"></div>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="charts-row">
+                <div class="card chart-card">
+                    <div class="card-header">
+                        <h3><i class="ri-pie-chart-line"></i> Publication Type</h3>
+                    </div>
+                    <div class="chart-wrap"><canvas id="chartType"></canvas></div>
+                </div>
+                <div class="card chart-card">
+                    <div class="card-header">
+                        <h3><i class="ri-bar-chart-grouped-line"></i> Branch Distribution</h3>
+                    </div>
+                    <div class="chart-wrap"><canvas id="chartBranch"></canvas></div>
+                </div>
+                <div class="card chart-card">
+                    <div class="card-header">
+                        <h3><i class="ri-donut-chart-line"></i> Indexing Breakdown</h3>
+                    </div>
+                    <div class="chart-wrap"><canvas id="chartIndexing"></canvas></div>
+                </div>
+            </div>
+
+            <!-- Recent Table -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="ri-time-line"></i> Recent Publications</h3>
+                    <button class="btn btn-outline btn-sm" onclick="App.switchView('publications')">
+                        View All <i class="ri-arrow-right-line"></i>
+                    </button>
+                </div>
+                <div class="table-scroll">
+                    <table class="data-table" id="recentTable">
+                        <thead>
+                            <tr>
+                                <th>Roll No</th>
+                                <th>Name</th>
+                                <th>Program</th>
+                                <th>Branch</th>
+                                <th>Article Title</th>
+                                <th>Type</th>
+                                <th>Indexing</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentTableBody"></tbody>
+                    </table>
+                </div>
+                <div class="empty-state" id="recentEmpty" style="display:none;">
+                    <i class="ri-file-search-line"></i>
+                    <h4>No Publications Yet</h4>
+                    <p>Start by adding your first student publication</p>
+                    <button class="btn btn-primary" onclick="App.switchView('add')">
+                        <i class="ri-add-line"></i> Add First Publication
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== ADD PUBLICATION VIEW ==================== -->
+        <section class="view" id="view-add">
+            <div class="section-header">
+                <div>
+                    <h2><i class="ri-add-circle-line"></i> Add New Publication</h2>
+                    <p>Record a new student research publication entry</p>
+                </div>
+            </div>
+
+            <div class="card form-card">
+                <form id="publicationForm" autocomplete="off">
+                    <!-- Student Section -->
+                    <div class="form-section">
+                        <div class="form-section-badge">
+                            <i class="ri-user-line"></i>
+                        </div>
+                        <h3 class="form-section-title">Student Information</h3>
+                    </div>
+                    <div class="form-grid-3">
+                        <div class="field">
+                            <label for="rollNo">Roll Number <span class="req">*</span></label>
+                            <div class="field-input">
+                                <i class="ri-hashtag"></i>
+                                <input type="text" id="rollNo" name="roll_no" required placeholder="e.g. 21CSE001">
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label for="studentName">Student Name <span class="req">*</span></label>
+                            <div class="field-input">
+                                <i class="ri-user-3-line"></i>
+                                <input type="text" id="studentName" name="name" required placeholder="Full Name">
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label for="branch">Branch <span class="req">*</span></label>
+                            <div class="field-input">
+                                <i class="ri-git-branch-line"></i>
+                                <select id="branch" name="branch" required>
+                                    <option value="" disabled selected>Select Branch</option>
+                                    <option value="CSE">CSE — Computer Science</option>
+                                    <option value="ECE">ECE — Electronics & Communication</option>
+                                    <option value="EEE">EEE — Electrical & Electronics</option>
+                                    <option value="ME">ME — Mechanical Engineering</option>
+                                    <option value="CE">CE — Civil Engineering</option>
+                                    <option value="IT">IT — Information Technology</option>
+                                    <option value="AI&ML">AI&ML — Artificial Intelligence</option>
+                                    <option value="DS">DS — Data Science</option>
+                                    <option value="CSM">CSM — CS (AI & ML)</option>
+                                    <option value="CSD">CSD — CS (Data Science)</option>
+                                    <option value="MBA">MBA — Business Admin</option>
+                                    <option value="MCA">MCA — Computer Applications</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row-inline">
+                        <div class="field">
+                            <label>Program <span class="req">*</span></label>
+                            <div class="toggle-pills" id="programToggle">
+                                <button type="button" class="pill active" data-value="UG">
+                                    <i class="ri-graduation-cap-line"></i> UG
+                                </button>
+                                <button type="button" class="pill" data-value="PG">
+                                    <i class="ri-book-open-line"></i> PG
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-divider"></div>
+
+                    <!-- Publication Section -->
+                    <div class="form-section">
+                        <div class="form-section-badge badge-pub">
+                            <i class="ri-article-line"></i>
+                        </div>
+                        <h3 class="form-section-title">Publication Details</h3>
+                    </div>
+
+                    <div class="field">
+                        <label for="articleTitle">Article / Paper Title <span class="req">*</span></label>
+                        <div class="field-input">
+                            <i class="ri-file-text-line"></i>
+                            <input type="text" id="articleTitle" name="article_title" required placeholder="Enter the full title of the research paper">
+                        </div>
+                    </div>
+
+                    <div class="form-grid-3">
+                        <div class="field">
+                            <label>Publication Type <span class="req">*</span></label>
+                            <div class="toggle-pills" id="typeToggle">
+                                <button type="button" class="pill active" data-value="Journal">
+                                    <i class="ri-newspaper-line"></i> Journal
+                                </button>
+                                <button type="button" class="pill" data-value="Conference">
+                                    <i class="ri-presentation-line"></i> Conference
+                                </button>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label for="indexing">Indexing <span class="req">*</span></label>
+                            <div class="field-input">
+                                <i class="ri-search-eye-line"></i>
+                                <select id="indexing" name="indexing" required>
+                                    <option value="" disabled selected>Select Indexing</option>
+                                    <option value="SCI">SCI</option>
+                                    <option value="Scopus">Scopus</option>
+                                    <option value="UGC">UGC</option>
+                                    <option value="Web of Science">Web of Science</option>
+                                    <option value="IEEE">IEEE</option>
+                                    <option value="Springer">Springer</option>
+                                    <option value="Elsevier">Elsevier</option>
+                                    <option value="Google Scholar">Google Scholar</option>
+                                    <option value="Others">Others</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label for="journalTitle">Journal / Conference Name <span class="req">*</span></label>
+                            <div class="field-input">
+                                <i class="ri-book-2-line"></i>
+                                <input type="text" id="journalTitle" name="journal_conference_title" required placeholder="Name of the journal or conference">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label for="sponsorship">Sponsorship Details <span class="text-muted">(optional)</span></label>
+                        <div class="field-input">
+                            <i class="ri-money-dollar-circle-line"></i>
+                            <input type="text" id="sponsorship" name="sponsorship" placeholder="e.g. AICTE Funded, UGC Fellowship, etc.">
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="reset" class="btn btn-ghost" id="formResetBtn">
+                            <i class="ri-refresh-line"></i> Reset
+                        </button>
+                        <button type="submit" class="btn btn-primary btn-lg" id="formSubmitBtn">
+                            <i class="ri-save-line"></i> Save Publication
+                            <div class="btn-spinner" style="display:none;"></div>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- ==================== ALL PUBLICATIONS VIEW ==================== -->
+        <section class="view" id="view-publications">
+            <div class="section-header">
+                <div>
+                    <h2><i class="ri-file-list-3-line"></i> All Publications</h2>
+                    <p id="pubCount">Browse and manage student publication records</p>
+                </div>
+            </div>
+
+            <!-- Search & Filters -->
+            <div class="card filter-bar">
+                <div class="search-field">
+                    <i class="ri-search-line"></i>
+                    <input type="text" id="searchInput" placeholder="Search by name, roll no, title...">
+                    <button class="clear-btn" id="searchClear" style="display:none;">
+                        <i class="ri-close-circle-fill"></i>
+                    </button>
+                </div>
+                <div class="filter-group">
+                    <select class="filter-select" id="filterProgram">
+                        <option value="">All Programs</option>
+                        <option value="UG">UG</option>
+                        <option value="PG">PG</option>
+                    </select>
+                    <select class="filter-select" id="filterBranch">
+                        <option value="">All Branches</option>
+                        <option value="CSE">CSE</option><option value="ECE">ECE</option>
+                        <option value="EEE">EEE</option><option value="ME">ME</option>
+                        <option value="CE">CE</option><option value="IT">IT</option>
+                        <option value="AI&ML">AI&ML</option><option value="DS">DS</option>
+                        <option value="CSM">CSM</option><option value="CSD">CSD</option>
+                        <option value="MBA">MBA</option><option value="MCA">MCA</option>
+                    </select>
+                    <select class="filter-select" id="filterType">
+                        <option value="">All Types</option>
+                        <option value="Journal">Journal</option>
+                        <option value="Conference">Conference</option>
+                    </select>
+                    <select class="filter-select" id="filterIndexing">
+                        <option value="">All Indexing</option>
+                        <option value="SCI">SCI</option><option value="Scopus">Scopus</option>
+                        <option value="UGC">UGC</option><option value="Web of Science">Web of Science</option>
+                        <option value="IEEE">IEEE</option><option value="Springer">Springer</option>
+                        <option value="Elsevier">Elsevier</option><option value="Google Scholar">Google Scholar</option>
+                        <option value="Others">Others</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary btn-sm" id="downloadFilteredBtn" onclick="App.exportFilteredXLSX()" style="margin-left: auto;">
+                    <i class="ri-file-excel-line"></i> Download as XLSX
+                </button>
+            </div>
+
+            <!-- Table -->
+            <div class="card">
+                <div class="table-scroll">
+                    <table class="data-table" id="pubTable">
+                        <thead>
+                            <tr>
+                                <th class="sortable" data-sort="roll_no">Roll No <i class="ri-arrow-up-down-line"></i></th>
+                                <th class="sortable" data-sort="name">Name <i class="ri-arrow-up-down-line"></i></th>
+                                <th>Program</th>
+                                <th>Branch</th>
+                                <th class="sortable" data-sort="article_title">Article Title <i class="ri-arrow-up-down-line"></i></th>
+                                <th>J / C</th>
+                                <th>Indexing</th>
+                                <th>Journal / Conference</th>
+                                <th>Sponsorship</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pubTableBody"></tbody>
+                    </table>
+                </div>
+                <div class="empty-state" id="pubEmpty" style="display:none;">
+                    <i class="ri-inbox-line"></i>
+                    <h4>No Records Found</h4>
+                    <p>Try adjusting your search or filters</p>
+                </div>
+                <div class="table-footer" id="pagination">
+                    <button class="btn btn-outline btn-sm" id="prevPage" disabled>
+                        <i class="ri-arrow-left-s-line"></i> Previous
+                    </button>
+                    <span class="page-info" id="pageInfo">Page 1 of 1</span>
+                    <button class="btn btn-outline btn-sm" id="nextPage" disabled>
+                        Next <i class="ri-arrow-right-s-line"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== EXPORT VIEW ==================== -->
+        <section class="view" id="view-export">
+            <div class="section-header">
+                <div>
+                    <h2><i class="ri-download-cloud-2-line"></i> Export Data</h2>
+                    <p>Download your publication records in various formats</p>
+                </div>
+            </div>
+            <div class="export-row">
+                <div class="card export-card">
+                    <div class="export-icon-wrap csv"><i class="ri-file-excel-2-line"></i></div>
+                    <h3>Export as CSV</h3>
+                    <p>Download as a spreadsheet file compatible with Excel and Google Sheets.</p>
+                    <button class="btn btn-primary" onclick="App.exportCSV()">
+                        <i class="ri-download-line"></i> Download CSV
+                    </button>
+                </div>
+                <div class="card export-card">
+                    <div class="export-icon-wrap json" style="background: linear-gradient(135deg, #e2f0d9, #c5e1a5); color: #388e3c;"><i class="ri-file-excel-line"></i></div>
+                    <h3>Export as XLSX</h3>
+                    <p>Download all publications as an Excel spreadsheet file (.xlsx).</p>
+                    <button class="btn btn-primary" onclick="App.exportXLSX()">
+                        <i class="ri-download-line"></i> Download XLSX
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ========== FOOTER ========== -->
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <p>&copy; 2026 Vignan's Foundation for Science, Technology & Research. R&D Department.</p>
+            <p class="footer-sub">Student Publication Tracker — All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- ========== EDIT MODAL ========== -->
+    <div class="modal-overlay" id="editModal">
+        <div class="modal card">
+            <div class="modal-header">
+                <h3><i class="ri-edit-line"></i> Edit Publication</h3>
+                <button class="modal-close" id="modalClose"><i class="ri-close-line"></i></button>
+            </div>
+            <form id="editForm" class="modal-body" autocomplete="off">
+                <input type="hidden" id="editId">
+                <div class="form-grid-2">
+                    <div class="field">
+                        <label for="editRollNo">Roll Number</label>
+                        <div class="field-input"><input type="text" id="editRollNo" required></div>
+                    </div>
+                    <div class="field">
+                        <label for="editName">Student Name</label>
+                        <div class="field-input"><input type="text" id="editName" required></div>
+                    </div>
+                    <div class="field">
+                        <label for="editProgram">Program</label>
+                        <div class="field-input">
+                            <select id="editProgram" required>
+                                <option value="UG">UG</option><option value="PG">PG</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="editBranch">Branch</label>
+                        <div class="field-input">
+                            <select id="editBranch" required>
+                                <option value="CSE">CSE</option><option value="ECE">ECE</option>
+                                <option value="EEE">EEE</option><option value="ME">ME</option>
+                                <option value="CE">CE</option><option value="IT">IT</option>
+                                <option value="AI&ML">AI&ML</option><option value="DS">DS</option>
+                                <option value="CSM">CSM</option><option value="CSD">CSD</option>
+                                <option value="MBA">MBA</option><option value="MCA">MCA</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="field full-span">
+                        <label for="editArticleTitle">Article Title</label>
+                        <div class="field-input"><input type="text" id="editArticleTitle" required></div>
+                    </div>
+                    <div class="field">
+                        <label for="editType">Type</label>
+                        <div class="field-input">
+                            <select id="editType" required>
+                                <option value="Journal">Journal</option><option value="Conference">Conference</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="editIndexing">Indexing</label>
+                        <div class="field-input">
+                            <select id="editIndexing" required>
+                                <option value="SCI">SCI</option><option value="Scopus">Scopus</option>
+                                <option value="UGC">UGC</option><option value="Web of Science">Web of Science</option>
+                                <option value="IEEE">IEEE</option><option value="Springer">Springer</option>
+                                <option value="Elsevier">Elsevier</option><option value="Google Scholar">Google Scholar</option>
+                                <option value="Others">Others</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="field full-span">
+                        <label for="editJournalTitle">Journal / Conference Name</label>
+                        <div class="field-input"><input type="text" id="editJournalTitle" required></div>
+                    </div>
+                    <div class="field full-span">
+                        <label for="editSponsorship">Sponsorship</label>
+                        <div class="field-input"><input type="text" id="editSponsorship" placeholder="Optional"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-ghost" id="modalCancelBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary"><i class="ri-save-line"></i> Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========== DELETE MODAL ========== -->
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal card modal-sm">
+            <div class="modal-header modal-header-danger">
+                <h3><i class="ri-error-warning-line"></i> Confirm Delete</h3>
+                <button class="modal-close" id="deleteModalClose"><i class="ri-close-line"></i></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this publication? This action cannot be undone.</p>
+                <div class="delete-record-info" id="deleteInfo"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" id="deleteCancelBtn">Cancel</button>
+                <button class="btn btn-danger" id="deleteConfirmBtn"><i class="ri-delete-bin-line"></i> Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== LOADING OVERLAY ========== -->
+    <div class="loading-overlay active" id="loadingOverlay">
+        <div class="loader">
+            <div class="loader-ring"></div>
+            <span>Loading R&D Data...</span>
+        </div>
+    </div>
+
+    <!-- ========== TOAST CONTAINER ========== -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="app.js?v=2.0"></script>
+</body>
+</html>
