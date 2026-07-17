@@ -276,7 +276,11 @@ const App = {
             this.resetToggles();
         } catch (err) {
             console.error('Add error:', err);
-            Toast.show('error', 'Save Failed', err.message || 'Failed to save publication');
+            let msg = err.message || 'Failed to save publication';
+            if (msg.includes('row-level security') || msg.includes('RLS')) {
+                msg = 'Access Denied: You are logged in with offline demo credentials. Please log in using a real account registered in your Supabase Auth panel.';
+            }
+            Toast.show('error', 'Save Failed', msg);
         } finally {
             if (submitBtn) submitBtn.disabled = false;
             if (loader) loader.style.display = 'none';
@@ -313,7 +317,11 @@ const App = {
             Toast.show('success', 'Updated!', 'Publication record has been updated in database.');
         } catch (err) {
             console.error('Update error:', err);
-            Toast.show('error', 'Update Failed', err.message || 'Failed to update publication');
+            let msg = err.message || 'Failed to update publication';
+            if (msg.includes('row-level security') || msg.includes('RLS')) {
+                msg = 'Access Denied: Please log in using a real account registered in your Supabase Auth panel.';
+            }
+            Toast.show('error', 'Update Failed', msg);
         }
     },
 
@@ -340,7 +348,11 @@ const App = {
             Toast.show('success', 'Deleted', 'Publication record has been removed from database.');
         } catch (err) {
             console.error('Delete error:', err);
-            Toast.show('error', 'Delete Failed', err.message || 'Failed to delete publication');
+            let msg = err.message || 'Failed to delete publication';
+            if (msg.includes('row-level security') || msg.includes('RLS')) {
+                msg = 'Access Denied: Please log in using a real account registered in your Supabase Auth panel.';
+            }
+            Toast.show('error', 'Delete Failed', msg);
         }
     },
 
