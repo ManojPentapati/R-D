@@ -664,7 +664,7 @@ const App = {
             empty.style.display = 'none';
             table.style.display = '';
             tbody.innerHTML = pageData.map(p => {
-                const titleHtml = p.paper_link 
+                const titleHtml = p.paper_link
                     ? `<a href="${p.paper_link}" target="_blank" style="color: var(--accent-light, #2196f3); text-decoration: none; font-weight: 500;" class="paper-link" title="View Publication">${this.escapeHtml(this.truncate(p.article_title, 35))} <i class="ri-external-link-line" style="font-size: 11px;"></i></a>`
                     : this.escapeHtml(this.truncate(p.article_title, 35));
                 return `
@@ -1109,7 +1109,7 @@ const App = {
                 const email = document.getElementById('adminEmail').value.trim();
                 const password = document.getElementById('adminPassword').value;
                 const submitBtn = document.getElementById('createAdminSubmitBtn');
-                
+
                 submitBtn.disabled = true;
                 try {
                     if (!supabaseClient) {
