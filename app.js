@@ -746,10 +746,13 @@ const App = {
 
         // Hide/Show Hero Section (only show on Dashboard)
         const heroSection = document.getElementById('heroSection');
-        if (viewName === 'dashboard' || viewName === 'publications') {
-            heroSection.style.display = 'block';
+        const mainWrapper = document.querySelector('.main-wrapper');
+        if (viewName === 'dashboard') {
+            if (heroSection) heroSection.style.display = 'block';
+            if (mainWrapper) mainWrapper.style.paddingTop = '32px';
         } else {
-            heroSection.style.display = 'none';
+            if (heroSection) heroSection.style.display = 'none';
+            if (mainWrapper) mainWrapper.style.paddingTop = 'calc(var(--nav-height) + 32px)';
         }
 
         // Refresh data when switching to publications
