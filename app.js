@@ -40,6 +40,7 @@ const App = {
         this.bindEvents();
         this.initSlideshow();
         this.checkHashRoute();
+        this.setupInputValidation();
         if (!supabaseClient) {
             await this.loadData();
         }
@@ -427,9 +428,9 @@ const App = {
                     legend: {
                         position: 'bottom',
                         labels: {
-                            color: '#556275',
+                            color: 'rgba(255,255,255,0.85)',
                             padding: 16,
-                            font: { family: 'Inter', size: 12 },
+                            font: { family: 'Inter', size: 12, weight: '500' },
                             usePointStyle: true,
                             pointStyleWidth: 10
                         }
@@ -489,17 +490,17 @@ const App = {
                 },
                 scales: {
                     x: {
-                        ticks: { color: '#556275', font: { family: 'Inter', size: 11 } },
+                        ticks: { color: 'rgba(255,255,255,0.75)', font: { family: 'Inter', size: 11 } },
                         grid: { display: false }
                     },
                     y: {
                         beginAtZero: true,
                         ticks: {
-                            color: '#556275',
+                            color: 'rgba(255,255,255,0.75)',
                             font: { family: 'Inter', size: 11 },
                             stepSize: 1
                         },
-                        grid: { color: 'rgba(0,0,0,0.05)' }
+                        grid: { color: 'rgba(255,255,255,0.08)' }
                     }
                 }
             }
@@ -550,7 +551,7 @@ const App = {
                     legend: {
                         position: 'bottom',
                         labels: {
-                            color: '#556275',
+                            color: 'rgba(255,255,255,0.85)',
                             padding: 12,
                             font: { family: 'Inter', size: 11 },
                             usePointStyle: true,
@@ -561,7 +562,8 @@ const App = {
                 scales: {
                     r: {
                         ticks: { display: false },
-                        grid: { color: 'rgba(0,0,0,0.05)' }
+                        grid: { color: 'rgba(255,255,255,0.08)' },
+                        angleLines: { color: 'rgba(255,255,255,0.08)' }
                     }
                 }
             }
@@ -655,7 +657,7 @@ const App = {
                     : this.escapeHtml(this.truncate(p.article_title, 35));
                 return `
                     <tr>
-                        <td><strong>${this.escapeHtml(p.roll_no)}</strong></td>
+                        <td class="clickable-copy" onclick="App.copyToClipboard('${p.roll_no}', 'Paper ID')" title="Click to copy Paper ID"><strong>${this.escapeHtml(p.roll_no)}</strong> <i class="ri-file-copy-line copy-ico"></i></td>
                         <td class="admin-only">${this.escapeHtml(p.name)}</td>
                         <td class="admin-only"><span class="badge badge-${p.program.toLowerCase()}">${p.program}</span></td>
                         <td class="admin-only">${this.escapeHtml(p.branch)}</td>
@@ -664,7 +666,7 @@ const App = {
                         <td class="admin-only"><span class="badge badge-indexing">${this.escapeHtml(p.indexing || '—')}</span></td>
                         <td class="admin-only" title="${this.escapeHtml(p.journal_conference_title || '')}">${this.escapeHtml(this.truncate(p.journal_conference_title || '—', 25))}</td>
                         <td class="admin-only">${this.escapeHtml(p.sponsorship || '—')}</td>
-                        <td class="admin-only">${this.escapeHtml(p.mentor_name || '—')}</td>
+                        <td class="admin-only clickable-copy" onclick="App.copyToClipboard('${this.escapeHtml(p.mentor_name || '')}', 'Mentor Name')" title="Click to copy Mentor Name">${this.escapeHtml(p.mentor_name || '—')} <i class="ri-file-copy-line copy-ico"></i></td>
                         <td class="super-admin-only">₹${parseFloat(p.funding_amount || 0).toLocaleString()}</td>
                         <td class="admin-only">
                             <div class="actions-cell">
@@ -700,7 +702,11 @@ const App = {
         document.getElementById('editBranch').value = pub.branch;
         document.getElementById('editArticleTitle').value = pub.article_title;
         document.getElementById('editType').value = pub.publication_type;
-        document.getElementById('editIndexing').value = pub.indexing || '';
+        const editIndexingSelect = document.getElementById('editIndexing');
+        if (editIndexingSelect) {
+            editIndexingSelect.value = pub.indexing || '';
+            editIndexingSelect.dispatchEvent(new Event('change'));
+        }
         document.getElementById('editJournalTitle').value = pub.journal_conference_title || '';
         document.getElementById('editSponsorship').value = pub.sponsorship || '';
         document.getElementById('editMentorName').value = pub.mentor_name || '';
@@ -1154,12 +1160,96 @@ const App = {
         }
     },
 
+    setupInputValidation() {
+        const validateRoll = (el) => {
+            const val = el.value.trim();
+            if (val === '') {
+                el.classList.remove('is-valid', 'is-invalid');
+                return;
+            }
+            // Vignan roll numbers are alphanumeric, between 8 and 10 chars
+            const pattern = /^[a-zA-Z0-9]{8,10}$/;
+            if (pattern.test(val)) {
+                el.classList.add('is-valid');
+                el.classList.remove('is-invalid');
+            } else {
+                el.classList.add('is-invalid');
+                el.classList.remove('is-valid');
+            }
+        };
+
+        const rollInput = document.getElementById('rollNo');
+        const editRollInput = document.getElementById('editRollNo');
+        if (rollInput) {
+            rollInput.addEventListener('input', () => validateRoll(rollInput));
+        }
+        if (editRollInput) {
+            editRollInput.addEventListener('input', () => validateRoll(editRollInput));
+        }
+
+        // Email validation for Admin registration
+        const adminEmail = document.getElementById('adminEmail');
+        if (adminEmail) {
+            adminEmail.addEventListener('input', () => {
+                const email = adminEmail.value.trim();
+                if (email === '') {
+                    adminEmail.classList.remove('is-valid', 'is-invalid');
+                    return;
+                }
+                const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (emailPattern.test(email) && email.toLowerCase().endsWith('@vignan.ac.in')) {
+                    adminEmail.classList.add('is-valid');
+                    adminEmail.classList.remove('is-invalid');
+                } else {
+                    adminEmail.classList.add('is-invalid');
+                    adminEmail.classList.remove('is-valid');
+                }
+            });
+        }
+
+        // Indexing Helper Tooltips
+        const indexingGuides = {
+            'SCI': 'Science Citation Index — Highest quality, recommended for international research journals.',
+            'Scopus': 'Scopus Index — Widely recognized indexing for premium international journals & IEEE conferences.',
+            'UGC': 'UGC Care List — Recommended for national journals and Indian research publications.',
+            'Web of Science': 'Clarivate Web of Science — Elite indexing standard matching global metrics.',
+            'IEEE': 'IEEE Xplore — Highly recommended for Computer Science & Engineering conferences/publications.',
+            'Springer': 'Springer Link — Prestigious publisher with high citation index.',
+            'Elsevier': 'Elsevier ScienceDirect — Renowned international scientific publisher.',
+            'Google Scholar': 'Google Scholar — Free indexing, good for citation tracking but verify with faculty advisor.',
+            'Others': 'Non-listed indexing — Choose if your index is not in the list.'
+        };
+
+        const setupIndexingGuide = (selectId, helperId) => {
+            const select = document.getElementById(selectId);
+            const helper = document.getElementById(helperId);
+            if (select && helper) {
+                select.addEventListener('change', () => {
+                    const guide = indexingGuides[select.value] || '';
+                    helper.textContent = guide;
+                });
+            }
+        };
+
+        setupIndexingGuide('indexing', 'indexingHelper');
+        setupIndexingGuide('editIndexing', 'editIndexingHelper');
+    },
+
     // ── Utility ──
     escapeHtml(text) {
         if (!text) return '';
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
+    },
+
+    copyToClipboard(text, label) {
+        if (!text || text === '—') return;
+        navigator.clipboard.writeText(text).then(() => {
+            Toast.show('success', 'Copied!', `${label} copied to clipboard.`);
+        }).catch(err => {
+            console.error('Failed to copy:', err);
+        });
     },
 
     truncate(text, maxLen) {

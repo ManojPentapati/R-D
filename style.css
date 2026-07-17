@@ -427,8 +427,8 @@ body {
 }
 
 .stat-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: var(--radius-lg);
     padding: 22px 20px;
     display: flex;
@@ -436,13 +436,27 @@ body {
     gap: 16px;
     position: relative;
     overflow: hidden;
-    box-shadow: var(--shadow-sm);
-    transition: all 0.3s var(--ease);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    transition: all 0.4s var(--ease);
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 100%);
+    opacity: 0.8;
+    pointer-events: none;
 }
 
 .stat-card:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-lg);
+    transform: translateY(-4px) scale(1.02);
+    border-color: rgba(240, 180, 41, 0.35);
+    box-shadow: 0 12px 30px rgba(240, 180, 41, 0.15), 0 0 16px rgba(240, 180, 41, 0.05);
 }
 
 .stat-card-icon {
@@ -467,14 +481,14 @@ body {
 .stat-card-value {
     font-size: 28px;
     font-weight: 800;
-    color: var(--navy);
+    color: #fff;
     line-height: 1;
     letter-spacing: -0.5px;
 }
 
 .stat-card-label {
     font-size: 11px;
-    color: var(--text-muted);
+    color: rgba(255, 255, 255, 0.55);
     text-transform: uppercase;
     letter-spacing: 0.5px;
     font-weight: 600;
@@ -1335,5 +1349,47 @@ body.super-admin-mode .filter-bar.admin-only {
 body.super-admin-mode section.super-admin-only,
 body.admin-mode section.admin-only {
     display: block !important;
+}
+
+/* ============ FORM VALIDATION FEEDBACK ============ */
+.field-input input.is-valid, .field-input select.is-valid {
+    border-color: var(--teal-light, #00bcd4) !important;
+    box-shadow: 0 0 8px rgba(0, 188, 212, 0.15) !important;
+}
+
+.field-input input.is-invalid, .field-input select.is-invalid {
+    border-color: var(--coral, #ff6f61) !important;
+    box-shadow: 0 0 8px rgba(255, 111, 97, 0.15) !important;
+}
+
+.field-helper {
+    display: block;
+    font-size: 11px;
+    color: var(--gold, #f0b429);
+    margin-top: 6px;
+    font-style: italic;
+    line-height: 1.4;
+    transition: all 0.2s ease;
+}
+
+.clickable-copy {
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.clickable-copy:hover {
+    color: var(--gold, #f0b429) !important;
+}
+
+.clickable-copy .copy-ico {
+    font-size: 11px;
+    opacity: 0;
+    margin-left: 4px;
+    transition: opacity 0.2s ease;
+    vertical-align: middle;
+}
+
+.clickable-copy:hover .copy-ico {
+    opacity: 0.6;
 }
 
