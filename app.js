@@ -871,6 +871,19 @@ const App = {
             });
         });
 
+        // Logo click handler
+        const navBrand = document.querySelector('.nav-brand');
+        if (navBrand) {
+            navBrand.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (State.userRole === 'super_admin') {
+                    this.switchView('dashboard');
+                } else {
+                    this.switchView('publications');
+                }
+            });
+        }
+
         // Mobile nav toggle
         document.getElementById('navToggle').addEventListener('click', () => {
             document.getElementById('navLinks').classList.toggle('open');
