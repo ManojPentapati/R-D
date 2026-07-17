@@ -1320,3 +1320,20 @@ body.show-auth-trigger #authBtn {
     display: flex !important;
 }
 
+/* Block & Flex Layout Overrides for Roles */
+body.admin-mode div.admin-only,
+body.super-admin-mode div.admin-only,
+body.super-admin-mode div.super-admin-only {
+    display: block !important;
+}
+
+body.admin-mode .filter-bar.admin-only,
+body.super-admin-mode .filter-bar.admin-only {
+    display: flex !important;
+}
+
+body.super-admin-mode section.super-admin-only,
+body.admin-mode section.admin-only {
+    display: block !important;
+}
+

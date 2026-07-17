@@ -33,6 +33,9 @@
                 <a href="#" class="nav-link active super-admin-only" data-view="dashboard" id="nav-dashboard">
                     <i class="ri-dashboard-3-line"></i> Dashboard
                 </a>
+                <a href="#" class="nav-link super-admin-only" data-view="manage-admins" id="nav-manage-admins">
+                    <i class="ri-user-settings-line"></i> Manage Admins
+                </a>
                 <a href="#" class="nav-link admin-only" data-view="add" id="nav-add">
                     <i class="ri-add-circle-line"></i> Add Publication
                 </a>
@@ -372,7 +375,7 @@
             </div>
 
             <!-- Search & Filters -->
-            <div class="card filter-bar">
+            <div class="card filter-bar admin-only">
                 <div class="search-field">
                     <i class="ri-search-line"></i>
                     <input type="text" id="searchInput" placeholder="Search by name, roll no, title...">
@@ -420,16 +423,16 @@
                     <table class="data-table" id="pubTable">
                         <thead>
                             <tr>
-                                <th class="sortable" data-sort="roll_no">Roll No <i class="ri-arrow-up-down-line"></i></th>
-                                <th class="sortable" data-sort="name">Name <i class="ri-arrow-up-down-line"></i></th>
-                                <th>Program</th>
-                                <th>Branch</th>
-                                <th class="sortable" data-sort="article_title">Article Title <i class="ri-arrow-up-down-line"></i></th>
-                                <th>J / C</th>
-                                <th>Indexing</th>
-                                <th>Journal / Conference</th>
-                                <th>Sponsorship</th>
-                                <th>Mentor / Guide</th>
+                                <th class="sortable" data-sort="roll_no">Paper ID <i class="ri-arrow-up-down-line"></i></th>
+                                <th class="admin-only sortable" data-sort="name">Name <i class="ri-arrow-up-down-line"></i></th>
+                                <th class="admin-only">Program</th>
+                                <th class="admin-only">Branch</th>
+                                <th class="sortable" data-sort="article_title">Paper Title <i class="ri-arrow-up-down-line"></i></th>
+                                <th class="admin-only">J / C</th>
+                                <th class="admin-only">Indexing</th>
+                                <th class="admin-only">Journal / Conference</th>
+                                <th class="admin-only">Sponsorship</th>
+                                <th class="admin-only">Mentor / Guide</th>
                                 <th class="super-admin-only">Funding Amount (₹)</th>
                                 <th class="admin-only">Actions</th>
                             </tr>
@@ -479,6 +482,40 @@
                         <i class="ri-download-line"></i> Download XLSX
                     </button>
                 </div>
+            </div>
+        </section>
+
+        <!-- ==================== MANAGE ADMINS VIEW ==================== -->
+        <section class="view" id="view-manage-admins">
+            <div class="section-header">
+                <div>
+                    <h2><i class="ri-user-add-line"></i> Manage Admins</h2>
+                    <p>Create and register new admin credentials for the system</p>
+                </div>
+            </div>
+            <div class="card" style="max-width: 500px; margin: 0 auto; padding: 24px;">
+                <form id="createAdminForm" autocomplete="off">
+                    <div class="field" style="margin-bottom: 20px;">
+                        <label for="adminEmail">Admin Email Address <span class="req">*</span></label>
+                        <div class="field-input">
+                            <i class="ri-mail-line"></i>
+                            <input type="email" id="adminEmail" required placeholder="admin@vignan.ac.in" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="field" style="margin-bottom: 24px;">
+                        <label for="adminPassword">Temporary Password <span class="req">*</span></label>
+                        <div class="field-input">
+                            <i class="ri-key-line"></i>
+                            <input type="password" id="adminPassword" required placeholder="Min 6 characters" autocomplete="off" minlength="6">
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: flex-end; gap: 12px;">
+                        <button type="reset" class="btn btn-ghost">Reset</button>
+                        <button type="submit" class="btn btn-primary" id="createAdminSubmitBtn">
+                            <i class="ri-user-shared-line"></i> Register Admin
+                        </button>
+                    </div>
+                </form>
             </div>
         </section>
 

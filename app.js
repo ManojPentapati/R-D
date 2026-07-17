@@ -170,6 +170,8 @@ const App = {
             const viewId = currentView.id.replace('view-', '');
             if (viewId === 'dashboard' && role !== 'super_admin') {
                 this.switchView('publications');
+            } else if (viewId === 'manage-admins' && role !== 'super_admin') {
+                this.switchView('publications');
             } else if (viewId === 'add' && !role) {
                 this.switchView('publications');
             } else if (viewId === 'export' && !role) {
@@ -654,15 +656,15 @@ const App = {
                 return `
                     <tr>
                         <td><strong>${this.escapeHtml(p.roll_no)}</strong></td>
-                        <td>${this.escapeHtml(p.name)}</td>
-                        <td><span class="badge badge-${p.program.toLowerCase()}">${p.program}</span></td>
-                        <td>${this.escapeHtml(p.branch)}</td>
+                        <td class="admin-only">${this.escapeHtml(p.name)}</td>
+                        <td class="admin-only"><span class="badge badge-${p.program.toLowerCase()}">${p.program}</span></td>
+                        <td class="admin-only">${this.escapeHtml(p.branch)}</td>
                         <td title="${this.escapeHtml(p.article_title)}">${titleHtml}</td>
-                        <td><span class="badge badge-${p.publication_type.toLowerCase()}">${p.publication_type}</span></td>
-                        <td><span class="badge badge-indexing">${this.escapeHtml(p.indexing || '—')}</span></td>
-                        <td title="${this.escapeHtml(p.journal_conference_title || '')}">${this.escapeHtml(this.truncate(p.journal_conference_title || '—', 25))}</td>
-                        <td>${this.escapeHtml(p.sponsorship || '—')}</td>
-                        <td>${this.escapeHtml(p.mentor_name || '—')}</td>
+                        <td class="admin-only"><span class="badge badge-${p.publication_type.toLowerCase()}">${p.publication_type}</span></td>
+                        <td class="admin-only"><span class="badge badge-indexing">${this.escapeHtml(p.indexing || '—')}</span></td>
+                        <td class="admin-only" title="${this.escapeHtml(p.journal_conference_title || '')}">${this.escapeHtml(this.truncate(p.journal_conference_title || '—', 25))}</td>
+                        <td class="admin-only">${this.escapeHtml(p.sponsorship || '—')}</td>
+                        <td class="admin-only">${this.escapeHtml(p.mentor_name || '—')}</td>
                         <td class="super-admin-only">₹${parseFloat(p.funding_amount || 0).toLocaleString()}</td>
                         <td class="admin-only">
                             <div class="actions-cell">
@@ -744,7 +746,7 @@ const App = {
 
         // Hide/Show Hero Section (only show on Dashboard)
         const heroSection = document.getElementById('heroSection');
-        if (viewName === 'dashboard') {
+        if (viewName === 'dashboard' || viewName === 'publications') {
             heroSection.style.display = 'block';
         } else {
             heroSection.style.display = 'none';
@@ -1064,6 +1066,41 @@ const App = {
 
         // Hash change routing
         window.addEventListener('hashchange', () => this.checkHashRoute());
+
+        // Create Admin Form Submit
+        const createAdminForm = document.getElementById('createAdminForm');
+        if (createAdminForm) {
+            createAdminForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('adminEmail').value.trim();
+                const password = document.getElementById('adminPassword').value;
+                const submitBtn = document.getElementById('createAdminSubmitBtn');
+                
+                submitBtn.disabled = true;
+                try {
+                    if (!supabaseClient) {
+                        Toast.show('success', 'Admin Created (Demo)', `New admin account registered: ${email}`);
+                        createAdminForm.reset();
+                        return;
+                    }
+
+                    const { error } = await supabaseClient.rpc('create_admin_user', {
+                        new_email: email,
+                        new_password: password
+                    });
+
+                    if (error) throw error;
+
+                    Toast.show('success', 'Success!', `Registered admin: ${email}`);
+                    createAdminForm.reset();
+                } catch (err) {
+                    console.error('Error creating admin:', err);
+                    Toast.show('error', 'Registration Failed', err.message || 'Failed to create admin');
+                } finally {
+                    submitBtn.disabled = false;
+                }
+            });
+        }
     },
 
     async handleAuthClick() {
