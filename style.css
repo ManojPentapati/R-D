@@ -1310,3 +1310,13 @@ body.admin-mode .nav-link.admin-only {
     display: flex !important;
 }
 
+#authBtn {
+    display: none !important;
+}
+
+body.admin-mode #authBtn,
+body.super-admin-mode #authBtn,
+body.show-auth-trigger #authBtn {
+    display: flex !important;
+}
+

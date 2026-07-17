@@ -39,6 +39,7 @@ const App = {
         this.initSupabase();
         this.bindEvents();
         this.initSlideshow();
+        this.checkHashRoute();
         if (!supabaseClient) {
             await this.loadData();
         }
@@ -1060,6 +1061,9 @@ const App = {
                 submitBtn.disabled = false;
             }
         });
+
+        // Hash change routing
+        window.addEventListener('hashchange', () => this.checkHashRoute());
     },
 
     async handleAuthClick() {
@@ -1074,6 +1078,7 @@ const App = {
                     this.updateUIForRole();
                     await this.loadData();
                 }
+                window.location.hash = ''; // Clear the admin hash to hide the button
                 Toast.show('success', 'Logged Out', 'Successfully logged out.');
             } catch (err) {
                 console.error('Logout error:', err);
@@ -1081,6 +1086,18 @@ const App = {
             }
         } else {
             this.openModal('loginModal');
+        }
+    },
+
+    checkHashRoute() {
+        const hash = window.location.hash;
+        if (hash === '#admin' || hash === '#login') {
+            document.body.classList.add('show-auth-trigger');
+            if (!State.session) {
+                this.openModal('loginModal');
+            }
+        } else {
+            document.body.classList.remove('show-auth-trigger');
         }
     },
 
