@@ -193,6 +193,8 @@ const App = {
                 this.switchView('home');
             } else if (viewId === 'export' && !role) {
                 this.switchView('home');
+            } else if (viewId === 'reimbursement' && role) {
+                this.switchView(role === 'super_admin' ? 'dashboard' : 'home');
             }
         }
     },

@@ -1,21 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vignan R&D — Student Publication Tracker</title>
-    <meta name="description" content="Vignan's Foundation for Science, Technology & Research — R&D Student Publication Management System">
+    <meta name="description"
+        content="Vignan's Foundation for Science, Technology & Research — R&D Student Publication Management System">
     <link rel="icon" href="assets/vignan logo.png" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@600;700;800&display=swap"
+        rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/amazon-fonts@1.0.1/fonts/stylesheet.css" />
+    <link rel="stylesheet" type="text/css"
+        href="https://cdn.jsdelivr.net/npm/amazon-fonts@1.0.1/fonts/stylesheet.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
     <!-- ========== TOP NAVBAR ========== -->
@@ -45,7 +51,7 @@
                 <a href="#" class="nav-link" data-view="publications" id="nav-publications">
                     <i class="ri-file-list-3-line"></i> Publications
                 </a>
-                <a href="#" class="nav-link" data-view="reimbursement" id="nav-reimbursement">
+                <a href="#" class="nav-link public-only" data-view="reimbursement" id="nav-reimbursement">
                     <i class="ri-refund-2-line"></i> Fee Reimbursement
                 </a>
                 <a href="#" class="nav-link admin-only" data-view="export" id="nav-export">
@@ -58,7 +64,8 @@
                     <div class="conn-dot"></div>
                     <span>Connecting</span>
                 </div>
-                <button class="btn btn-outline btn-sm" id="authBtn" onclick="App.handleAuthClick()" style="margin-left: 12px; padding: 6px 14px; border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; background: rgba(255,255,255,0.05); color: #fff; display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 13px; font-weight: 500; transition: all 0.2s;">
+                <button class="btn btn-outline btn-sm" id="authBtn" onclick="App.handleAuthClick()"
+                    style="margin-left: 12px; padding: 6px 14px; border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; background: rgba(255,255,255,0.05); color: #fff; display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 13px; font-weight: 500; transition: all 0.2s;">
                     <i class="ri-login-box-line"></i> <span id="authBtnText">Admin Login</span>
                 </button>
                 <button class="nav-toggle" id="navToggle">
@@ -71,13 +78,16 @@
     <!-- ========== HERO SECTION ========== -->
     <section class="hero-section" id="heroSection">
         <div class="hero-bg">
-            <img src="assets/Ablock.jpg.jpeg" alt="Vignan University" class="hero-img" id="hero-bg-1" style="opacity: 1;">
-            <img src="assets/H block.jpg.jpeg" alt="Vignan University" class="hero-img" id="hero-bg-2" style="opacity: 0;">
+            <img src="assets/Ablock.jpg.jpeg" alt="Vignan University" class="hero-img" id="hero-bg-1"
+                style="opacity: 1;">
+            <img src="assets/H block.jpg.jpeg" alt="Vignan University" class="hero-img" id="hero-bg-2"
+                style="opacity: 0;">
             <div class="hero-overlay"></div>
         </div>
         <div class="hero-content">
             <h1 class="hero-title">Research & Development</h1>
-            <p class="hero-subtitle">Student Publication Management System — Vignan's Foundation for Science, Technology & Research</p>
+            <p class="hero-subtitle">Student Publication Management System — Vignan's Foundation for Science, Technology
+                & Research</p>
         </div>
     </section>
 
@@ -229,7 +239,8 @@
                                 <label for="studentName">Student Name <span class="req">*</span></label>
                                 <div class="field-input">
                                     <i class="ri-user-3-line"></i>
-                                    <input type="text" id="studentName" name="name" required autocomplete="name" placeholder="Full Name">
+                                    <input type="text" id="studentName" name="name" required autocomplete="name"
+                                        placeholder="Full Name">
                                 </div>
                             </div>
                             <div class="field">
@@ -284,7 +295,8 @@
                             <label for="articleTitle">Article / Paper Title <span class="req">*</span></label>
                             <div class="field-input">
                                 <i class="ri-file-text-line"></i>
-                                <input type="text" id="articleTitle" name="article_title" required placeholder="Enter the full title of the research paper">
+                                <input type="text" id="articleTitle" name="article_title" required
+                                    placeholder="Enter the full title of the research paper">
                             </div>
                         </div>
 
@@ -323,39 +335,48 @@
                                 <label for="journalTitle">Journal / Conference Name <span class="req">*</span></label>
                                 <div class="field-input">
                                     <i class="ri-book-2-line"></i>
-                                    <input type="text" id="journalTitle" name="journal_conference_title" required placeholder="Name of the journal or conference">
+                                    <input type="text" id="journalTitle" name="journal_conference_title" required
+                                        placeholder="Name of the journal or conference">
                                 </div>
                             </div>
                         </div>
 
                         <div class="field">
-                            <label for="sponsorship">Sponsorship Details <span class="text-muted">(optional)</span></label>
+                            <label for="sponsorship">Sponsorship Details <span
+                                    class="text-muted">(optional)</span></label>
                             <div class="field-input">
                                 <i class="ri-money-dollar-circle-line"></i>
-                                <input type="text" id="sponsorship" name="sponsorship" placeholder="e.g. AICTE Funded, UGC Fellowship, etc.">
+                                <input type="text" id="sponsorship" name="sponsorship"
+                                    placeholder="e.g. AICTE Funded, UGC Fellowship, etc.">
                             </div>
                         </div>
 
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 24px;">
+                        <div
+                            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 24px;">
                             <div class="field">
                                 <label for="mentorName">Mentor / Guide Name <span class="req">*</span></label>
                                 <div class="field-input">
                                     <i class="ri-user-star-line"></i>
-                                    <input type="text" id="mentorName" name="mentor_name" required placeholder="Name of Faculty Guide">
+                                    <input type="text" id="mentorName" name="mentor_name" required
+                                        placeholder="Name of Faculty Guide">
                                 </div>
                             </div>
                             <div class="field">
-                                <label for="paperLink">Paper Link / DOI <span class="text-muted">(optional)</span></label>
+                                <label for="paperLink">Paper Link / DOI <span
+                                        class="text-muted">(optional)</span></label>
                                 <div class="field-input">
                                     <i class="ri-link"></i>
-                                    <input type="url" id="paperLink" name="paper_link" placeholder="e.g. https://doi.org/... or IEEE link">
+                                    <input type="url" id="paperLink" name="paper_link"
+                                        placeholder="e.g. https://doi.org/... or IEEE link">
                                 </div>
                             </div>
                             <div class="field">
-                                <label for="fundingAmount">Funding / Reg. Fee Amount (₹) <span class="text-muted">(optional)</span></label>
+                                <label for="fundingAmount">Funding / Reg. Fee Amount (₹) <span
+                                        class="text-muted">(optional)</span></label>
                                 <div class="field-input">
                                     <i class="ri-money-rupee-circle-line"></i>
-                                    <input type="number" id="fundingAmount" name="funding_amount" placeholder="e.g. 5000 (Private details)" min="0">
+                                    <input type="number" id="fundingAmount" name="funding_amount"
+                                        placeholder="e.g. 5000 (Private details)" min="0">
                                 </div>
                             </div>
                         </div>
@@ -377,30 +398,52 @@
                     <div class="card-header">
                         <h3><i class="ri-file-excel-2-line"></i> Bulk Import (Excel/CSV)</h3>
                     </div>
-                    <div class="upload-card-body" style="padding: 24px; display: flex; flex-direction: column; gap: 20px;">
-                        <p class="upload-desc" style="color: var(--text-secondary); font-size: 13px; margin: 0; line-height: 1.5;">Batch register multiple student publication entries at once using a formatted Excel or CSV spreadsheet file.</p>
-                        
-                        <div class="template-box" style="display: flex; align-items: flex-start; gap: 12px; background: rgba(21, 101, 192, 0.05); border: 1px dashed var(--blue); padding: 16px; border-radius: 8px;">
-                            <i class="ri-download-2-line" style="font-size: 24px; color: var(--blue); margin-top: 2px;"></i>
+                    <div class="upload-card-body"
+                        style="padding: 24px; display: flex; flex-direction: column; gap: 20px;">
+                        <p class="upload-desc"
+                            style="color: var(--text-secondary); font-size: 13px; margin: 0; line-height: 1.5;">Batch
+                            register multiple student publication entries at once using a formatted Excel or CSV
+                            spreadsheet file.</p>
+
+                        <div class="template-box"
+                            style="display: flex; align-items: flex-start; gap: 12px; background: rgba(21, 101, 192, 0.05); border: 1px dashed var(--blue); padding: 16px; border-radius: 8px;">
+                            <i class="ri-download-2-line"
+                                style="font-size: 24px; color: var(--blue); margin-top: 2px;"></i>
                             <div>
-                                <h4 style="font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 4px;">Spreadsheet Template</h4>
-                                <p style="font-size: 12px; color: var(--text-secondary); margin: 0 0 8px 0; line-height: 1.4;">Download our pre-structured template sheet to ensure matching headers.</p>
-                                <a href="#" onclick="App.downloadImportTemplate(event)" class="template-link" style="color: var(--blue); font-size: 12px; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 4px;"><i class="ri-file-excel-line"></i> Download Template (.xlsx)</a>
+                                <h4 style="font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 4px;">
+                                    Spreadsheet Template</h4>
+                                <p
+                                    style="font-size: 12px; color: var(--text-secondary); margin: 0 0 8px 0; line-height: 1.4;">
+                                    Download our pre-structured template sheet to ensure matching headers.</p>
+                                <a href="#" onclick="App.downloadImportTemplate(event)" class="template-link"
+                                    style="color: var(--blue); font-size: 12px; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 4px;"><i
+                                        class="ri-file-excel-line"></i> Download Template (.xlsx)</a>
                             </div>
                         </div>
 
-                        <div class="dropzone" id="dropzone" style="border: 2px dashed var(--border); border-radius: 12px; padding: 36px 20px; text-align: center; cursor: pointer; transition: all 0.3s var(--ease); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; background: var(--surface-hover);">
-                            <i class="ri-upload-cloud-2-line dropzone-icon" style="font-size: 40px; color: var(--text-muted); transition: transform 0.3s ease;"></i>
-                            <p class="dropzone-text" style="font-size: 13px; font-weight: 500; color: var(--text-secondary); margin: 0;">Drag & drop your spreadsheet file here or <span class="browse-btn" style="color: var(--blue); font-weight: 600; text-decoration: underline;">browse files</span></p>
+                        <div class="dropzone" id="dropzone"
+                            style="border: 2px dashed var(--border); border-radius: 12px; padding: 36px 20px; text-align: center; cursor: pointer; transition: all 0.3s var(--ease); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; background: var(--surface-hover);">
+                            <i class="ri-upload-cloud-2-line dropzone-icon"
+                                style="font-size: 40px; color: var(--text-muted); transition: transform 0.3s ease;"></i>
+                            <p class="dropzone-text"
+                                style="font-size: 13px; font-weight: 500; color: var(--text-secondary); margin: 0;">Drag
+                                & drop your spreadsheet file here or <span class="browse-btn"
+                                    style="color: var(--blue); font-weight: 600; text-decoration: underline;">browse
+                                    files</span></p>
                             <input type="file" id="bulkUploadFile" accept=".xlsx, .xls, .csv" style="display: none;">
-                            <span class="file-name-indicator" id="fileNameIndicator" style="display: none; background: rgba(0, 137, 123, 0.1); color: var(--teal); border: 1px solid rgba(0, 137, 123, 0.2); padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-top: 8px;"></span>
+                            <span class="file-name-indicator" id="fileNameIndicator"
+                                style="display: none; background: rgba(0, 137, 123, 0.1); color: var(--teal); border: 1px solid rgba(0, 137, 123, 0.2); padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-top: 8px;"></span>
                         </div>
 
                         <div id="uploadProgress" class="upload-progress-container" style="display: none;">
-                            <div class="progress-bar-wrap" style="height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-bottom: 8px;">
-                                <div class="progress-bar-fill" id="progressBarFill" style="width: 0%; height: 100%; background: var(--teal-light); transition: width 0.3s ease;"></div>
+                            <div class="progress-bar-wrap"
+                                style="height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-bottom: 8px;">
+                                <div class="progress-bar-fill" id="progressBarFill"
+                                    style="width: 0%; height: 100%; background: var(--teal-light); transition: width 0.3s ease;">
+                                </div>
                             </div>
-                            <span class="progress-status" id="progressStatus" style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">Uploading...</span>
+                            <span class="progress-status" id="progressStatus"
+                                style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">Uploading...</span>
                         </div>
                     </div>
                 </div>
@@ -421,7 +464,8 @@
             <div class="card filter-bar admin-only">
                 <div class="search-field" style="position: relative;">
                     <i class="ri-search-line"></i>
-                    <input type="text" id="searchInput" placeholder="Search by name, roll no, title..." autocomplete="off">
+                    <input type="text" id="searchInput" placeholder="Search by name, roll no, title..."
+                        autocomplete="off">
                     <button class="clear-btn" id="searchClear" style="display:none;">
                         <i class="ri-close-circle-fill"></i>
                     </button>
@@ -436,12 +480,18 @@
                     </select>
                     <select class="filter-select" id="filterBranch">
                         <option value="">All Branches</option>
-                        <option value="CSE">CSE</option><option value="ECE">ECE</option>
-                        <option value="EEE">EEE</option><option value="ME">ME</option>
-                        <option value="CE">CE</option><option value="IT">IT</option>
-                        <option value="AI&ML">AI&ML</option><option value="DS">DS</option>
-                        <option value="CSM">CSM</option><option value="CSD">CSD</option>
-                        <option value="MBA">MBA</option><option value="MCA">MCA</option>
+                        <option value="CSE">CSE</option>
+                        <option value="ECE">ECE</option>
+                        <option value="EEE">EEE</option>
+                        <option value="ME">ME</option>
+                        <option value="CE">CE</option>
+                        <option value="IT">IT</option>
+                        <option value="AI&ML">AI&ML</option>
+                        <option value="DS">DS</option>
+                        <option value="CSM">CSM</option>
+                        <option value="CSD">CSD</option>
+                        <option value="MBA">MBA</option>
+                        <option value="MCA">MCA</option>
                     </select>
                     <select class="filter-select" id="filterType">
                         <option value="">All Types</option>
@@ -450,14 +500,19 @@
                     </select>
                     <select class="filter-select" id="filterIndexing">
                         <option value="">All Indexing</option>
-                        <option value="SCI">SCI</option><option value="Scopus">Scopus</option>
-                        <option value="UGC">UGC</option><option value="Web of Science">Web of Science</option>
-                        <option value="IEEE">IEEE</option><option value="Springer">Springer</option>
-                        <option value="Elsevier">Elsevier</option><option value="Google Scholar">Google Scholar</option>
+                        <option value="SCI">SCI</option>
+                        <option value="Scopus">Scopus</option>
+                        <option value="UGC">UGC</option>
+                        <option value="Web of Science">Web of Science</option>
+                        <option value="IEEE">IEEE</option>
+                        <option value="Springer">Springer</option>
+                        <option value="Elsevier">Elsevier</option>
+                        <option value="Google Scholar">Google Scholar</option>
                         <option value="Others">Others</option>
                     </select>
                 </div>
-                <button class="btn btn-primary btn-sm" id="downloadFilteredBtn" onclick="App.exportFilteredXLSX()" style="margin-left: auto;">
+                <button class="btn btn-primary btn-sm" id="downloadFilteredBtn" onclick="App.exportFilteredXLSX()"
+                    style="margin-left: auto;">
                     <i class="ri-file-excel-line"></i> Download as XLSX
                 </button>
             </div>
@@ -471,11 +526,14 @@
                     <table class="data-table" id="pubTable">
                         <thead>
                             <tr>
-                                <th class="sortable" data-sort="roll_no">Paper ID <i class="ri-arrow-up-down-line"></i></th>
-                                <th class="admin-only sortable" data-sort="name">Name <i class="ri-arrow-up-down-line"></i></th>
+                                <th class="sortable" data-sort="roll_no">Paper ID <i class="ri-arrow-up-down-line"></i>
+                                </th>
+                                <th class="admin-only sortable" data-sort="name">Name <i
+                                        class="ri-arrow-up-down-line"></i></th>
                                 <th class="admin-only">Program</th>
                                 <th class="admin-only">Branch</th>
-                                <th class="sortable" data-sort="article_title">Paper Title <i class="ri-arrow-up-down-line"></i></th>
+                                <th class="sortable" data-sort="article_title">Paper Title <i
+                                        class="ri-arrow-up-down-line"></i></th>
                                 <th class="admin-only">J / C</th>
                                 <th class="admin-only">Indexing</th>
                                 <th class="admin-only">Journal / Conference</th>
@@ -523,7 +581,9 @@
                     </button>
                 </div>
                 <div class="card export-card">
-                    <div class="export-icon-wrap json" style="background: linear-gradient(135deg, #e2f0d9, #c5e1a5); color: #388e3c;"><i class="ri-file-excel-line"></i></div>
+                    <div class="export-icon-wrap json"
+                        style="background: linear-gradient(135deg, #e2f0d9, #c5e1a5); color: #388e3c;"><i
+                            class="ri-file-excel-line"></i></div>
                     <h3>Export as XLSX</h3>
                     <p>Download all publications as an Excel spreadsheet file (.xlsx).</p>
                     <button class="btn btn-primary" onclick="App.exportXLSX()">
@@ -541,11 +601,12 @@
                     <p>Generate fee reimbursement requests and cover letters for published papers</p>
                 </div>
             </div>
-            
+
             <div class="card" style="max-width: 800px; margin: 0 auto; padding: 32px;">
                 <form id="reimbursementForm">
                     <div style="margin-bottom: 28px;">
-                        <h3 style="margin-bottom: 16px; border-bottom: 2px solid var(--border-light); padding-bottom: 8px; color: var(--navy); display: flex; align-items: center; gap: 8px;">
+                        <h3
+                            style="margin-bottom: 16px; border-bottom: 2px solid var(--border-light); padding-bottom: 8px; color: var(--navy); display: flex; align-items: center; gap: 8px;">
                             <i class="ri-article-line" style="color: var(--blue);"></i> 1. Paper Details
                         </h3>
                         <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
@@ -553,25 +614,30 @@
                                 <label for="reimbPaperTitle">Title of the Paper <span class="req">*</span></label>
                                 <div class="field-input">
                                     <i class="ri-article-line"></i>
-                                    <input type="text" id="reimbPaperTitle" required placeholder="e.g. Deep Learning for Medical Image Classification">
+                                    <input type="text" id="reimbPaperTitle" required
+                                        placeholder="e.g. Deep Learning for Medical Image Classification">
                                 </div>
                             </div>
                             <div class="field" style="margin-bottom: 0;">
                                 <label for="reimbHostInst">Host Institute / Organizer <span class="req">*</span></label>
                                 <div class="field-input">
                                     <i class="ri-building-line"></i>
-                                    <input type="text" id="reimbHostInst" required placeholder="e.g. IIT Madras or IEEE Madras Section">
+                                    <input type="text" id="reimbHostInst" required
+                                        placeholder="e.g. IIT Madras or IEEE Madras Section">
                                 </div>
                             </div>
                             <div class="field" style="margin-bottom: 0;">
-                                <label for="reimbConfName">Name of Journal / Conference <span class="req">*</span></label>
+                                <label for="reimbConfName">Name of Journal / Conference <span
+                                        class="req">*</span></label>
                                 <div class="field-input">
                                     <i class="ri-map-pin-line"></i>
-                                    <input type="text" id="reimbConfName" required placeholder="e.g. IEEE SPICES 2026 or Springer Journal">
+                                    <input type="text" id="reimbConfName" required
+                                        placeholder="e.g. IEEE SPICES 2026 or Springer Journal">
                                 </div>
                             </div>
                             <div class="field" style="margin-bottom: 0;">
-                                <label for="reimbConfDates">Dates of Conference / Publication <span class="req">*</span></label>
+                                <label for="reimbConfDates">Dates of Conference / Publication <span
+                                        class="req">*</span></label>
                                 <div class="field-input">
                                     <i class="ri-calendar-line"></i>
                                     <input type="text" id="reimbConfDates" required placeholder="e.g. June 15-17, 2026">
@@ -581,12 +647,15 @@
                     </div>
 
                     <div style="margin-bottom: 28px;">
-                        <h3 style="margin-bottom: 16px; border-bottom: 2px solid var(--border-light); padding-bottom: 8px; color: var(--navy); display: flex; align-items: center; gap: 8px;">
+                        <h3
+                            style="margin-bottom: 16px; border-bottom: 2px solid var(--border-light); padding-bottom: 8px; color: var(--navy); display: flex; align-items: center; gap: 8px;">
                             <i class="ri-user-group-line" style="color: var(--blue);"></i> 2. Authors Information
                         </h3>
-                        <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 16px;">
+                        <div class="form-grid"
+                            style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 16px;">
                             <div class="field" style="margin-bottom: 0;">
-                                <label for="reimbStudentCount">Number of Student Authors <span class="req">*</span></label>
+                                <label for="reimbStudentCount">Number of Student Authors <span
+                                        class="req">*</span></label>
                                 <div class="field-input">
                                     <i class="ri-user-line"></i>
                                     <select id="reimbStudentCount" onchange="App.generateAuthorInputs()">
@@ -600,7 +669,8 @@
                                 </div>
                             </div>
                             <div class="field" style="margin-bottom: 0;">
-                                <label for="reimbFacultyCount">Number of Faculty Guides <span class="req">*</span></label>
+                                <label for="reimbFacultyCount">Number of Faculty Guides <span
+                                        class="req">*</span></label>
                                 <div class="field-input">
                                     <i class="ri-user-star-line"></i>
                                     <select id="reimbFacultyCount" onchange="App.generateAuthorInputs()">
@@ -618,8 +688,10 @@
                     </div>
 
                     <div style="margin-bottom: 28px;">
-                        <h3 style="margin-bottom: 16px; border-bottom: 2px solid var(--border-light); padding-bottom: 8px; color: var(--navy); display: flex; align-items: center; gap: 8px;">
-                            <i class="ri-money-rupee-circle-line" style="color: var(--blue);"></i> 3. Registration & Fee Receipt
+                        <h3
+                            style="margin-bottom: 16px; border-bottom: 2px solid var(--border-light); padding-bottom: 8px; color: var(--navy); display: flex; align-items: center; gap: 8px;">
+                            <i class="ri-money-rupee-circle-line" style="color: var(--blue);"></i> 3. Registration & Fee
+                            Receipt
                         </h3>
                         <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                             <div class="field" style="margin-bottom: 0;">
@@ -630,27 +702,34 @@
                                 </div>
                             </div>
                             <div class="field" style="margin-bottom: 0;">
-                                <label for="reimbReceiptFile">Upload Registration Fee Receipt <span class="req">*</span></label>
+                                <label for="reimbReceiptFile">Upload Registration Fee Receipt <span
+                                        class="req">*</span></label>
                                 <div class="field-input" style="padding: 4px;">
-                                    <input type="file" id="reimbReceiptFile" required accept="image/*,application/pdf" style="border: none; padding: 4px; background: transparent; color: inherit; width: 100%;">
+                                    <input type="file" id="reimbReceiptFile" required accept="image/*,application/pdf"
+                                        style="border: none; padding: 4px; background: transparent; color: inherit; width: 100%;">
                                 </div>
-                                <div id="reimbReceiptPreview" style="margin-top: 8px; display: none; max-width: 150px; max-height: 150px; overflow: hidden; border: 1px solid var(--border); border-radius: 6px;">
-                                    <img id="reimbReceiptImg" src="" style="width: 100%; height: auto; object-fit: cover;">
+                                <div id="reimbReceiptPreview"
+                                    style="margin-top: 8px; display: none; max-width: 150px; max-height: 150px; overflow: hidden; border: 1px solid var(--border); border-radius: 6px;">
+                                    <img id="reimbReceiptImg" src=""
+                                        style="width: 100%; height: auto; object-fit: cover;">
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <div style="margin-bottom: 28px;">
-                        <h3 style="margin-bottom: 16px; border-bottom: 2px solid var(--border-light); padding-bottom: 8px; color: var(--navy); display: flex; align-items: center; gap: 8px;">
-                            <i class="ri-bank-line" style="color: var(--blue);"></i> 4. Bank Account Details (for Reimbursement Credit)
+                        <h3
+                            style="margin-bottom: 16px; border-bottom: 2px solid var(--border-light); padding-bottom: 8px; color: var(--navy); display: flex; align-items: center; gap: 8px;">
+                            <i class="ri-bank-line" style="color: var(--blue);"></i> 4. Bank Account Details (for
+                            Reimbursement Credit)
                         </h3>
                         <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                             <div class="field" style="margin-bottom: 0;">
                                 <label for="reimbAccHolder">Account Holder Name <span class="req">*</span></label>
                                 <div class="field-input">
                                     <i class="ri-user-line"></i>
-                                    <input type="text" id="reimbAccHolder" required placeholder="Name as per Bank Account">
+                                    <input type="text" id="reimbAccHolder" required
+                                        placeholder="Name as per Bank Account">
                                 </div>
                             </div>
                             <div class="field" style="margin-bottom: 0;">
@@ -664,7 +743,8 @@
                                 <label for="reimbBankName">Bank Name <span class="req">*</span></label>
                                 <div class="field-input">
                                     <i class="ri-bank-line"></i>
-                                    <input type="text" id="reimbBankName" required placeholder="e.g. State Bank of India">
+                                    <input type="text" id="reimbBankName" required
+                                        placeholder="e.g. State Bank of India">
                                 </div>
                             </div>
                             <div class="field" style="margin-bottom: 0;">
@@ -678,31 +758,40 @@
                                 <label for="reimbIFSC">IFSC Code <span class="req">*</span></label>
                                 <div class="field-input">
                                     <i class="ri-shield-keyhole-line"></i>
-                                    <input type="text" id="reimbIFSC" required placeholder="e.g. SBIN0007299" pattern="^[A-Z]{4}0[A-Z0-9]{6}$" title="Enter a valid 11-digit IFSC code (e.g. SBIN0007299)">
+                                    <input type="text" id="reimbIFSC" required placeholder="e.g. SBIN0007299"
+                                        pattern="^[A-Z]{4}0[A-Z0-9]{6}$"
+                                        title="Enter a valid 11-digit IFSC code (e.g. SBIN0007299)">
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div style="margin-bottom: 28px; background: rgba(240, 180, 41, 0.08); border-left: 4px solid var(--gold); padding: 16px; border-radius: 8px;">
-                        <h4 style="color: var(--gold-dark); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; font-weight: 600;"><i class="ri-information-line"></i> Important Instructions</h4>
-                        <ul style="margin: 0; padding-left: 20px; font-size: 13px; color: var(--text-secondary); display: flex; flex-direction: column; gap: 6px;">
+                    <div
+                        style="margin-bottom: 28px; background: rgba(240, 180, 41, 0.08); border-left: 4px solid var(--gold); padding: 16px; border-radius: 8px;">
+                        <h4
+                            style="color: var(--gold-dark); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; font-weight: 600;">
+                            <i class="ri-information-line"></i> Important Instructions</h4>
+                        <ul
+                            style="margin: 0; padding-left: 20px; font-size: 13px; color: var(--text-secondary); display: flex; flex-direction: column; gap: 6px;">
                             <li>Fill out all details accurately before generating.</li>
                             <li>Generate and print the application form and cover letter from this page.</li>
                             <li>Attach the printed application to:
-                                <ul style="margin: 4px 0 0 0; padding-left: 20px; list-style-type: circle; display: flex; flex-direction: column; gap: 2px;">
+                                <ul
+                                    style="margin: 4px 0 0 0; padding-left: 20px; list-style-type: circle; display: flex; flex-direction: column; gap: 2px;">
                                     <li>Copy of the published paper.</li>
                                     <li>Copy of the bank passbook (first page).</li>
                                     <li>Original Registration Fee Receipt.</li>
                                 </ul>
                             </li>
-                            <li>Student must get the signature from the Faculty Guide and HOD (Head of Department) in the printed form.</li>
+                            <li>Student must get the signature from the Faculty Guide and HOD (Head of Department) in
+                                the printed form.</li>
                             <li>Submit the fully signed application along with the cover letter to the R&D Cell.</li>
                         </ul>
                     </div>
 
                     <div style="display: flex; justify-content: flex-end; gap: 12px;">
-                        <button type="reset" class="btn btn-ghost" onclick="setTimeout(() => App.generateAuthorInputs(), 50)">Reset Form</button>
+                        <button type="reset" class="btn btn-ghost"
+                            onclick="setTimeout(() => App.generateAuthorInputs(), 50)">Reset Form</button>
                         <button type="submit" class="btn btn-primary" id="reimbSubmitBtn">
                             <i class="ri-file-text-line"></i> Generate Application & Cover Letter
                         </button>
@@ -725,14 +814,16 @@
                         <label for="adminEmail">Admin Email Address <span class="req">*</span></label>
                         <div class="field-input">
                             <i class="ri-mail-line"></i>
-                            <input type="email" id="adminEmail" required placeholder="admin@vignan.ac.in" autocomplete="off">
+                            <input type="email" id="adminEmail" required placeholder="admin@vignan.ac.in"
+                                autocomplete="off">
                         </div>
                     </div>
                     <div class="field" style="margin-bottom: 24px;">
                         <label for="adminPassword">Temporary Password <span class="req">*</span></label>
                         <div class="field-input">
                             <i class="ri-key-line"></i>
-                            <input type="password" id="adminPassword" required placeholder="Min 6 characters" autocomplete="off" minlength="6">
+                            <input type="password" id="adminPassword" required placeholder="Min 6 characters"
+                                autocomplete="off" minlength="6">
                         </div>
                     </div>
                     <div style="display: flex; justify-content: flex-end; gap: 12px;">
@@ -777,7 +868,8 @@
                         <label for="editProgram">Program</label>
                         <div class="field-input">
                             <select id="editProgram" required>
-                                <option value="UG">UG</option><option value="PG">PG</option>
+                                <option value="UG">UG</option>
+                                <option value="PG">PG</option>
                             </select>
                         </div>
                     </div>
@@ -785,12 +877,18 @@
                         <label for="editBranch">Branch</label>
                         <div class="field-input">
                             <select id="editBranch" required>
-                                <option value="CSE">CSE</option><option value="ECE">ECE</option>
-                                <option value="EEE">EEE</option><option value="ME">ME</option>
-                                <option value="CE">CE</option><option value="IT">IT</option>
-                                <option value="AI&ML">AI&ML</option><option value="DS">DS</option>
-                                <option value="CSM">CSM</option><option value="CSD">CSD</option>
-                                <option value="MBA">MBA</option><option value="MCA">MCA</option>
+                                <option value="CSE">CSE</option>
+                                <option value="ECE">ECE</option>
+                                <option value="EEE">EEE</option>
+                                <option value="ME">ME</option>
+                                <option value="CE">CE</option>
+                                <option value="IT">IT</option>
+                                <option value="AI&ML">AI&ML</option>
+                                <option value="DS">DS</option>
+                                <option value="CSM">CSM</option>
+                                <option value="CSD">CSD</option>
+                                <option value="MBA">MBA</option>
+                                <option value="MCA">MCA</option>
                                 <option value="Other">Other</option>
                             </select>
                         </div>
@@ -803,7 +901,8 @@
                         <label for="editType">Type</label>
                         <div class="field-input">
                             <select id="editType" required>
-                                <option value="Journal">Journal</option><option value="Conference">Conference</option>
+                                <option value="Journal">Journal</option>
+                                <option value="Conference">Conference</option>
                             </select>
                         </div>
                     </div>
@@ -811,10 +910,14 @@
                         <label for="editIndexing">Indexing</label>
                         <div class="field-input">
                             <select id="editIndexing" required>
-                                <option value="SCI">SCI</option><option value="Scopus">Scopus</option>
-                                <option value="UGC">UGC</option><option value="Web of Science">Web of Science</option>
-                                <option value="IEEE">IEEE</option><option value="Springer">Springer</option>
-                                <option value="Elsevier">Elsevier</option><option value="Google Scholar">Google Scholar</option>
+                                <option value="SCI">SCI</option>
+                                <option value="Scopus">Scopus</option>
+                                <option value="UGC">UGC</option>
+                                <option value="Web of Science">Web of Science</option>
+                                <option value="IEEE">IEEE</option>
+                                <option value="Springer">Springer</option>
+                                <option value="Elsevier">Elsevier</option>
+                                <option value="Google Scholar">Google Scholar</option>
                                 <option value="Others">Others</option>
                             </select>
                         </div>
@@ -830,15 +933,18 @@
                     </div>
                     <div class="field full-span">
                         <label for="editMentorName">Mentor / Guide Name</label>
-                        <div class="field-input"><input type="text" id="editMentorName" required placeholder="Name of Faculty Guide"></div>
+                        <div class="field-input"><input type="text" id="editMentorName" required
+                                placeholder="Name of Faculty Guide"></div>
                     </div>
                     <div class="field full-span">
                         <label for="editPaperLink">Paper Link / DOI</label>
-                        <div class="field-input"><input type="url" id="editPaperLink" placeholder="e.g. https://doi.org/... or IEEE link (Optional)"></div>
+                        <div class="field-input"><input type="url" id="editPaperLink"
+                                placeholder="e.g. https://doi.org/... or IEEE link (Optional)"></div>
                     </div>
                     <div class="field full-span">
                         <label for="editFundingAmount">Funding / Reg. Fee Amount (₹)</label>
-                        <div class="field-input"><input type="number" id="editFundingAmount" min="0" placeholder="e.g. 5000 (Private details)"></div>
+                        <div class="field-input"><input type="number" id="editFundingAmount" min="0"
+                                placeholder="e.g. 5000 (Private details)"></div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -872,21 +978,24 @@
         <div class="modal card modal-sm">
             <div class="modal-header">
                 <h3><i class="ri-lock-line"></i> Admin Login</h3>
-                <button class="modal-close" id="loginModalClose" onclick="App.closeModal('loginModal')"><i class="ri-close-line"></i></button>
+                <button class="modal-close" id="loginModalClose" onclick="App.closeModal('loginModal')"><i
+                        class="ri-close-line"></i></button>
             </div>
             <form id="loginForm" class="modal-body" autocomplete="on">
                 <div class="field" style="margin-bottom: 20px;">
                     <label for="loginEmail">Email Address</label>
                     <div class="field-input">
                         <i class="ri-mail-line"></i>
-                        <input type="email" id="loginEmail" required autocomplete="email" placeholder="email@vignan.ac.in">
+                        <input type="email" id="loginEmail" required autocomplete="email"
+                            placeholder="email@vignan.ac.in">
                     </div>
                 </div>
                 <div class="field" style="margin-bottom: 24px;">
                     <label for="loginPassword">Password</label>
                     <div class="field-input">
                         <i class="ri-key-line"></i>
-                        <input type="password" id="loginPassword" required autocomplete="current-password" placeholder="••••••••">
+                        <input type="password" id="loginPassword" required autocomplete="current-password"
+                            placeholder="••••••••">
                     </div>
                 </div>
                 <div class="modal-footer" style="padding-top: 0; padding-bottom: 0;">
@@ -901,14 +1010,20 @@
 
     <!-- ========== PRINT PREVIEW MODAL ========== -->
     <div class="modal-overlay" id="printPreviewModal">
-        <div class="modal card modal-lg" style="max-width: 900px; width: 90%; background: var(--bg-white); overflow: hidden; max-height: 90vh; display: flex; flex-direction: column;">
-            <div class="modal-header" style="flex-shrink: 0; background: var(--navy); color: #fff; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center;">
-                <h3 style="margin: 0; color: #fff; display: flex; align-items: center; gap: 8px;"><i class="ri-printer-line" style="color: var(--gold);"></i> Reimbursement Application Preview</h3>
+        <div class="modal card modal-lg"
+            style="max-width: 900px; width: 90%; background: var(--bg-white); overflow: hidden; max-height: 90vh; display: flex; flex-direction: column;">
+            <div class="modal-header"
+                style="flex-shrink: 0; background: var(--navy); color: #fff; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin: 0; color: #fff; display: flex; align-items: center; gap: 8px;"><i
+                        class="ri-printer-line" style="color: var(--gold);"></i> Reimbursement Application Preview</h3>
                 <div style="display: flex; gap: 8px; align-items: center;">
-                    <button class="btn btn-primary btn-sm" onclick="App.printApplication()" style="background: var(--gold); color: var(--navy); border: none; font-weight: 600; padding: 8px 16px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                    <button class="btn btn-primary btn-sm" onclick="App.printApplication()"
+                        style="background: var(--gold); color: var(--navy); border: none; font-weight: 600; padding: 8px 16px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
                         <i class="ri-printer-line"></i> Print / Save PDF
                     </button>
-                    <button class="modal-close" id="printPreviewModalClose" onclick="App.closeModal('printPreviewModal')" style="color: #fff; background: rgba(255,255,255,0.1); border: none; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                    <button class="modal-close" id="printPreviewModalClose"
+                        onclick="App.closeModal('printPreviewModal')"
+                        style="color: #fff; background: rgba(255,255,255,0.1); border: none; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
                         <i class="ri-close-line"></i>
                     </button>
                 </div>
@@ -934,4 +1049,5 @@
 
     <script src="app.js?v=2.6"></script>
 </body>
+
 </html>
