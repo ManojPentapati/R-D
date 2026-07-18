@@ -1499,3 +1499,24 @@ body.admin-mode section.admin-only {
         margin: 15mm;
     }
 }
+
+/* ============ CENTERED LAYOUT FOR PUBLICATIONS VIEW ============ */
+#view-publications.centered-layout {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+body:not(.admin-mode):not(.super-admin-mode) #view-publications {
+    max-width: 750px;
+    margin: 0 auto;
+}
+
+/* Make sure the text cells in the public 2-column view look clean and balanced */
+body:not(.admin-mode):not(.super-admin-mode) #pubTable th,
+body:not(.admin-mode):not(.super-admin-mode) #pubTable td {
+    padding: 16px 20px;
+}
+body:not(.admin-mode):not(.super-admin-mode) #pubTable th:first-child,
+body:not(.admin-mode):not(.super-admin-mode) #pubTable td:first-child {
+    width: 200px;
+}

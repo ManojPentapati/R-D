@@ -763,7 +763,7 @@ const App = {
     },
 
     // ── View Switching ──
-    switchView(viewName) {
+    switchView(viewName, forceShowHero = false) {
         // Update nav
         document.querySelectorAll('.nav-link').forEach(item => {
             item.classList.toggle('active', item.dataset.view === viewName);
@@ -775,15 +775,23 @@ const App = {
         });
         document.getElementById(`view-${viewName}`).classList.add('active');
 
-        // Hide/Show Hero Section (only show on Dashboard)
+        // Hide/Show Hero Section (only show on Dashboard, or if forced like logo click)
         const heroSection = document.getElementById('heroSection');
         const mainWrapper = document.querySelector('.main-wrapper');
-        if (viewName === 'dashboard') {
+        const viewPublications = document.getElementById('view-publications');
+
+        const shouldShowHero = (viewName === 'dashboard') || (viewName === 'publications' && forceShowHero);
+
+        if (shouldShowHero) {
             if (heroSection) heroSection.style.display = 'block';
             if (mainWrapper) mainWrapper.style.paddingTop = '32px';
+            if (viewPublications) viewPublications.classList.remove('centered-layout');
         } else {
             if (heroSection) heroSection.style.display = 'none';
             if (mainWrapper) mainWrapper.style.paddingTop = 'calc(var(--nav-height) + 32px)';
+            if (viewName === 'publications' && viewPublications) {
+                viewPublications.classList.add('centered-layout');
+            }
         }
 
         // Refresh data when switching to publications
@@ -913,7 +921,7 @@ const App = {
                 if (State.userRole === 'super_admin') {
                     this.switchView('dashboard');
                 } else {
-                    this.switchView('publications');
+                    this.switchView('publications', true);
                 }
             });
         }
