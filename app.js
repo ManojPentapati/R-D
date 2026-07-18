@@ -44,6 +44,9 @@ const App = {
         if (!supabaseClient) {
             await this.loadData();
         }
+        if (!window.location.hash) {
+            this.switchView('home');
+        }
         this.hideLoading();
     },
 
@@ -183,13 +186,13 @@ const App = {
         if (currentView) {
             const viewId = currentView.id.replace('view-', '');
             if (viewId === 'dashboard' && role !== 'super_admin') {
-                this.switchView('publications');
+                this.switchView('home');
             } else if (viewId === 'manage-admins' && role !== 'super_admin') {
-                this.switchView('publications');
+                this.switchView('home');
             } else if (viewId === 'add' && !role) {
-                this.switchView('publications');
+                this.switchView('home');
             } else if (viewId === 'export' && !role) {
-                this.switchView('publications');
+                this.switchView('home');
             }
         }
     },
@@ -763,24 +766,28 @@ const App = {
     },
 
     // ── View Switching ──
-    switchView(viewName, forceShowHero = false) {
+    switchView(viewName) {
         // Update nav
         document.querySelectorAll('.nav-link').forEach(item => {
             item.classList.toggle('active', item.dataset.view === viewName);
         });
 
+        // Map 'home' view to the publications table container
+        const activeViewId = viewName === 'home' ? 'publications' : viewName;
+
         // Update views
         document.querySelectorAll('.view').forEach(view => {
             view.classList.remove('active');
         });
-        document.getElementById(`view-${viewName}`).classList.add('active');
+        const targetView = document.getElementById(`view-${activeViewId}`);
+        if (targetView) targetView.classList.add('active');
 
-        // Hide/Show Hero Section (only show on Dashboard, or if forced like logo click)
+        // Hide/Show Hero Section (only show on Dashboard and Home)
         const heroSection = document.getElementById('heroSection');
         const mainWrapper = document.querySelector('.main-wrapper');
         const viewPublications = document.getElementById('view-publications');
 
-        const shouldShowHero = (viewName === 'dashboard') || (viewName === 'publications' && forceShowHero);
+        const shouldShowHero = (viewName === 'dashboard') || (viewName === 'home');
 
         if (shouldShowHero) {
             if (heroSection) heroSection.style.display = 'block';
@@ -789,13 +796,13 @@ const App = {
         } else {
             if (heroSection) heroSection.style.display = 'none';
             if (mainWrapper) mainWrapper.style.paddingTop = 'calc(var(--nav-height) + 32px)';
-            if (viewName === 'publications' && viewPublications) {
+            if (activeViewId === 'publications' && viewPublications) {
                 viewPublications.classList.add('centered-layout');
             }
         }
 
-        // Refresh data when switching to publications
-        if (viewName === 'publications') {
+        // Refresh data when switching to publications/home
+        if (activeViewId === 'publications') {
             this.applyFilters();
         }
 
@@ -921,7 +928,7 @@ const App = {
                 if (State.userRole === 'super_admin') {
                     this.switchView('dashboard');
                 } else {
-                    this.switchView('publications', true);
+                    this.switchView('home');
                 }
             });
         }
