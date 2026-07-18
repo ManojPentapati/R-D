@@ -42,6 +42,9 @@
                 <a href="#" class="nav-link" data-view="publications" id="nav-publications">
                     <i class="ri-file-list-3-line"></i> Publications
                 </a>
+                <a href="#" class="nav-link" data-view="reimbursement" id="nav-reimbursement">
+                    <i class="ri-refund-2-line"></i> Fee Reimbursement
+                </a>
                 <a href="#" class="nav-link admin-only" data-view="export" id="nav-export">
                     <i class="ri-download-cloud-2-line"></i> Export
                 </a>
@@ -486,6 +489,184 @@
             </div>
         </section>
 
+        <!-- ==================== FEE REIMBURSEMENT VIEW ==================== -->
+        <section class="view" id="view-reimbursement">
+            <div class="section-header">
+                <div>
+                    <h2><i class="ri-refund-2-line"></i> Fee Reimbursement</h2>
+                    <p>Generate fee reimbursement requests and cover letters for published papers</p>
+                </div>
+            </div>
+            
+            <div class="card" style="max-width: 800px; margin: 0 auto; padding: 32px;">
+                <form id="reimbursementForm">
+                    <div style="margin-bottom: 28px;">
+                        <h3 style="margin-bottom: 16px; border-bottom: 2px solid var(--border-light); padding-bottom: 8px; color: var(--navy); display: flex; align-items: center; gap: 8px;">
+                            <i class="ri-article-line" style="color: var(--blue);"></i> 1. Paper Details
+                        </h3>
+                        <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div class="field" style="grid-column: span 2; margin-bottom: 0;">
+                                <label for="reimbPaperTitle">Title of the Paper <span class="req">*</span></label>
+                                <div class="field-input">
+                                    <i class="ri-article-line"></i>
+                                    <input type="text" id="reimbPaperTitle" required placeholder="e.g. Deep Learning for Medical Image Classification">
+                                </div>
+                            </div>
+                            <div class="field" style="margin-bottom: 0;">
+                                <label for="reimbHostInst">Host Institute / Organizer <span class="req">*</span></label>
+                                <div class="field-input">
+                                    <i class="ri-building-line"></i>
+                                    <input type="text" id="reimbHostInst" required placeholder="e.g. IIT Madras or IEEE Madras Section">
+                                </div>
+                            </div>
+                            <div class="field" style="margin-bottom: 0;">
+                                <label for="reimbConfName">Name of Journal / Conference <span class="req">*</span></label>
+                                <div class="field-input">
+                                    <i class="ri-map-pin-line"></i>
+                                    <input type="text" id="reimbConfName" required placeholder="e.g. IEEE SPICES 2026 or Springer Journal">
+                                </div>
+                            </div>
+                            <div class="field" style="margin-bottom: 0;">
+                                <label for="reimbConfDates">Dates of Conference / Publication <span class="req">*</span></label>
+                                <div class="field-input">
+                                    <i class="ri-calendar-line"></i>
+                                    <input type="text" id="reimbConfDates" required placeholder="e.g. June 15-17, 2026">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 28px;">
+                        <h3 style="margin-bottom: 16px; border-bottom: 2px solid var(--border-light); padding-bottom: 8px; color: var(--navy); display: flex; align-items: center; gap: 8px;">
+                            <i class="ri-user-group-line" style="color: var(--blue);"></i> 2. Authors Information
+                        </h3>
+                        <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 16px;">
+                            <div class="field" style="margin-bottom: 0;">
+                                <label for="reimbStudentCount">Number of Student Authors <span class="req">*</span></label>
+                                <div class="field-input">
+                                    <i class="ri-user-line"></i>
+                                    <select id="reimbStudentCount" onchange="App.generateAuthorInputs()">
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3" selected>3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="field" style="margin-bottom: 0;">
+                                <label for="reimbFacultyCount">Number of Faculty Guides <span class="req">*</span></label>
+                                <div class="field-input">
+                                    <i class="ri-user-star-line"></i>
+                                    <select id="reimbFacultyCount" onchange="App.generateAuthorInputs()">
+                                        <option value="0">0</option>
+                                        <option value="1" selected>1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="authorInputsContainer" style="display: flex; flex-direction: column; gap: 16px;">
+                            <!-- Dynamically generated author inputs -->
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 28px;">
+                        <h3 style="margin-bottom: 16px; border-bottom: 2px solid var(--border-light); padding-bottom: 8px; color: var(--navy); display: flex; align-items: center; gap: 8px;">
+                            <i class="ri-money-rupee-circle-line" style="color: var(--blue);"></i> 3. Registration & Fee Receipt
+                        </h3>
+                        <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div class="field" style="margin-bottom: 0;">
+                                <label for="reimbFeePaid">Registration Fee Paid (₹) <span class="req">*</span></label>
+                                <div class="field-input">
+                                    <i class="ri-money-rupee-circle-line"></i>
+                                    <input type="number" id="reimbFeePaid" required min="0" placeholder="e.g. 5000">
+                                </div>
+                            </div>
+                            <div class="field" style="margin-bottom: 0;">
+                                <label for="reimbReceiptFile">Upload Registration Fee Receipt <span class="req">*</span></label>
+                                <div class="field-input" style="padding: 4px;">
+                                    <input type="file" id="reimbReceiptFile" required accept="image/*,application/pdf" style="border: none; padding: 4px; background: transparent; color: inherit; width: 100%;">
+                                </div>
+                                <div id="reimbReceiptPreview" style="margin-top: 8px; display: none; max-width: 150px; max-height: 150px; overflow: hidden; border: 1px solid var(--border); border-radius: 6px;">
+                                    <img id="reimbReceiptImg" src="" style="width: 100%; height: auto; object-fit: cover;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 28px;">
+                        <h3 style="margin-bottom: 16px; border-bottom: 2px solid var(--border-light); padding-bottom: 8px; color: var(--navy); display: flex; align-items: center; gap: 8px;">
+                            <i class="ri-bank-line" style="color: var(--blue);"></i> 4. Bank Account Details (for Reimbursement Credit)
+                        </h3>
+                        <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div class="field" style="margin-bottom: 0;">
+                                <label for="reimbAccHolder">Account Holder Name <span class="req">*</span></label>
+                                <div class="field-input">
+                                    <i class="ri-user-line"></i>
+                                    <input type="text" id="reimbAccHolder" required placeholder="Name as per Bank Account">
+                                </div>
+                            </div>
+                            <div class="field" style="margin-bottom: 0;">
+                                <label for="reimbAccNo">Bank Account Number <span class="req">*</span></label>
+                                <div class="field-input">
+                                    <i class="ri-bank-card-line"></i>
+                                    <input type="text" id="reimbAccNo" required placeholder="Account Number">
+                                </div>
+                            </div>
+                            <div class="field" style="margin-bottom: 0;">
+                                <label for="reimbBankName">Bank Name <span class="req">*</span></label>
+                                <div class="field-input">
+                                    <i class="ri-bank-line"></i>
+                                    <input type="text" id="reimbBankName" required placeholder="e.g. State Bank of India">
+                                </div>
+                            </div>
+                            <div class="field" style="margin-bottom: 0;">
+                                <label for="reimbBankBranch">Branch Name <span class="req">*</span></label>
+                                <div class="field-input">
+                                    <i class="ri-map-pin-line"></i>
+                                    <input type="text" id="reimbBankBranch" required placeholder="e.g. Vadlamudi">
+                                </div>
+                            </div>
+                            <div class="field" style="grid-column: span 2; margin-bottom: 0;">
+                                <label for="reimbIFSC">IFSC Code <span class="req">*</span></label>
+                                <div class="field-input">
+                                    <i class="ri-shield-keyhole-line"></i>
+                                    <input type="text" id="reimbIFSC" required placeholder="e.g. SBIN0007299" pattern="^[A-Z]{4}0[A-Z0-9]{6}$" title="Enter a valid 11-digit IFSC code (e.g. SBIN0007299)">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 28px; background: rgba(240, 180, 41, 0.08); border-left: 4px solid var(--gold); padding: 16px; border-radius: 8px;">
+                        <h4 style="color: var(--gold-dark); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; font-weight: 600;"><i class="ri-information-line"></i> Important Instructions</h4>
+                        <ul style="margin: 0; padding-left: 20px; font-size: 13px; color: var(--text-secondary); display: flex; flex-direction: column; gap: 6px;">
+                            <li>Fill out all details accurately before generating.</li>
+                            <li>Generate and print the application form and cover letter from this page.</li>
+                            <li>Attach the printed application to:
+                                <ul style="margin: 4px 0 0 0; padding-left: 20px; list-style-type: circle; display: flex; flex-direction: column; gap: 2px;">
+                                    <li>Copy of the published paper.</li>
+                                    <li>Copy of the bank passbook (first page).</li>
+                                    <li>Original Registration Fee Receipt.</li>
+                                </ul>
+                            </li>
+                            <li>Student must get the signature from the Faculty Guide and HOD (Head of Department) in the printed form.</li>
+                            <li>Submit the fully signed application along with the cover letter to the R&D Cell.</li>
+                        </ul>
+                    </div>
+
+                    <div style="display: flex; justify-content: flex-end; gap: 12px;">
+                        <button type="reset" class="btn btn-ghost" onclick="setTimeout(() => App.generateAuthorInputs(), 50)">Reset Form</button>
+                        <button type="submit" class="btn btn-primary" id="reimbSubmitBtn">
+                            <i class="ri-file-text-line"></i> Generate Application & Cover Letter
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
         <!-- ==================== MANAGE ADMINS VIEW ==================== -->
         <section class="view" id="view-manage-admins">
             <div class="section-header">
@@ -671,6 +852,28 @@
                     </button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- ========== PRINT PREVIEW MODAL ========== -->
+    <div class="modal-overlay" id="printPreviewModal">
+        <div class="modal card modal-lg" style="max-width: 900px; width: 90%; background: var(--bg-white); overflow: hidden; max-height: 90vh; display: flex; flex-direction: column;">
+            <div class="modal-header" style="flex-shrink: 0; background: var(--navy); color: #fff; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin: 0; color: #fff; display: flex; align-items: center; gap: 8px;"><i class="ri-printer-line" style="color: var(--gold);"></i> Reimbursement Application Preview</h3>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <button class="btn btn-primary btn-sm" onclick="App.printApplication()" style="background: var(--gold); color: var(--navy); border: none; font-weight: 600; padding: 8px 16px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                        <i class="ri-printer-line"></i> Print / Save PDF
+                    </button>
+                    <button class="modal-close" id="printPreviewModalClose" onclick="App.closeModal('printPreviewModal')" style="color: #fff; background: rgba(255,255,255,0.1); border: none; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="modal-body" style="flex-grow: 1; overflow-y: auto; padding: 24px; background: #f0f2f5;">
+                <div id="print-preview-content" class="print-preview-paper">
+                    <!-- Dynamic Printable Document goes here -->
+                </div>
+            </div>
         </div>
     </div>
 
