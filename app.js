@@ -37,7 +37,6 @@ const App = {
     async init() {
         await this.loadEnv();
         this.initSupabase();
-        this.initTheme();
         this.bindEvents();
         this.initSlideshow();
         this.checkHashRoute();
@@ -140,28 +139,6 @@ const App = {
             this.updateConnectionStatus('error', 'Connection Failed');
             Toast.show('error', 'Connection Error', 'Failed to initialize Supabase');
         }
-    },
-
-    initTheme() {
-        const savedTheme = localStorage.getItem('theme');
-        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const isDark = savedTheme === 'dark' || (!savedTheme && systemPrefersDark);
-        
-        if (isDark) {
-            document.body.classList.add('dark-theme');
-            const themeBtn = document.getElementById('themeToggleBtn');
-            if (themeBtn) themeBtn.innerHTML = '<i class="ri-sun-line"></i>';
-        }
-    },
-
-    toggleTheme() {
-        const isDark = document.body.classList.toggle('dark-theme');
-        localStorage.setItem('theme', isDark ? 'dark' : 'theme-light');
-        const themeBtn = document.getElementById('themeToggleBtn');
-        if (themeBtn) {
-            themeBtn.innerHTML = isDark ? '<i class="ri-sun-line"></i>' : '<i class="ri-moon-line"></i>';
-        }
-        Toast.show('success', 'Theme Updated', `Switched to ${isDark ? 'Dark' : 'Light'} Mode.`);
     },
 
     async fetchUserRole(userId) {
