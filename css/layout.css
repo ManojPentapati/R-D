@@ -280,3 +280,23 @@
     margin: 0 auto;
     padding: 32px 32px 64px;
 }
+
+/* ============ FOOTER ============ */
+.site-footer {
+    background: var(--navy);
+    padding: 32px;
+    text-align: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.footer-inner p {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.footer-sub {
+    margin-top: 4px;
+    font-size: 11px !important;
+    color: rgba(255, 255, 255, 0.35) !important;
+}
