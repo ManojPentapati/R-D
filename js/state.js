@@ -28,7 +28,8 @@ const State = {
     editingId: null,
     deletingId: null,
     session: null,
-    userRole: null // 'super_admin', 'admin', or null
+    userRole: null, // 'super_admin', 'admin', or null
+    pendingImports: []
 };
 
 // Global App Object

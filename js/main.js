@@ -16,6 +16,7 @@ Object.assign(App, {
         if (!window.location.hash) {
             this.switchView('home');
         }
+        this.loadReimbursementDraft();
         this.hideLoading();
     },
 
@@ -78,6 +79,41 @@ Object.assign(App, {
             });
         }
 
+        // Clickable Dashboard Stat Cards to auto-filter publications
+        document.querySelectorAll('.stat-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const valueEl = card.querySelector('.stat-card-value');
+                if (!valueEl) return;
+                
+                const id = valueEl.id;
+                // Target 'home' for public view, 'publications' if logged in as admin
+                const targetView = State.userRole ? 'publications' : 'home';
+                
+                // Clear all filters first
+                this.clearAllFilters();
+                
+                if (id === 'statUG') {
+                    State.filters.program = 'UG';
+                    const select = document.getElementById('filterProgram');
+                    if (select) select.value = 'UG';
+                } else if (id === 'statPG') {
+                    State.filters.program = 'PG';
+                    const select = document.getElementById('filterProgram');
+                    if (select) select.value = 'PG';
+                } else if (id === 'statJournal') {
+                    State.filters.type = 'Journal';
+                    const select = document.getElementById('filterType');
+                    if (select) select.value = 'Journal';
+                } else if (id === 'statConference') {
+                    State.filters.type = 'Conference';
+                    const select = document.getElementById('filterType');
+                    if (select) select.value = 'Conference';
+                }
+                
+                this.switchView(targetView);
+            });
+        });
+
         // Toggle pills (Program & Type selectors)
         document.querySelectorAll('.toggle-pills').forEach(group => {
             group.querySelectorAll('.pill').forEach(btn => {
@@ -105,7 +141,9 @@ Object.assign(App, {
                     sponsorship: document.getElementById('sponsorship').value.trim() || null,
                     mentor_name: document.getElementById('mentorName').value.trim(),
                     paper_link: document.getElementById('paperLink').value.trim() || null,
-                    funding_amount: parseFloat(document.getElementById('fundingAmount').value) || 0
+                    funding_amount: parseFloat(document.getElementById('fundingAmount').value) || 0,
+                    journal_tier: document.getElementById('journalTier').value || null,
+                    impact_factor: parseFloat(document.getElementById('impactFactor').value) || null
                 };
                 await this.addPublication(formData);
             });
@@ -128,7 +166,9 @@ Object.assign(App, {
                     sponsorship: document.getElementById('editSponsorship').value.trim() || null,
                     mentor_name: document.getElementById('editMentorName').value.trim(),
                     paper_link: document.getElementById('editPaperLink').value.trim() || null,
-                    funding_amount: parseFloat(document.getElementById('editFundingAmount').value) || 0
+                    funding_amount: parseFloat(document.getElementById('editFundingAmount').value) || 0,
+                    journal_tier: document.getElementById('editJournalTier').value || null,
+                    impact_factor: parseFloat(document.getElementById('editImpactFactor').value) || null
                 };
                 await this.updatePublication(State.editingId, formData);
             });
@@ -411,16 +451,25 @@ Object.assign(App, {
 
                 const fileInput = document.getElementById('reimbReceiptFile');
                 const file = fileInput ? fileInput.files[0] : null;
+
                 if (file && file.type.startsWith('image/')) {
                     const reader = new FileReader();
                     reader.onload = (event) => {
                         this.renderAndOpenPrintModal(formData, event.target.result);
+                        this.clearReimbursementDraft();
                     };
                     reader.readAsDataURL(file);
                 } else {
                     this.renderAndOpenPrintModal(formData, '');
+                    this.clearReimbursementDraft();
                 }
             });
+        }
+
+        // Auto-save reimbursement draft as the user types
+        if (reimbursementForm) {
+            reimbursementForm.addEventListener('input', () => this.saveReimbursementDraft());
+            reimbursementForm.addEventListener('change', () => this.saveReimbursementDraft());
         }
 
         // Autocomplete suggestions box click and typing listeners

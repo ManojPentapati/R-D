@@ -3,6 +3,113 @@
    ============================================ */
 
 Object.assign(App, {
+    // ── Fee Reimbursement Draft Auto-save ──
+    saveReimbursementDraft() {
+        const authors = [];
+        const nameInputs = document.querySelectorAll('.reimb-author-name');
+        const roleSelects = document.querySelectorAll('.reimb-author-role');
+        const deptInputs = document.querySelectorAll('.reimb-author-dept');
+        const rollInputs = document.querySelectorAll('.reimb-author-roll');
+        const branchInputs = document.querySelectorAll('.reimb-author-branch');
+        const empcodeInputs = document.querySelectorAll('.reimb-author-empcode');
+
+        let studentIndex = 0;
+        let facultyIndex = 0;
+
+        nameInputs.forEach((input, index) => {
+            const name = input.value.trim();
+            const role = roleSelects[index].value;
+            const dept = deptInputs[index] ? deptInputs[index].value.trim() : '';
+            let rollNo = '';
+            let branch = '';
+            let empCode = '';
+
+            if (role === 'student') {
+                rollNo = rollInputs[studentIndex] ? rollInputs[studentIndex].value.trim() : '';
+                branch = branchInputs[studentIndex] ? branchInputs[studentIndex].value.trim() : '';
+                studentIndex++;
+            } else {
+                empCode = empcodeInputs[facultyIndex] ? empcodeInputs[facultyIndex].value.trim() : '';
+                facultyIndex++;
+            }
+
+            authors.push({ name, role, dept, rollNo, branch, empCode });
+        });
+
+        const draft = {
+            paperTitle: document.getElementById('reimbPaperTitle')?.value.trim() || '',
+            hostInst: document.getElementById('reimbHostInst')?.value.trim() || '',
+            confName: document.getElementById('reimbConfName')?.value.trim() || '',
+            confDates: document.getElementById('reimbConfDates')?.value.trim() || '',
+            studentCount: document.getElementById('reimbStudentCount')?.value || '1',
+            facultyCount: document.getElementById('reimbFacultyCount')?.value || '1',
+            feePaid: document.getElementById('reimbFeePaid')?.value || '',
+            accHolder: document.getElementById('reimbAccHolder')?.value.trim() || '',
+            accNo: document.getElementById('reimbAccNo')?.value.trim() || '',
+            bankName: document.getElementById('reimbBankName')?.value.trim() || '',
+            branchName: document.getElementById('reimbBankBranch')?.value.trim() || '',
+            ifsc: document.getElementById('reimbIFSC')?.value.trim() || '',
+            authors: authors
+        };
+
+        localStorage.setItem('reimbursement_draft', JSON.stringify(draft));
+    },
+
+    loadReimbursementDraft() {
+        const raw = localStorage.getItem('reimbursement_draft');
+        if (!raw) return;
+
+        try {
+            const draft = JSON.parse(raw);
+            if (document.getElementById('reimbPaperTitle')) document.getElementById('reimbPaperTitle').value = draft.paperTitle;
+            if (document.getElementById('reimbHostInst')) document.getElementById('reimbHostInst').value = draft.hostInst;
+            if (document.getElementById('reimbConfName')) document.getElementById('reimbConfName').value = draft.confName;
+            if (document.getElementById('reimbConfDates')) document.getElementById('reimbConfDates').value = draft.confDates;
+            if (document.getElementById('reimbStudentCount')) document.getElementById('reimbStudentCount').value = draft.studentCount;
+            if (document.getElementById('reimbFacultyCount')) document.getElementById('reimbFacultyCount').value = draft.facultyCount;
+            if (document.getElementById('reimbFeePaid')) document.getElementById('reimbFeePaid').value = draft.feePaid;
+            if (document.getElementById('reimbAccHolder')) document.getElementById('reimbAccHolder').value = draft.accHolder;
+            if (document.getElementById('reimbAccNo')) document.getElementById('reimbAccNo').value = draft.accNo;
+            if (document.getElementById('reimbBankName')) document.getElementById('reimbBankName').value = draft.bankName;
+            if (document.getElementById('reimbBankBranch')) document.getElementById('reimbBankBranch').value = draft.branchName;
+            if (document.getElementById('reimbIFSC')) document.getElementById('reimbIFSC').value = draft.ifsc;
+
+            // Generate author rows first
+            this.generateAuthorInputs();
+
+            // Populate author rows
+            const nameInputs = document.querySelectorAll('.reimb-author-name');
+            const deptInputs = document.querySelectorAll('.reimb-author-dept');
+            const rollInputs = document.querySelectorAll('.reimb-author-roll');
+            const branchInputs = document.querySelectorAll('.reimb-author-branch');
+            const empcodeInputs = document.querySelectorAll('.reimb-author-empcode');
+
+            let studentIndex = 0;
+            let facultyIndex = 0;
+
+            draft.authors.forEach((author, index) => {
+                if (index < nameInputs.length) {
+                    nameInputs[index].value = author.name;
+                    if (deptInputs[index]) deptInputs[index].value = author.dept;
+                    if (author.role === 'student') {
+                        if (rollInputs[studentIndex]) rollInputs[studentIndex].value = author.rollNo;
+                        if (branchInputs[studentIndex]) branchInputs[studentIndex].value = author.branch;
+                        studentIndex++;
+                    } else {
+                        if (empcodeInputs[facultyIndex]) empcodeInputs[facultyIndex].value = author.empCode;
+                        facultyIndex++;
+                    }
+                }
+            });
+        } catch (e) {
+            console.error('Error loading reimbursement draft:', e);
+        }
+    },
+
+    clearReimbursementDraft() {
+        localStorage.removeItem('reimbursement_draft');
+    },
+
     // ── Fee Reimbursement Logic ──
     generateAuthorInputs() {
         const studentSelect = document.getElementById('reimbStudentCount');

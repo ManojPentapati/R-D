@@ -391,6 +391,21 @@ Object.assign(App, {
                 const titleHtml = p.paper_link
                     ? `<a href="${p.paper_link}" target="_blank" style="color: var(--accent-light, #2196f3); text-decoration: none; font-weight: 500;" class="paper-link" title="View Publication">${this.escapeHtml(this.truncate(p.article_title, 35))} <i class="ri-external-link-line" style="font-size: 11px;"></i></a>`
                     : this.escapeHtml(this.truncate(p.article_title, 35));
+
+                // Quality badges
+                let qualityBadges = '';
+                if (p.journal_tier) {
+                    let tierClass = 'tier-badge';
+                    if (p.journal_tier === 'Q1') tierClass += ' q1';
+                    else if (p.journal_tier === 'Q2') tierClass += ' q2';
+                    else if (p.journal_tier === 'Q3') tierClass += ' q3';
+                    else if (p.journal_tier === 'Q4') tierClass += ' q4';
+                    qualityBadges += `<span class="badge ${tierClass}" title="Journal Tier">${p.journal_tier}</span>`;
+                }
+                if (p.impact_factor) {
+                    qualityBadges += ` <span class="badge badge-impact" title="Impact Factor">IF: ${p.impact_factor}</span>`;
+                }
+
                 return `
                     <tr>
                         <td class="clickable-copy" onclick="App.copyToClipboard('${p.roll_no}', 'Paper ID')" title="Click to copy Paper ID"><strong>${this.escapeHtml(p.roll_no)}</strong> <i class="ri-file-copy-line copy-ico"></i></td>
@@ -399,7 +414,10 @@ Object.assign(App, {
                         <td class="admin-only">${this.escapeHtml(p.branch)}</td>
                         <td title="${this.escapeHtml(p.article_title)}">${titleHtml}</td>
                         <td class="admin-only"><span class="badge badge-${p.publication_type.toLowerCase()}">${p.publication_type}</span></td>
-                        <td class="admin-only"><span class="badge badge-indexing">${this.escapeHtml(p.indexing || '—')}</span></td>
+                        <td class="admin-only">
+                            <span class="badge badge-indexing">${this.escapeHtml(p.indexing || '—')}</span>
+                            ${qualityBadges}
+                        </td>
                         <td class="admin-only" title="${this.escapeHtml(p.journal_conference_title || '')}">${this.escapeHtml(this.truncate(p.journal_conference_title || '—', 25))}</td>
                         <td class="admin-only">${this.escapeHtml(p.sponsorship || '—')}</td>
                         <td class="admin-only clickable-copy" onclick="App.copyToClipboard('${this.escapeHtml(p.mentor_name || '')}', 'Mentor Name')" title="Click to copy Mentor Name">${this.escapeHtml(p.mentor_name || '—')} <i class="ri-file-copy-line copy-ico"></i></td>
@@ -451,6 +469,8 @@ Object.assign(App, {
         document.getElementById('editMentorName').value = pub.mentor_name || '';
         document.getElementById('editPaperLink').value = pub.paper_link || '';
         document.getElementById('editFundingAmount').value = pub.funding_amount || 0;
+        document.getElementById('editJournalTier').value = pub.journal_tier || '';
+        document.getElementById('editImpactFactor').value = pub.impact_factor || '';
 
         this.openModal('editModal');
     },

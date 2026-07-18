@@ -40,7 +40,9 @@ Object.assign(App, {
                     'sponsorship': ['sponsorship', 'sponsor'],
                     'mentor_name': ['mentor name', 'mentor', 'guide name', 'guide', 'mentor_name'],
                     'paper_link': ['paper link', 'link', 'doi', 'paper_link'],
-                    'funding_amount': ['funding amount', 'funding', 'registration fee', 'funding_amount']
+                    'funding_amount': ['funding amount', 'funding', 'registration fee', 'funding_amount'],
+                    'journal_tier': ['journal tier', 'q-rank', 'q rank', 'tier', 'journal_tier'],
+                    'impact_factor': ['impact factor', 'impact', 'if', 'impact_factor']
                 };
 
                 const headerIndices = {};
@@ -70,7 +72,9 @@ Object.assign(App, {
                         sponsorship: getVal('sponsorship') || null,
                         mentor_name: getVal('mentor_name'),
                         paper_link: getVal('paper_link') || null,
-                        funding_amount: parseFloat(getVal('funding_amount')) || 0
+                        funding_amount: parseFloat(getVal('funding_amount')) || 0,
+                        journal_tier: getVal('journal_tier') || null,
+                        impact_factor: parseFloat(getVal('impact_factor')) || null
                     };
 
                     if (record.publication_type) {
@@ -107,65 +111,108 @@ Object.assign(App, {
                     return;
                 }
 
-                const progressContainer = document.getElementById('uploadProgress');
-                const progressBarFill = document.getElementById('progressBarFill');
-                const progressStatus = document.getElementById('progressStatus');
+                // Store in state and display preview modal
+                State.pendingImports = recordsToInsert;
 
-                if (progressContainer) {
-                    progressContainer.style.display = 'block';
-                    progressBarFill.style.width = '20%';
-                    progressStatus.textContent = `Importing ${recordsToInsert.length} records...`;
+                const previewStatus = document.getElementById('importPreviewStatus');
+                if (previewStatus) {
+                    previewStatus.innerHTML = `You are about to import <strong>${recordsToInsert.length}</strong> publication records from the spreadsheet. Please verify the mapped columns in the preview below before confirming.`;
                 }
 
-                let successCount = 0;
-                if (supabaseClient) {
-                    progressBarFill.style.width = '50%';
-                    const { data, error } = await supabaseClient
-                        .from('publications')
-                        .insert(recordsToInsert)
-                        .select();
-
-                    if (error) {
-                        if (error.message && error.message.includes('row-level security')) {
-                            throw new Error('Supabase RLS Error: Row-Level Security prevents anonymous uploads. Please log in with valid admin credentials.');
-                        }
-                        throw error;
-                    }
-                    successCount = data.length;
-                } else {
-                    recordsToInsert.forEach(rec => {
-                        rec.id = 'demo-' + Math.random().toString(36).substr(2, 9);
-                        rec.created_at = new Date().toISOString();
-                        State.publications.unshift(rec);
-                    });
-                    successCount = recordsToInsert.length;
-                    this.saveLocalData();
+                const previewBody = document.getElementById('importPreviewBody');
+                if (previewBody) {
+                    // Preview up to 8 rows
+                    const previewRows = recordsToInsert.slice(0, 8);
+                    previewBody.innerHTML = previewRows.map(p => `
+                        <tr>
+                            <td><strong>${this.escapeHtml(p.roll_no)}</strong></td>
+                            <td>${this.escapeHtml(p.name)}</td>
+                            <td><span class="badge badge-${p.program.toLowerCase()}">${p.program}</span></td>
+                            <td>${this.escapeHtml(p.branch)}</td>
+                            <td title="${this.escapeHtml(p.article_title)}">${this.escapeHtml(this.truncate(p.article_title, 30))}</td>
+                            <td><span class="badge badge-${p.publication_type.toLowerCase()}">${p.publication_type}</span></td>
+                            <td><span class="badge badge-indexing">${this.escapeHtml(p.indexing || '—')}</span></td>
+                            <td>${this.escapeHtml(p.mentor_name || '—')}</td>
+                        </tr>
+                    `).join('');
                 }
 
-                progressBarFill.style.width = '100%';
-                setTimeout(() => {
-                    if (progressContainer) progressContainer.style.display = 'none';
-                    Toast.show('success', 'Import Successful', `Successfully registered ${successCount} student publications.`);
-                    this.loadData();
-                    this.switchView('publications');
-
-                    const fileInput = document.getElementById('bulkUploadFile');
-                    if (fileInput) fileInput.value = '';
-                    if (fileNameIndicator) {
-                        fileNameIndicator.textContent = '';
-                        fileNameIndicator.style.display = 'none';
-                    }
-                }, 500);
+                this.openModal('importPreviewModal');
 
             } catch (err) {
                 console.error(err);
-                const progressContainer = document.getElementById('uploadProgress');
-                if (progressContainer) progressContainer.style.display = 'none';
                 Toast.show('error', 'Import Failed', err.message || 'An error occurred during file parsing.');
             }
         };
 
         reader.readAsArrayBuffer(file);
+    },
+
+    async confirmBulkImport() {
+        const recordsToInsert = State.pendingImports;
+        if (!recordsToInsert || recordsToInsert.length === 0) return;
+
+        this.closeModal('importPreviewModal');
+
+        const progressContainer = document.getElementById('uploadProgress');
+        const progressBarFill = document.getElementById('progressBarFill');
+        const progressStatus = document.getElementById('progressStatus');
+
+        if (progressContainer) {
+            progressContainer.style.display = 'block';
+            progressBarFill.style.width = '20%';
+            progressStatus.textContent = `Importing ${recordsToInsert.length} records...`;
+        }
+
+        try {
+            let successCount = 0;
+            if (supabaseClient) {
+                progressBarFill.style.width = '50%';
+                const { data, error } = await supabaseClient
+                    .from('publications')
+                    .insert(recordsToInsert)
+                    .select();
+
+                if (error) {
+                    if (error.message && error.message.includes('row-level security')) {
+                        throw new Error('Supabase RLS Error: Row-Level Security prevents anonymous uploads. Please log in with valid admin credentials.');
+                    }
+                    throw error;
+                }
+                successCount = data.length;
+            } else {
+                recordsToInsert.forEach(rec => {
+                    rec.id = 'demo-' + Math.random().toString(36).substr(2, 9);
+                    rec.created_at = new Date().toISOString();
+                    State.publications.unshift(rec);
+                });
+                successCount = recordsToInsert.length;
+                this.saveLocalData();
+            }
+
+            progressBarFill.style.width = '100%';
+            setTimeout(() => {
+                if (progressContainer) progressContainer.style.display = 'none';
+                Toast.show('success', 'Import Successful', `Successfully registered ${successCount} student publications.`);
+                this.loadData();
+                this.switchView('publications');
+
+                const fileInput = document.getElementById('bulkUploadFile');
+                if (fileInput) fileInput.value = '';
+                const fileNameIndicator = document.getElementById('fileNameIndicator');
+                if (fileNameIndicator) {
+                    fileNameIndicator.textContent = '';
+                    fileNameIndicator.style.display = 'none';
+                }
+            }, 500);
+
+        } catch (err) {
+            console.error(err);
+            if (progressContainer) progressContainer.style.display = 'none';
+            Toast.show('error', 'Import Failed', err.message || 'An error occurred during file upload.');
+        } finally {
+            State.pendingImports = [];
+        }
     },
 
     downloadImportTemplate(e) {
