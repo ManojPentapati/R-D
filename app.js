@@ -167,6 +167,15 @@ const App = {
             body.classList.add('admin-mode');
         }
 
+        // Toggle display of public-only elements dynamically based on user role
+        document.querySelectorAll('.public-only').forEach(el => {
+            if (role) {
+                el.style.setProperty('display', 'none', 'important');
+            } else {
+                el.style.display = '';
+            }
+        });
+
         const authBtnText = document.getElementById('authBtnText');
         const authBtnIcon = document.querySelector('#authBtn i');
         if (State.session) {
