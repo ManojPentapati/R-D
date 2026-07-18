@@ -1,0 +1,94 @@
+/* ============================================
+   Vignan R&D Publication Tracker — CSS Variables & Reset
+   ============================================ */
+
+:root {
+    --navy: #0d1b2a;
+    --navy-light: #1b2838;
+    --navy-deep: #060f1a;
+    --blue: #1565c0;
+    --blue-light: #1e88e5;
+    --blue-bright: #42a5f5;
+    --blue-glow: rgba(21, 101, 192, 0.25);
+    --gold: #f0b429;
+    --gold-light: #fdd835;
+    --gold-dark: #c49000;
+    --teal: #00897b;
+    --teal-light: #26a69a;
+    --coral: #e8415c;
+    --coral-light: #ff6b6b;
+    --purple: #7e57c2;
+    --orange: #ef6c00;
+
+    --bg: #f4f6fa;
+    --bg-white: #ffffff;
+    --bg-dark-card: rgba(13, 27, 42, 0.03);
+    --surface: #ffffff;
+    --surface-hover: #f8fafd;
+
+    --text: #1a2332;
+    --text-secondary: #556275;
+    --text-muted: #8e99a9;
+    --text-white: #ffffff;
+
+    --border: #e2e8f0;
+    --border-light: #eef2f7;
+
+    --shadow-sm: 0 1px 3px rgba(13, 27, 42, 0.06), 0 1px 2px rgba(13, 27, 42, 0.04);
+    --shadow-md: 0 4px 14px rgba(13, 27, 42, 0.08), 0 2px 6px rgba(13, 27, 42, 0.04);
+    --shadow-lg: 0 10px 30px rgba(13, 27, 42, 0.12), 0 4px 10px rgba(13, 27, 42, 0.06);
+    --shadow-xl: 0 20px 50px rgba(13, 27, 42, 0.15);
+
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+    --radius-full: 50px;
+
+    --nav-height: 64px;
+    --hero-height: 340px;
+
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ── Reset ── */
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+}
+
+body {
+    font-family: 'Amazon Ember', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg);
+}
+
+::-webkit-scrollbar-thumb {
+    background: #c1c9d4;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a0aab5;
+}
