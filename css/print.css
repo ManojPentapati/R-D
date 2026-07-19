@@ -75,4 +75,10 @@
         size: A4;
         margin: 15mm;
     }
+
+    /* Set Landscape margins and size for certificates */
+    .print-landscape-mode @page {
+        size: A4 landscape !important;
+        margin: 8mm !important;
+    }
 }
