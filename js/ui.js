@@ -520,13 +520,15 @@ Object.assign(App, {
         const footer = document.querySelector('.site-footer');
 
         if (viewName === 'home') {
+            document.body.classList.add('home-layout');
             if (heroSection) {
                 heroSection.style.display = 'block';
-                heroSection.style.height = 'calc(100vh - var(--nav-height))';
+                heroSection.style.height = '';
             }
             if (mainWrapper) mainWrapper.style.display = 'none';
-            if (footer) footer.style.display = 'none';
+            if (footer) footer.style.display = 'block';
         } else if (viewName === 'dashboard') {
+            document.body.classList.remove('home-layout');
             if (heroSection) {
                 heroSection.style.display = 'block';
                 heroSection.style.height = '';
@@ -537,6 +539,7 @@ Object.assign(App, {
             }
             if (footer) footer.style.display = '';
         } else {
+            document.body.classList.remove('home-layout');
             if (heroSection) heroSection.style.display = 'none';
             if (mainWrapper) {
                 mainWrapper.style.display = 'block';

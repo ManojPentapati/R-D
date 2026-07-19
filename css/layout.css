@@ -300,3 +300,22 @@
     font-size: 11px !important;
     color: rgba(255, 255, 255, 0.35) !important;
 }
+
+/* ============ HOME LAYOUT SPECIFIC ============ */
+body.home-layout {
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+body.home-layout #heroSection {
+    flex: 1;
+    height: auto !important;
+    margin-top: var(--nav-height);
+    margin-bottom: 0;
+}
+
+body.home-layout .site-footer {
+    flex-shrink: 0;
+}
