@@ -108,6 +108,18 @@
 }
 
 /* ============ FORM STRUCTURE VIEWS ============ */
+.add-grid-layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+    align-items: start;
+    max-width: 100%;
+}
+
+.add-grid-layout .form-card {
+    max-width: 100%;
+}
+
 .form-card {
     padding: 36px;
     max-width: 900px;
@@ -428,6 +440,12 @@ body:not(.admin-mode):not(.super-admin-mode) #pubTable td:first-child {
     }
     .charts-row {
         grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 1024px) {
+    .add-grid-layout {
+        grid-template-columns: 1fr;
     }
 }
 

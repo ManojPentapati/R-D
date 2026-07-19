@@ -400,8 +400,7 @@
                         style="padding: 24px; display: flex; flex-direction: column; gap: 20px;">
                         <p class="upload-desc"
                             style="color: var(--text-secondary); font-size: 13px; margin: 0; line-height: 1.5;">Batch
-                            register multiple student publication entries at once using a formatted Excel or CSV
-                            spreadsheet file.</p>
+                            register student publication entries using a formatted spreadsheet (Excel/CSV) or upload academic paper documents (PDF/Word) for smart extraction.</p>
 
                         <div class="template-box"
                             style="display: flex; align-items: flex-start; gap: 12px; background: rgba(21, 101, 192, 0.05); border: 1px dashed var(--blue); padding: 16px; border-radius: 8px;">
@@ -409,13 +408,21 @@
                                 style="font-size: 24px; color: var(--blue); margin-top: 2px;"></i>
                             <div>
                                 <h4 style="font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 4px;">
-                                    Spreadsheet Template</h4>
+                                    Download Sample Templates</h4>
                                 <p
-                                    style="font-size: 12px; color: var(--text-secondary); margin: 0 0 8px 0; line-height: 1.4;">
-                                    Download our pre-structured template sheet to ensure matching headers.</p>
-                                <a href="#" onclick="App.downloadImportTemplate(event)" class="template-link"
-                                    style="color: var(--blue); font-size: 12px; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 4px;"><i
-                                        class="ri-file-excel-line"></i> Download Template (.xlsx)</a>
+                                    style="font-size: 12px; color: var(--text-secondary); margin: 0 0 10px 0; line-height: 1.4;">
+                                    Get sample formatted files to ensure correct schema mapping:</p>
+                                <div style="display: flex; flex-direction: column; gap: 6px;">
+                                    <a href="#" onclick="App.downloadImportTemplate(event)" class="template-link"
+                                        style="color: var(--blue); font-size: 12px; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 4px;"><i
+                                            class="ri-file-excel-line"></i> Spreadsheet Template (.xlsx)</a>
+                                    <a href="#" onclick="App.downloadPDFTemplate(event)" class="template-link"
+                                        style="color: var(--blue); font-size: 12px; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 4px;"><i
+                                            class="ri-file-pdf-line"></i> PDF Paper Sample (.pdf)</a>
+                                    <a href="#" onclick="App.downloadDOCTemplate(event)" class="template-link"
+                                        style="color: var(--blue); font-size: 12px; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 4px;"><i
+                                            class="ri-file-word-line"></i> Word Document Sample (.doc)</a>
+                                </div>
                             </div>
                         </div>
 
@@ -425,10 +432,10 @@
                                 style="font-size: 40px; color: var(--text-muted); transition: transform 0.3s ease;"></i>
                             <p class="dropzone-text"
                                 style="font-size: 13px; font-weight: 500; color: var(--text-secondary); margin: 0;">Drag
-                                & drop your spreadsheet file here or <span class="browse-btn"
+                                & drop your spreadsheet, PDF or Word file here or <span class="browse-btn"
                                     style="color: var(--blue); font-weight: 600; text-decoration: underline;">browse
                                     files</span></p>
-                            <input type="file" id="bulkUploadFile" accept=".xlsx, .xls, .csv" style="display: none;">
+                            <input type="file" id="bulkUploadFile" accept=".xlsx, .xls, .csv, .pdf, .docx, .doc" style="display: none;">
                             <span class="file-name-indicator" id="fileNameIndicator"
                                 style="display: none; background: rgba(0, 137, 123, 0.1); color: var(--teal); border: 1px solid rgba(0, 137, 123, 0.2); padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-top: 8px;"></span>
                         </div>

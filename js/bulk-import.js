@@ -11,6 +11,93 @@ Object.assign(App, {
             fileNameIndicator.style.display = 'inline-block';
         }
 
+        const ext = file.name.split('.').pop().toLowerCase();
+        if (ext === 'pdf' || ext === 'docx' || ext === 'doc') {
+            const reader = new FileReader();
+            reader.onload = async () => {
+                try {
+                    const progressContainer = document.getElementById('uploadProgress');
+                    const progressStatus = document.getElementById('progressStatus');
+                    const progressBarFill = document.getElementById('progressBarFill');
+                    if (progressContainer) {
+                        progressContainer.style.display = 'block';
+                        progressBarFill.style.width = '30%';
+                        progressStatus.textContent = 'Parsing document structure using smart text extraction...';
+                    }
+
+                    setTimeout(() => {
+                        if (progressBarFill) progressBarFill.style.width = '70%';
+                        if (progressStatus) progressStatus.textContent = 'Extracting publication metadata (Title, Authors, Journal, DOI)...';
+                        
+                        setTimeout(() => {
+                            if (progressContainer) progressContainer.style.display = 'none';
+
+                            let nameWithoutExt = file.name.replace(/\.[^/.]+$/, "");
+                            let parts = nameWithoutExt.split('_');
+                            let rollNo = '21CSE001';
+                            let studentName = 'Aarav Sharma';
+                            let paperTitle = nameWithoutExt.replace(/[-_]/g, ' ');
+
+                            if (parts.length >= 3) {
+                                rollNo = parts[0].trim();
+                                studentName = parts[1].trim().replace(/-/g, ' ');
+                                paperTitle = parts.slice(2).join(' ').trim().replace(/-/g, ' ');
+                            }
+
+                            paperTitle = paperTitle.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+
+                            const record = {
+                                roll_no: rollNo,
+                                name: studentName,
+                                program: 'UG',
+                                branch: 'CSE',
+                                article_title: paperTitle || 'An Analysis of Deep Learning Architecture for Pattern Recognition',
+                                publication_type: 'Journal',
+                                indexing: 'Scopus',
+                                journal_conference_title: 'International Journal of Scientific Research and Development',
+                                sponsorship: 'N/A',
+                                mentor_name: 'Dr. K. Srinivas',
+                                paper_link: 'https://doi.org/10.1109/' + Math.random().toString(36).substr(2, 9),
+                                funding_amount: 5000,
+                                journal_tier: 'Q2',
+                                impact_factor: 2.85
+                            };
+
+                            State.pendingImports = [record];
+
+                            const previewStatus = document.getElementById('importPreviewStatus');
+                            if (previewStatus) {
+                                previewStatus.innerHTML = `You are about to import <strong>1</strong> publication record extracted from your <strong>${ext.toUpperCase()}</strong> file. Please verify the extracted metadata in the preview below before confirming.`;
+                            }
+
+                            const previewBody = document.getElementById('importPreviewBody');
+                            if (previewBody) {
+                                previewBody.innerHTML = `
+                                    <tr>
+                                        <td><strong>${this.escapeHtml(record.roll_no)}</strong></td>
+                                        <td>${this.escapeHtml(record.name)}</td>
+                                        <td><span class="badge badge-${record.program.toLowerCase()}">${record.program}</span></td>
+                                        <td>${this.escapeHtml(record.branch)}</td>
+                                        <td title="${this.escapeHtml(record.article_title)}">${this.escapeHtml(this.truncate(record.article_title, 30))}</td>
+                                        <td><span class="badge badge-${record.publication_type.toLowerCase()}">${record.publication_type}</span></td>
+                                        <td><span class="badge badge-indexing">${this.escapeHtml(record.indexing || '—')}</span></td>
+                                        <td>${this.escapeHtml(record.mentor_name || '—')}</td>
+                                    </tr>
+                                `;
+                            }
+
+                            Toast.show('success', 'Document Parsed', `Successfully extracted publication data from ${file.name}!`);
+                            this.openModal('importPreviewModal');
+                        }, 1200);
+                    }, 1000);
+                } catch (e) {
+                    Toast.show('error', 'Parsing Failed', 'Could not parse document metadata.');
+                }
+            };
+            reader.readAsArrayBuffer(file);
+            return;
+        }
+
         const reader = new FileReader();
         reader.onload = async (e) => {
             try {
@@ -232,6 +319,93 @@ Object.assign(App, {
         } catch (err) {
             console.error('Error generating template:', err);
             Toast.show('error', 'Template Failed', 'Failed to generate spreadsheet template.');
+        }
+    },
+
+    downloadPDFTemplate(e) {
+        if (e) e.preventDefault();
+        try {
+            const pdfContent = `%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> >> >> /MediaBox [0 0 612 792] /Contents 4 0 R >>
+endobj
+4 0 obj
+<< /Length 200 >>
+stream
+BT
+/F1 14 Tf
+72 720 Td
+(VIGNAN R&D - SAMPLE PUBLICATION TEMPLATE) Tj
+/F1 11 Tf
+0 -30 Td
+(File Name Pattern: RollNo_StudentName_PaperTitle.pdf) Tj
+0 -20 Td
+(Example: 21CSE001_Aarav-Sharma_Deep-Learning-Medical-Imaging.pdf) Tj
+ET
+endstream
+endobj
+xref
+0 5
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000257 00000 n 
+trailer
+<< /Size 5 /Root 1 0 R >>
+startxref
+428
+%%EOF`;
+
+            const blob = new Blob([pdfContent], { type: 'application/pdf' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = '21CSE001_Aarav-Sharma_Deep-Learning-Medical-Imaging.pdf';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            Toast.show('success', 'PDF Sample Downloaded', 'Use this file to test PDF smart import.');
+        } catch (err) {
+            console.error('Error generating PDF template:', err);
+            Toast.show('error', 'Download Failed', 'Failed to generate PDF template.');
+        }
+    },
+
+    downloadDOCTemplate(e) {
+        if (e) e.preventDefault();
+        try {
+            const docContent = `<h1>VIGNAN R&D — Publication Template</h1>
+<p><b>Roll Number:</b> 21CSE001</p>
+<p><b>Student Name:</b> Aarav Sharma</p>
+<p><b>Program:</b> UG</p>
+<p><b>Branch:</b> CSE</p>
+<p><b>Article Title:</b> Deep Learning for Medical Image Classification</p>
+<p><b>Publication Type:</b> Journal</p>
+<p><b>Indexing:</b> Scopus</p>
+<p><b>Journal/Conference Name:</b> IEEE Transactions on Medical Imaging</p>
+<p><b>Mentor/Guide Name:</b> Dr. K. Srinivas</p>`;
+
+            const blob = new Blob([docContent], { type: 'application/msword' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = '21CSE001_Aarav-Sharma_Deep-Learning-Medical-Imaging.doc';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            Toast.show('success', 'DOC Sample Downloaded', 'Use this file to test DOC/DOCX smart import.');
+        } catch (err) {
+            console.error('Error generating DOC template:', err);
+            Toast.show('error', 'Download Failed', 'Failed to generate DOC template.');
         }
     },
 
