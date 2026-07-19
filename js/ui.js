@@ -620,9 +620,12 @@ Object.assign(App, {
             document.body.classList.add('home-layout');
             if (heroSection) {
                 heroSection.style.display = 'block';
-                heroSection.style.height = '';
+                heroSection.style.height = '70vh';
             }
-            if (mainWrapper) mainWrapper.style.display = 'none';
+            if (mainWrapper) {
+                mainWrapper.style.display = 'block';
+                mainWrapper.style.paddingTop = '32px';
+            }
             if (footer) footer.style.display = 'block';
         } else if (viewName === 'dashboard') {
             document.body.classList.remove('home-layout');
@@ -650,6 +653,8 @@ Object.assign(App, {
 
         if (activeViewId === 'publications') {
             this.applyFilters();
+        } else if (activeViewId === 'manage-claims') {
+            this.loadReimbursements();
         }
 
         // Close mobile drawer menu
@@ -803,6 +808,8 @@ Object.assign(App, {
                 this.switchView('home');
             } else if (viewId === 'export' && !role) {
                 this.switchView('home');
+            } else if (viewId === 'manage-claims' && !role) {
+                this.switchView('home');
             } else if (viewId === 'reimbursement' && role) {
                 this.switchView(role === 'super_admin' ? 'dashboard' : 'home');
             }
@@ -823,6 +830,176 @@ Object.assign(App, {
             isConnected = false;
         }
         if (span) span.textContent = text;
+    },
+
+    renderReimbursementsTable() {
+        const tbody = document.getElementById('reimbursementsTableBody');
+        if (!tbody) return;
+
+        const data = State.reimbursements || [];
+        if (data.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 40px 0;">No reimbursement claims submitted yet.</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = data.map(c => {
+            const dateStr = new Date(c.created_at).toLocaleDateString(undefined, {
+                year: 'numeric', month: 'short', day: 'numeric'
+            });
+
+            let statusClass = 'pending';
+            if (c.status === 'Approved') statusClass = 'ug';
+            else if (c.status === 'Under Review') statusClass = 'pg';
+            else if (c.status === 'Rejected') statusClass = 'rejected';
+
+            return `
+                <tr>
+                    <td>
+                        <div style="font-weight: 600; color: var(--navy); text-align: left;">${this.escapeHtml(c.student_name)}</div>
+                        <div style="font-size: 12px; color: var(--text-muted); text-align: left;">${this.escapeHtml(c.roll_no)} (${this.escapeHtml(c.branch)})</div>
+                        <div style="font-size: 11px; color: var(--text-muted); text-align: left;">Dept: ${this.escapeHtml(c.dept)}</div>
+                    </td>
+                    <td>
+                        <div style="font-weight: 500; font-size: 13px; color: var(--navy); max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left;" title="${this.escapeHtml(c.paper_title)}">${this.escapeHtml(c.paper_title)}</div>
+                        <div style="font-size: 11px; color: var(--text-muted); text-align: left;">${this.escapeHtml(c.conf_name)}</div>
+                        <div style="font-size: 11px; color: var(--text-muted); text-align: left;">${this.escapeHtml(c.conf_dates)}</div>
+                    </td>
+                    <td style="font-weight: 600; color: var(--navy);">₹${parseFloat(c.fee_paid || 0).toLocaleString()}</td>
+                    <td style="font-size: 12px; line-height: 1.4; text-align: left;">
+                        <div><strong>Holder:</strong> ${this.escapeHtml(c.bank_acc_holder)}</div>
+                        <div><strong>A/C:</strong> ${this.escapeHtml(c.bank_acc_no)}</div>
+                        <div><strong>Bank:</strong> ${this.escapeHtml(c.bank_name)} (${this.escapeHtml(c.bank_branch)})</div>
+                        <div><strong>IFSC:</strong> ${this.escapeHtml(c.ifsc)}</div>
+                    </td>
+                    <td style="font-size: 12px; color: var(--text-muted);">${dateStr}</td>
+                    <td>
+                        <span class="badge badge-${statusClass}">${this.escapeHtml(c.status)}</span>
+                    </td>
+                    <td>
+                        <div style="display: flex; gap: 8px; align-items: center; justify-content: center;">
+                            <select class="form-input" style="padding: 4px 8px; font-size: 12px; margin-bottom: 0; width: 120px;" onchange="App.updateClaimStatus('${c.id}', this.value)">
+                                <option value="Submitted" ${c.status === 'Submitted' ? 'selected' : ''}>Submitted</option>
+                                <option value="Under Review" ${c.status === 'Under Review' ? 'selected' : ''}>Under Review</option>
+                                <option value="Approved" ${c.status === 'Approved' ? 'selected' : ''}>Approved</option>
+                                <option value="Rejected" ${c.status === 'Rejected' ? 'selected' : ''}>Rejected</option>
+                            </select>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    },
+
+    trackReimbursementStatus() {
+        const rollInput = document.getElementById('trackerRollNo');
+        const resultsEl = document.getElementById('trackerResults');
+        if (!rollInput || !resultsEl) return;
+
+        const rollNo = rollInput.value.trim().toUpperCase();
+        if (!rollNo) {
+            Toast.show('warning', 'Input Required', 'Please enter a Roll Number to track.');
+            return;
+        }
+
+        // Search through State.reimbursements (if empty, load first from localstorage/DB)
+        const runTrack = () => {
+            const matches = State.reimbursements.filter(c => c.roll_no.trim().toUpperCase() === rollNo);
+
+            resultsEl.style.display = 'block';
+            if (matches.length === 0) {
+                resultsEl.innerHTML = `
+                    <div style="text-align: center; padding: 24px; background: rgba(240, 180, 41, 0.05); border: 1px dashed rgba(240, 180, 41, 0.3); border-radius: 8px; color: var(--navy); font-weight: 500;">
+                        <i class="ri-alert-line" style="font-size: 24px; color: #f0b429; display: block; margin-bottom: 8px;"></i>
+                        No fee reimbursement claims found for Roll Number <strong>${this.escapeHtml(rollNo)}</strong>.
+                    </div>
+                `;
+                return;
+            }
+
+            resultsEl.innerHTML = `
+                <h4 style="margin-bottom: 16px; color: var(--navy); border-bottom: 1px solid var(--border-light); padding-bottom: 8px;">
+                    Claims Found for ${this.escapeHtml(rollNo)} (${matches.length})
+                </h4>
+                <div style="display: flex; flex-direction: column; gap: 20px;">
+                    ${matches.map(c => {
+                        const dateStr = new Date(c.created_at).toLocaleDateString(undefined, {
+                            year: 'numeric', month: 'short', day: 'numeric'
+                        });
+
+                        const isSubmitted = true;
+                        const isUnderReview = c.status === 'Under Review' || c.status === 'Approved' || c.status === 'Rejected';
+                        const isApproved = c.status === 'Approved';
+                        const isRejected = c.status === 'Rejected';
+
+                        let step3Label = 'Approved';
+                        let step3Icon = 'ri-checkbox-circle-line';
+                        let step3Color = 'var(--emerald, #24b47e)';
+
+                        if (isRejected) {
+                            step3Label = 'Rejected';
+                            step3Icon = 'ri-close-circle-line';
+                            step3Color = '#c62828';
+                        }
+
+                        return `
+                            <div style="background: var(--bg-light); border: 1px solid var(--border-light); border-radius: 8px; padding: 16px;">
+                                <div style="font-weight: 600; color: var(--navy); margin-bottom: 4px; font-size: 14px; text-align: left;">${this.escapeHtml(c.paper_title)}</div>
+                                <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 24px; text-align: left;">
+                                    <strong>Organizer:</strong> ${this.escapeHtml(c.conf_name)} | <strong>Submitted on:</strong> ${dateStr}
+                                </div>
+                                
+                                <div style="display: flex; justify-content: space-between; position: relative; margin-top: 10px; padding: 0 10px;">
+                                    <div style="position: absolute; top: 14px; left: 40px; right: 40px; height: 3px; background: var(--border-light); z-index: 1;">
+                                        <div style="width: ${isApproved || isRejected ? '100%' : (isUnderReview ? '50%' : '0%')}; height: 100%; background: var(--blue); transition: width 0.3s ease;"></div>
+                                    </div>
+                                    
+                                    <div style="display: flex; flex-direction: column; align-items: center; z-index: 2; width: 80px; text-align: center;">
+                                        <div style="width: 30px; height: 30px; border-radius: 50%; background: ${isSubmitted ? 'var(--blue)' : 'var(--border-light)'}; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; margin-bottom: 4px;">
+                                            <i class="ri-send-plane-line"></i>
+                                        </div>
+                                        <span style="font-size: 11px; font-weight: 600; color: ${isSubmitted ? 'var(--navy)' : 'var(--text-muted)'};">Submitted</span>
+                                    </div>
+
+                                    <div style="display: flex; flex-direction: column; align-items: center; z-index: 2; width: 80px; text-align: center;">
+                                        <div style="width: 30px; height: 30px; border-radius: 50%; background: ${isUnderReview ? 'var(--blue)' : 'var(--border-light)'}; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; margin-bottom: 4px;">
+                                            <i class="ri-eye-line"></i>
+                                        </div>
+                                        <span style="font-size: 11px; font-weight: 600; color: ${isUnderReview ? 'var(--navy)' : 'var(--text-muted)'};">Under Review</span>
+                                    </div>
+
+                                    <div style="display: flex; flex-direction: column; align-items: center; z-index: 2; width: 80px; text-align: center;">
+                                        <div style="width: 30px; height: 30px; border-radius: 50%; background: ${isApproved || isRejected ? step3Color : 'var(--border-light)'}; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; margin-bottom: 4px;">
+                                            <i class="${step3Icon}"></i>
+                                        </div>
+                                        <span style="font-size: 11px; font-weight: 600; color: ${isApproved || isRejected ? step3Color : 'var(--text-muted)'};">${step3Label}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        };
+
+        if (State.reimbursements.length === 0) {
+            // Lazy load first
+            if (!supabaseClient) {
+                const localData = localStorage.getItem('demo_reimbursements');
+                State.reimbursements = localData ? JSON.parse(localData) : this.getSampleReimbursements();
+                runTrack();
+            } else {
+                supabaseClient
+                    .from('reimbursements')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .then(({ data }) => {
+                        State.reimbursements = data || [];
+                        runTrack();
+                    });
+            }
+        } else {
+            runTrack();
+        }
     },
 
     // ── Utility Helpers ──

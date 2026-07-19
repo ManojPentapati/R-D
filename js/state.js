@@ -29,7 +29,8 @@ const State = {
     deletingId: null,
     session: null,
     userRole: null, // 'super_admin', 'admin', or null
-    pendingImports: []
+    pendingImports: [],
+    reimbursements: []
 };
 
 // Global App Object

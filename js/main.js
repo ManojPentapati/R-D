@@ -452,17 +452,53 @@ Object.assign(App, {
                 const fileInput = document.getElementById('reimbReceiptFile');
                 const file = fileInput ? fileInput.files[0] : null;
 
-                if (file && file.type.startsWith('image/')) {
-                    const reader = new FileReader();
-                    reader.onload = (event) => {
-                        this.renderAndOpenPrintModal(formData, event.target.result);
+                // Save the claim to database before printing
+                const firstStudent = formData.authors.find(a => a.role === 'student') || { name: '', rollNo: '', branch: '', dept: '' };
+                const dbData = {
+                    paper_title: formData.paperTitle,
+                    host_inst: formData.hostInst,
+                    conf_name: formData.confName,
+                    conf_dates: formData.confDates,
+                    fee_paid: formData.feePaid,
+                    roll_no: firstStudent.rollNo,
+                    student_name: firstStudent.name,
+                    branch: formData.branch,
+                    dept: firstStudent.dept,
+                    bank_acc_holder: formData.bank.accHolder,
+                    bank_acc_no: formData.bank.accNo,
+                    bank_name: formData.bank.bankName,
+                    bank_branch: formData.bank.branchName,
+                    ifsc: formData.bank.ifsc
+                };
+
+                this.submitReimbursementClaim(dbData).then(() => {
+                    Toast.show('success', 'Claim Registered', 'Your fee reimbursement claim has been registered in the R&D tracking system.');
+                    if (file && file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                            this.renderAndOpenPrintModal(formData, event.target.result);
+                            this.clearReimbursementDraft();
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        this.renderAndOpenPrintModal(formData, '');
                         this.clearReimbursementDraft();
-                    };
-                    reader.readAsDataURL(file);
-                } else {
-                    this.renderAndOpenPrintModal(formData, '');
-                    this.clearReimbursementDraft();
-                }
+                    }
+                }).catch((err) => {
+                    console.error('Claim registration error:', err);
+                    Toast.show('error', 'Registration Error', 'Could not register claim. The print preview will still open.');
+                    if (file && file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                            this.renderAndOpenPrintModal(formData, event.target.result);
+                            this.clearReimbursementDraft();
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        this.renderAndOpenPrintModal(formData, '');
+                        this.clearReimbursementDraft();
+                    }
+                });
             });
         }
 

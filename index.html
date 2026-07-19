@@ -62,6 +62,9 @@
                 <a href="#" class="nav-link admin-only" data-view="export" id="nav-export">
                     <i class="ri-download-cloud-2-line"></i> Export
                 </a>
+                <a href="#" class="nav-link admin-only" data-view="manage-claims" id="nav-manage-claims">
+                    <i class="ri-refund-2-line"></i> Manage Claims
+                </a>
             </div>
 
             <div class="nav-right">
@@ -922,6 +925,35 @@
                         </button>
                     </div>
                 </form>
+            </div>
+        <!-- ==================== MANAGE CLAIMS VIEW ==================== -->
+        <section class="view" id="view-manage-claims">
+            <div class="section-header">
+                <div>
+                    <h2><i class="ri-refund-2-line"></i> Manage Reimbursement Claims</h2>
+                    <p>Review, track, and update status of student fee reimbursement requests</p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="table-scroll">
+                    <table class="data-table" id="reimbursementsTable">
+                        <thead>
+                            <tr>
+                                <th>Student Details</th>
+                                <th>Paper Details</th>
+                                <th>Fee Paid</th>
+                                <th>Bank Details</th>
+                                <th>Date Submitted</th>
+                                <th>Status</th>
+                                <th style="text-align: center; width: 180px;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reimbursementsTableBody">
+                            <!-- Dynamically populated -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </section>
 
