@@ -652,17 +652,6 @@ Object.assign(App, {
                 mainWrapper.style.display = 'none';
             }
             if (footer) footer.style.display = 'block';
-        } else if (viewName === 'dashboard') {
-            document.body.classList.remove('home-layout');
-            if (heroSection) {
-                heroSection.style.display = 'block';
-                heroSection.style.height = '';
-            }
-            if (mainWrapper) {
-                mainWrapper.style.display = 'block';
-                mainWrapper.style.paddingTop = '32px';
-            }
-            if (footer) footer.style.display = '';
         } else {
             document.body.classList.remove('home-layout');
             if (heroSection) heroSection.style.display = 'none';
@@ -821,11 +810,23 @@ Object.assign(App, {
             }
         }
 
+        // Hide/Show Home navigation link for Super Admin
+        const navHome = document.getElementById('nav-home');
+        if (navHome) {
+            if (role === 'super_admin') {
+                navHome.style.setProperty('display', 'none', 'important');
+            } else {
+                navHome.style.display = '';
+            }
+        }
+
         // Adjust view based on role
         const currentView = document.querySelector('.view.active');
         if (currentView) {
             const viewId = currentView.id.replace('view-', '');
-            if (viewId === 'dashboard' && role !== 'super_admin') {
+            if (role === 'super_admin' && (viewId === 'home' || viewId === 'reimbursement')) {
+                this.switchView('dashboard');
+            } else if (viewId === 'dashboard' && role !== 'super_admin') {
                 this.switchView('home');
             } else if (viewId === 'manage-admins' && role !== 'super_admin') {
                 this.switchView('home');
@@ -838,6 +839,8 @@ Object.assign(App, {
             } else if (viewId === 'reimbursement' && role) {
                 this.switchView(role === 'super_admin' ? 'dashboard' : 'home');
             }
+        } else if (role === 'super_admin') {
+            this.switchView('dashboard');
         }
     },
 
