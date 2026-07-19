@@ -11,8 +11,8 @@
 }
 
 .stat-card {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--surface);
+    border: 1.5px solid var(--border);
     border-radius: var(--radius-lg);
     padding: 22px 20px;
     display: flex;
@@ -20,29 +20,21 @@
     gap: 16px;
     position: relative;
     overflow: hidden;
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    transition: all 0.4s var(--ease);
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s var(--ease);
     cursor: pointer;
 }
 
-.stat-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
-    opacity: 0.8;
-    pointer-events: none;
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
 }
 
-.stat-card:hover {
-    transform: translateY(-4px) scale(1.02);
-    border-color: rgba(240, 180, 41, 0.35);
-    box-shadow: 0 12px 30px rgba(240, 180, 41, 0.15), 0 0 16px rgba(240, 180, 41, 0.05);
-}
+.stat-card:has(.accent-total):hover { border-color: var(--blue); }
+.stat-card:has(.accent-ug):hover { border-color: var(--teal); }
+.stat-card:has(.accent-pg):hover { border-color: var(--purple); }
+.stat-card:has(.accent-journal):hover { border-color: var(--orange); }
+.stat-card:has(.accent-conf):hover { border-color: var(--coral); }
 
 .stat-card-icon {
     width: 48px;
@@ -68,14 +60,14 @@
 .stat-card-value {
     font-size: 28px;
     font-weight: 800;
-    color: #fff;
+    color: var(--text);
     line-height: 1;
     letter-spacing: -0.5px;
 }
 
 .stat-card-label {
     font-size: 11px;
-    color: rgba(255, 255, 255, 0.55);
+    color: var(--text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.5px;
     font-weight: 600;
@@ -312,9 +304,12 @@ body.admin-mode .admin-only {
 }
 
 body.super-admin-mode .nav-link.super-admin-only,
-body.super-admin-mode .nav-link.admin-only,
 body.admin-mode .nav-link.admin-only {
     display: flex !important;
+}
+
+body.super-admin-mode .nav-link.admin-only {
+    display: none !important;
 }
 
 #authBtn {

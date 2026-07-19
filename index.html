@@ -243,40 +243,6 @@
                     <div class="chart-wrap"><canvas id="chartIndexing"></canvas></div>
                 </div>
             </div>
-
-            <!-- Recent Table -->
-            <div class="card">
-                <div class="card-header">
-                    <h3><i class="ri-time-line"></i> Recent Publications</h3>
-                    <button class="btn btn-outline btn-sm" onclick="App.switchView('publications')">
-                        View All <i class="ri-arrow-right-line"></i>
-                    </button>
-                </div>
-                <div class="table-scroll">
-                    <table class="data-table" id="recentTable">
-                        <thead>
-                            <tr>
-                                <th>Roll No</th>
-                                <th>Name</th>
-                                <th>Program</th>
-                                <th>Branch</th>
-                                <th>Article Title</th>
-                                <th>Type</th>
-                                <th>Indexing</th>
-                            </tr>
-                        </thead>
-                        <tbody id="recentTableBody"></tbody>
-                    </table>
-                </div>
-                <div class="empty-state" id="recentEmpty" style="display:none;">
-                    <i class="ri-file-search-line"></i>
-                    <h4>No Publications Yet</h4>
-                    <p>Start by adding your first student publication</p>
-                    <button class="btn btn-primary" onclick="App.switchView('add')">
-                        <i class="ri-add-line"></i> Add First Publication
-                    </button>
-                </div>
-            </div>
         </section>
 
         <!-- ==================== ADD PUBLICATION VIEW ==================== -->
