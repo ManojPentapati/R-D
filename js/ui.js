@@ -51,6 +51,103 @@ Object.assign(App, {
         this.animateNumber('statConference', conferences);
     },
 
+    renderLeaderboard() {
+        const data = State.publications || [];
+        
+        // 1. Top Branches Calculation
+        const branchCounts = {};
+        data.forEach(p => {
+            if (p.branch) {
+                const branch = p.branch.trim().toUpperCase();
+                branchCounts[branch] = (branchCounts[branch] || 0) + 1;
+            }
+        });
+        const sortedBranches = Object.entries(branchCounts)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 5);
+
+        const branchesEl = document.getElementById('leaderboardBranches');
+        if (branchesEl) {
+            if (sortedBranches.length === 0) {
+                branchesEl.innerHTML = `<li style="color: var(--text-muted); text-align: center; padding: 20px 0;">No publications recorded yet.</li>`;
+            } else {
+                branchesEl.innerHTML = sortedBranches.map(([branch, count], index) => `
+                    <li style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-weight: 500; font-size: 14px;">
+                        <span style="color: var(--navy); display: flex; align-items: center; gap: 8px;">
+                            <span style="background: rgba(0, 119, 182, 0.1); color: var(--blue); width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold;">${index + 1}</span>
+                            ${this.escapeHtml(branch)}
+                        </span>
+                        <span class="badge" style="background: rgba(0, 119, 182, 0.1); color: var(--blue); font-weight: 600; padding: 4px 8px; border-radius: 4px;">${count} Pubs</span>
+                    </li>
+                `).join('');
+            }
+        }
+
+        // 2. Star Student Researchers Calculation
+        const studentCounts = {};
+        data.forEach(p => {
+            if (p.roll_no && p.name) {
+                const key = `${p.roll_no.trim()}|${p.name.trim()}|${p.branch || ''}`;
+                studentCounts[key] = (studentCounts[key] || 0) + 1;
+            }
+        });
+        const sortedStudents = Object.entries(studentCounts)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 5);
+
+        const studentsEl = document.getElementById('leaderboardStudents');
+        if (studentsEl) {
+            if (sortedStudents.length === 0) {
+                studentsEl.innerHTML = `<li style="color: var(--text-muted); text-align: center; padding: 20px 0;">No student researchers recorded yet.</li>`;
+            } else {
+                studentsEl.innerHTML = sortedStudents.map(([key, count], index) => {
+                    const [rollNo, name, branch] = key.split('|');
+                    return `
+                        <li style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-weight: 500; font-size: 14px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="background: rgba(240, 180, 41, 0.1); color: #b48500; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold;">${index + 1}</span>
+                                <div>
+                                    <div style="color: var(--navy); font-weight: 600; text-align: left;">${this.escapeHtml(name)}</div>
+                                    <div style="font-size: 11px; color: var(--text-muted); text-align: left;">${this.escapeHtml(rollNo)} (${this.escapeHtml(branch)})</div>
+                                </div>
+                            </div>
+                            <span class="badge" style="background: rgba(240, 180, 41, 0.1); color: #b48500; font-weight: 600; padding: 4px 8px; border-radius: 4px;">${count} Pubs</span>
+                        </li>
+                    `;
+                }).join('');
+            }
+        }
+
+        // 3. Distinguished Mentors Calculation
+        const mentorCounts = {};
+        data.forEach(p => {
+            if (p.mentor_name) {
+                const mentor = p.mentor_name.trim();
+                mentorCounts[mentor] = (mentorCounts[mentor] || 0) + 1;
+            }
+        });
+        const sortedMentors = Object.entries(mentorCounts)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 5);
+
+        const mentorsEl = document.getElementById('leaderboardMentors');
+        if (mentorsEl) {
+            if (sortedMentors.length === 0) {
+                mentorsEl.innerHTML = `<li style="color: var(--text-muted); text-align: center; padding: 20px 0;">No mentors recorded yet.</li>`;
+            } else {
+                mentorsEl.innerHTML = sortedMentors.map(([mentor, count], index) => `
+                    <li style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-weight: 500; font-size: 14px;">
+                        <span style="color: var(--navy); display: flex; align-items: center; gap: 8px;">
+                            <span style="background: rgba(36, 180, 126, 0.1); color: #1e8a60; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold;">${index + 1}</span>
+                            ${this.escapeHtml(mentor)}
+                        </span>
+                        <span class="badge" style="background: rgba(36, 180, 126, 0.1); color: #1e8a60; font-weight: 600; padding: 4px 8px; border-radius: 4px;">${count} Pubs</span>
+                    </li>
+                `).join('');
+            }
+        }
+    },
+
     // ── Charts Rendering ──
     renderCharts() {
         const data = State.publications;
@@ -266,7 +363,19 @@ Object.assign(App, {
     applyFilters() {
         let data = [...State.publications];
 
-        // Search
+        // Public search (visible to all users)
+        const publicSearchEl = document.getElementById('publicSearchInput');
+        const publicQuery = publicSearchEl ? publicSearchEl.value.trim().toLowerCase() : '';
+        if (publicQuery) {
+            data = data.filter(p =>
+                (p.roll_no || '').toLowerCase().includes(publicQuery) ||
+                (p.article_title || '').toLowerCase().includes(publicQuery) ||
+                (p.mentor_name || '').toLowerCase().includes(publicQuery) ||
+                (p.name || '').toLowerCase().includes(publicQuery)
+            );
+        }
+
+        // Admin search
         if (State.searchQuery) {
             const q = State.searchQuery.toLowerCase();
             data = data.filter(p =>
@@ -283,6 +392,7 @@ Object.assign(App, {
         if (State.filters.branch) data = data.filter(p => p.branch === State.filters.branch);
         if (State.filters.type) data = data.filter(p => p.publication_type === State.filters.type);
         if (State.filters.indexing) data = data.filter(p => p.indexing === State.filters.indexing);
+        if (State.filters.tier) data = data.filter(p => p.journal_tier === State.filters.tier);
 
         // Sort
         data.sort((a, b) => {
@@ -302,12 +412,16 @@ Object.assign(App, {
         const container = document.getElementById('activeFilters');
         if (!container) return;
 
+        const searchEl = document.getElementById('searchInput');
+        const publicSearchEl = document.getElementById('publicSearchInput');
         const filters = [
-            { id: 'searchInput', label: 'Search', value: document.getElementById('searchInput').value },
-            { id: 'filterProgram', label: 'Program', value: document.getElementById('filterProgram').value },
-            { id: 'filterBranch', label: 'Branch', value: document.getElementById('filterBranch').value },
-            { id: 'filterType', label: 'Type', value: document.getElementById('filterType').value },
-            { id: 'filterIndexing', label: 'Indexing', value: document.getElementById('filterIndexing').value }
+            { id: 'publicSearchInput', label: 'Search', value: publicSearchEl ? publicSearchEl.value : '' },
+            { id: 'searchInput', label: 'Admin Search', value: searchEl ? searchEl.value : '' },
+            { id: 'filterProgram', label: 'Program', value: document.getElementById('filterProgram') ? document.getElementById('filterProgram').value : '' },
+            { id: 'filterBranch', label: 'Branch', value: document.getElementById('filterBranch') ? document.getElementById('filterBranch').value : '' },
+            { id: 'filterType', label: 'Type', value: document.getElementById('filterType') ? document.getElementById('filterType').value : '' },
+            { id: 'filterIndexing', label: 'Indexing', value: document.getElementById('filterIndexing') ? document.getElementById('filterIndexing').value : '' },
+            { id: 'filterTier', label: 'Tier', value: document.getElementById('filterTier') ? document.getElementById('filterTier').value : '' }
         ];
 
         const activeFilters = filters.filter(f => f.value && f.value.trim() !== '');
@@ -340,6 +454,9 @@ Object.assign(App, {
                 const clearBtn = document.getElementById('searchClear');
                 if (clearBtn) clearBtn.style.display = 'none';
                 State.searchQuery = '';
+            } else if (id === 'publicSearchInput') {
+                const clearBtn = document.getElementById('publicSearchClear');
+                if (clearBtn) clearBtn.style.display = 'none';
             } else {
                 const key = id.replace('filter', '').toLowerCase();
                 State.filters[key] = '';
@@ -349,18 +466,21 @@ Object.assign(App, {
     },
 
     clearAllFilters() {
-        ['searchInput', 'filterProgram', 'filterBranch', 'filterType', 'filterIndexing'].forEach(id => {
+        ['searchInput', 'publicSearchInput', 'filterProgram', 'filterBranch', 'filterType', 'filterIndexing', 'filterTier'].forEach(id => {
             const el = document.getElementById(id);
             if (el) el.value = '';
         });
         const clearBtn = document.getElementById('searchClear');
         if (clearBtn) clearBtn.style.display = 'none';
+        const publicClearBtn = document.getElementById('publicSearchClear');
+        if (publicClearBtn) publicClearBtn.style.display = 'none';
 
         State.searchQuery = '';
         State.filters.program = '';
         State.filters.branch = '';
         State.filters.type = '';
         State.filters.indexing = '';
+        State.filters.tier = '';
 
         this.applyFilters();
     },
@@ -523,9 +643,12 @@ Object.assign(App, {
             document.body.classList.add('home-layout');
             if (heroSection) {
                 heroSection.style.display = 'block';
-                heroSection.style.height = '';
+                heroSection.style.height = '70vh';
             }
-            if (mainWrapper) mainWrapper.style.display = 'none';
+            if (mainWrapper) {
+                mainWrapper.style.display = 'block';
+                mainWrapper.style.paddingTop = '32px';
+            }
             if (footer) footer.style.display = 'block';
         } else if (viewName === 'dashboard') {
             document.body.classList.remove('home-layout');
@@ -553,6 +676,8 @@ Object.assign(App, {
 
         if (activeViewId === 'publications') {
             this.applyFilters();
+        } else if (activeViewId === 'manage-claims') {
+            this.loadReimbursements();
         }
 
         // Close mobile drawer menu
@@ -706,6 +831,8 @@ Object.assign(App, {
                 this.switchView('home');
             } else if (viewId === 'export' && !role) {
                 this.switchView('home');
+            } else if (viewId === 'manage-claims' && !role) {
+                this.switchView('home');
             } else if (viewId === 'reimbursement' && role) {
                 this.switchView(role === 'super_admin' ? 'dashboard' : 'home');
             }
@@ -726,6 +853,176 @@ Object.assign(App, {
             isConnected = false;
         }
         if (span) span.textContent = text;
+    },
+
+    renderReimbursementsTable() {
+        const tbody = document.getElementById('reimbursementsTableBody');
+        if (!tbody) return;
+
+        const data = State.reimbursements || [];
+        if (data.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 40px 0;">No reimbursement claims submitted yet.</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = data.map(c => {
+            const dateStr = new Date(c.created_at).toLocaleDateString(undefined, {
+                year: 'numeric', month: 'short', day: 'numeric'
+            });
+
+            let statusClass = 'pending';
+            if (c.status === 'Approved') statusClass = 'ug';
+            else if (c.status === 'Under Review') statusClass = 'pg';
+            else if (c.status === 'Rejected') statusClass = 'rejected';
+
+            return `
+                <tr>
+                    <td>
+                        <div style="font-weight: 600; color: var(--navy); text-align: left;">${this.escapeHtml(c.student_name)}</div>
+                        <div style="font-size: 12px; color: var(--text-muted); text-align: left;">${this.escapeHtml(c.roll_no)} (${this.escapeHtml(c.branch)})</div>
+                        <div style="font-size: 11px; color: var(--text-muted); text-align: left;">Dept: ${this.escapeHtml(c.dept)}</div>
+                    </td>
+                    <td>
+                        <div style="font-weight: 500; font-size: 13px; color: var(--navy); max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left;" title="${this.escapeHtml(c.paper_title)}">${this.escapeHtml(c.paper_title)}</div>
+                        <div style="font-size: 11px; color: var(--text-muted); text-align: left;">${this.escapeHtml(c.conf_name)}</div>
+                        <div style="font-size: 11px; color: var(--text-muted); text-align: left;">${this.escapeHtml(c.conf_dates)}</div>
+                    </td>
+                    <td style="font-weight: 600; color: var(--navy);">₹${parseFloat(c.fee_paid || 0).toLocaleString()}</td>
+                    <td style="font-size: 12px; line-height: 1.4; text-align: left;">
+                        <div><strong>Holder:</strong> ${this.escapeHtml(c.bank_acc_holder)}</div>
+                        <div><strong>A/C:</strong> ${this.escapeHtml(c.bank_acc_no)}</div>
+                        <div><strong>Bank:</strong> ${this.escapeHtml(c.bank_name)} (${this.escapeHtml(c.bank_branch)})</div>
+                        <div><strong>IFSC:</strong> ${this.escapeHtml(c.ifsc)}</div>
+                    </td>
+                    <td style="font-size: 12px; color: var(--text-muted);">${dateStr}</td>
+                    <td>
+                        <span class="badge badge-${statusClass}">${this.escapeHtml(c.status)}</span>
+                    </td>
+                    <td>
+                        <div style="display: flex; gap: 8px; align-items: center; justify-content: center;">
+                            <select class="form-input" style="padding: 4px 8px; font-size: 12px; margin-bottom: 0; width: 120px;" onchange="App.updateClaimStatus('${c.id}', this.value)">
+                                <option value="Submitted" ${c.status === 'Submitted' ? 'selected' : ''}>Submitted</option>
+                                <option value="Under Review" ${c.status === 'Under Review' ? 'selected' : ''}>Under Review</option>
+                                <option value="Approved" ${c.status === 'Approved' ? 'selected' : ''}>Approved</option>
+                                <option value="Rejected" ${c.status === 'Rejected' ? 'selected' : ''}>Rejected</option>
+                            </select>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    },
+
+    trackReimbursementStatus() {
+        const rollInput = document.getElementById('trackerRollNo');
+        const resultsEl = document.getElementById('trackerResults');
+        if (!rollInput || !resultsEl) return;
+
+        const rollNo = rollInput.value.trim().toUpperCase();
+        if (!rollNo) {
+            Toast.show('warning', 'Input Required', 'Please enter a Roll Number to track.');
+            return;
+        }
+
+        // Search through State.reimbursements (if empty, load first from localstorage/DB)
+        const runTrack = () => {
+            const matches = State.reimbursements.filter(c => c.roll_no.trim().toUpperCase() === rollNo);
+
+            resultsEl.style.display = 'block';
+            if (matches.length === 0) {
+                resultsEl.innerHTML = `
+                    <div style="text-align: center; padding: 24px; background: rgba(240, 180, 41, 0.05); border: 1px dashed rgba(240, 180, 41, 0.3); border-radius: 8px; color: var(--navy); font-weight: 500;">
+                        <i class="ri-alert-line" style="font-size: 24px; color: #f0b429; display: block; margin-bottom: 8px;"></i>
+                        No fee reimbursement claims found for Roll Number <strong>${this.escapeHtml(rollNo)}</strong>.
+                    </div>
+                `;
+                return;
+            }
+
+            resultsEl.innerHTML = `
+                <h4 style="margin-bottom: 16px; color: var(--navy); border-bottom: 1px solid var(--border-light); padding-bottom: 8px;">
+                    Claims Found for ${this.escapeHtml(rollNo)} (${matches.length})
+                </h4>
+                <div style="display: flex; flex-direction: column; gap: 20px;">
+                    ${matches.map(c => {
+                        const dateStr = new Date(c.created_at).toLocaleDateString(undefined, {
+                            year: 'numeric', month: 'short', day: 'numeric'
+                        });
+
+                        const isSubmitted = true;
+                        const isUnderReview = c.status === 'Under Review' || c.status === 'Approved' || c.status === 'Rejected';
+                        const isApproved = c.status === 'Approved';
+                        const isRejected = c.status === 'Rejected';
+
+                        let step3Label = 'Approved';
+                        let step3Icon = 'ri-checkbox-circle-line';
+                        let step3Color = 'var(--emerald, #24b47e)';
+
+                        if (isRejected) {
+                            step3Label = 'Rejected';
+                            step3Icon = 'ri-close-circle-line';
+                            step3Color = '#c62828';
+                        }
+
+                        return `
+                            <div style="background: var(--bg-light); border: 1px solid var(--border-light); border-radius: 8px; padding: 16px;">
+                                <div style="font-weight: 600; color: var(--navy); margin-bottom: 4px; font-size: 14px; text-align: left;">${this.escapeHtml(c.paper_title)}</div>
+                                <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 24px; text-align: left;">
+                                    <strong>Organizer:</strong> ${this.escapeHtml(c.conf_name)} | <strong>Submitted on:</strong> ${dateStr}
+                                </div>
+                                
+                                <div style="display: flex; justify-content: space-between; position: relative; margin-top: 10px; padding: 0 10px;">
+                                    <div style="position: absolute; top: 14px; left: 40px; right: 40px; height: 3px; background: var(--border-light); z-index: 1;">
+                                        <div style="width: ${isApproved || isRejected ? '100%' : (isUnderReview ? '50%' : '0%')}; height: 100%; background: var(--blue); transition: width 0.3s ease;"></div>
+                                    </div>
+                                    
+                                    <div style="display: flex; flex-direction: column; align-items: center; z-index: 2; width: 80px; text-align: center;">
+                                        <div style="width: 30px; height: 30px; border-radius: 50%; background: ${isSubmitted ? 'var(--blue)' : 'var(--border-light)'}; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; margin-bottom: 4px;">
+                                            <i class="ri-send-plane-line"></i>
+                                        </div>
+                                        <span style="font-size: 11px; font-weight: 600; color: ${isSubmitted ? 'var(--navy)' : 'var(--text-muted)'};">Submitted</span>
+                                    </div>
+
+                                    <div style="display: flex; flex-direction: column; align-items: center; z-index: 2; width: 80px; text-align: center;">
+                                        <div style="width: 30px; height: 30px; border-radius: 50%; background: ${isUnderReview ? 'var(--blue)' : 'var(--border-light)'}; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; margin-bottom: 4px;">
+                                            <i class="ri-eye-line"></i>
+                                        </div>
+                                        <span style="font-size: 11px; font-weight: 600; color: ${isUnderReview ? 'var(--navy)' : 'var(--text-muted)'};">Under Review</span>
+                                    </div>
+
+                                    <div style="display: flex; flex-direction: column; align-items: center; z-index: 2; width: 80px; text-align: center;">
+                                        <div style="width: 30px; height: 30px; border-radius: 50%; background: ${isApproved || isRejected ? step3Color : 'var(--border-light)'}; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; margin-bottom: 4px;">
+                                            <i class="${step3Icon}"></i>
+                                        </div>
+                                        <span style="font-size: 11px; font-weight: 600; color: ${isApproved || isRejected ? step3Color : 'var(--text-muted)'};">${step3Label}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        };
+
+        if (State.reimbursements.length === 0) {
+            // Lazy load first
+            if (!supabaseClient) {
+                const localData = localStorage.getItem('demo_reimbursements');
+                State.reimbursements = localData ? JSON.parse(localData) : this.getSampleReimbursements();
+                runTrack();
+            } else {
+                supabaseClient
+                    .from('reimbursements')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .then(({ data }) => {
+                        State.reimbursements = data || [];
+                        runTrack();
+                    });
+            }
+        } else {
+            runTrack();
+        }
     },
 
     // ── Utility Helpers ──

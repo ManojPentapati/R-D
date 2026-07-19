@@ -402,6 +402,16 @@
     color: #283593;
 }
 
+.badge-rejected {
+    background: #ffebee;
+    color: #c62828;
+}
+
+.badge-pending {
+    background: #fff8e1;
+    color: #f57f17;
+}
+
 .tier-badge {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);

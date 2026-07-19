@@ -62,6 +62,9 @@
                 <a href="#" class="nav-link admin-only" data-view="export" id="nav-export">
                     <i class="ri-download-cloud-2-line"></i> Export
                 </a>
+                <a href="#" class="nav-link admin-only" data-view="manage-claims" id="nav-manage-claims">
+                    <i class="ri-refund-2-line"></i> Manage Claims
+                </a>
             </div>
 
             <div class="nav-right">
@@ -100,7 +103,67 @@
     <main class="main-wrapper">
 
         <!-- ==================== HOME VIEW ==================== -->
-        <section class="view" id="view-home"></section>
+        <section class="view" id="view-home">
+            <!-- Research Leaderboard Section -->
+            <div class="section-header" style="justify-content: center; text-align: center; margin-top: 20px;">
+                <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
+                    <h2 style="justify-content: center; width: 100%;"><i class="ri-trophy-line" style="color: #f0b429; font-size: 26px;"></i> R&D Research Leaderboard</h2>
+                    <p>Celebrating outstanding research achievements at Vignan University</p>
+                </div>
+            </div>
+
+            <div class="leaderboard-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; margin-bottom: 40px;">
+                <!-- Top Branches Card -->
+                <div class="card" style="padding: 24px;">
+                    <h3 style="margin-bottom: 16px; color: var(--navy); border-bottom: 2px solid var(--border-light); padding-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+                        <i class="ri-git-branch-line" style="color: var(--blue);"></i> Top Departments
+                    </h3>
+                    <ul id="leaderboardBranches" style="list-style: none; padding: 0;">
+                        <!-- Dynamically populated -->
+                    </ul>
+                </div>
+
+                <!-- Star Student Researchers Card -->
+                <div class="card" style="padding: 24px;">
+                    <h3 style="margin-bottom: 16px; color: var(--navy); border-bottom: 2px solid var(--border-light); padding-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+                        <i class="ri-user-star-line" style="color: #f0b429;"></i> Star Researchers (Students)
+                    </h3>
+                    <ul id="leaderboardStudents" style="list-style: none; padding: 0;">
+                        <!-- Dynamically populated -->
+                    </ul>
+                </div>
+
+                <!-- Distinguished Mentors Card -->
+                <div class="card" style="padding: 24px;">
+                    <h3 style="margin-bottom: 16px; color: var(--navy); border-bottom: 2px solid var(--border-light); padding-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+                        <i class="ri-medal-2-line" style="color: #24b47e;"></i> Distinguished Mentors
+                    </h3>
+                    <ul id="leaderboardMentors" style="list-style: none; padding: 0;">
+                        <!-- Dynamically populated -->
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Fee Reimbursement Status Tracker Search Section -->
+            <div class="section-header" style="justify-content: center; text-align: center; margin-top: 40px;">
+                <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
+                    <h2 style="justify-content: center; width: 100%;"><i class="ri-refund-2-line" style="color: var(--blue); font-size: 26px;"></i> Track Fee Reimbursement Claim</h2>
+                    <p>Enter your student Roll Number to view the status of your submitted claim</p>
+                </div>
+            </div>
+
+            <div class="card" style="max-width: 600px; margin: 0 auto 60px; padding: 32px; text-align: center;">
+                <div style="display: flex; gap: 12px; margin-bottom: 24px;">
+                    <input type="text" id="trackerRollNo" class="form-input" placeholder="e.g. 211FA04001" style="flex: 1;">
+                    <button class="btn btn-primary" onclick="App.trackReimbursementStatus()">
+                        <i class="ri-search-2-line"></i> Track Status
+                    </button>
+                </div>
+                <div id="trackerResults" style="display: none; text-align: left;">
+                    <!-- Dynamically populated claim status details and progress stepper -->
+                </div>
+            </div>
+        </section>
 
         <!-- ==================== DASHBOARD VIEW ==================== -->
         <section class="view" id="view-dashboard">
@@ -489,7 +552,19 @@
                 </div>
             </div>
 
-            <!-- Search & Filters -->
+            <!-- Public Search Bar (visible to public only) -->
+            <div class="card filter-bar public-search-bar public-only">
+                <div class="search-field" style="position: relative; flex: 1;">
+                    <i class="ri-search-line"></i>
+                    <input type="text" id="publicSearchInput" placeholder="Search publications by title, roll no, or mentor..."
+                        autocomplete="off">
+                    <button class="clear-btn" id="publicSearchClear" style="display:none;">
+                        <i class="ri-close-circle-fill"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Admin Filters (admin-only) -->
             <div class="card filter-bar admin-only">
                 <div class="search-field" style="position: relative;">
                     <i class="ri-search-line"></i>
@@ -538,6 +613,13 @@
                         <option value="Elsevier">Elsevier</option>
                         <option value="Google Scholar">Google Scholar</option>
                         <option value="Others">Others</option>
+                    </select>
+                    <select class="filter-select" id="filterTier">
+                        <option value="">All Tiers</option>
+                        <option value="Q1">Q1</option>
+                        <option value="Q2">Q2</option>
+                        <option value="Q3">Q3</option>
+                        <option value="Q4">Q4</option>
                     </select>
                 </div>
                 <button class="btn btn-primary btn-sm" id="downloadFilteredBtn" onclick="App.exportFilteredXLSX()"
@@ -893,6 +975,35 @@
                         </button>
                     </div>
                 </form>
+            </div>
+        <!-- ==================== MANAGE CLAIMS VIEW ==================== -->
+        <section class="view" id="view-manage-claims">
+            <div class="section-header">
+                <div>
+                    <h2><i class="ri-refund-2-line"></i> Manage Reimbursement Claims</h2>
+                    <p>Review, track, and update status of student fee reimbursement requests</p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="table-scroll">
+                    <table class="data-table" id="reimbursementsTable">
+                        <thead>
+                            <tr>
+                                <th>Student Details</th>
+                                <th>Paper Details</th>
+                                <th>Fee Paid</th>
+                                <th>Bank Details</th>
+                                <th>Date Submitted</th>
+                                <th>Status</th>
+                                <th style="text-align: center; width: 180px;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reimbursementsTableBody">
+                            <!-- Dynamically populated -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </section>
 

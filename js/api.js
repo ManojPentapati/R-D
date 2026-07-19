@@ -121,6 +121,7 @@ Object.assign(App, {
         this.updateDashboard();
         this.renderCharts();
         this.renderRecentTable();
+        this.renderLeaderboard();
     },
 
     async addPublication(formData) {
@@ -353,6 +354,130 @@ Object.assign(App, {
                 article_title: 'Sentiment Analysis on Multilingual Social Media Posts using BERT',
                 publication_type: 'Journal', indexing: 'SCI', journal_conference_title: 'Journal of Computational Linguistics',
                 sponsorship: 'UGC NET Fellowship', created_at: '2026-04-20T10:00:00Z', updated_at: '2026-04-20T10:00:00Z'
+            }
+        ];
+    },
+
+    async loadReimbursements() {
+        if (!supabaseClient) {
+            const localData = localStorage.getItem('demo_reimbursements');
+            State.reimbursements = localData ? JSON.parse(localData) : this.getSampleReimbursements();
+            this.renderReimbursementsTable();
+            return;
+        }
+
+        try {
+            const { data, error } = await supabaseClient
+                .from('reimbursements')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) throw error;
+            State.reimbursements = data || [];
+            this.renderReimbursementsTable();
+        } catch (err) {
+            console.error('Failed to load reimbursements:', err);
+            Toast.show('error', 'Error', 'Failed to load reimbursement claims');
+        }
+    },
+
+    async submitReimbursementClaim(claimData) {
+        if (!supabaseClient) {
+            const localData = localStorage.getItem('demo_reimbursements');
+            const list = localData ? JSON.parse(localData) : this.getSampleReimbursements();
+            const newClaim = {
+                id: crypto.randomUUID(),
+                ...claimData,
+                status: 'Submitted',
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+            };
+            list.unshift(newClaim);
+            localStorage.setItem('demo_reimbursements', JSON.stringify(list));
+            State.reimbursements = list;
+            return newClaim;
+        }
+
+        try {
+            const { data, error } = await supabaseClient
+                .from('reimbursements')
+                .insert([claimData])
+                .select()
+                .single();
+
+            if (error) throw error;
+            return data;
+        } catch (err) {
+            console.error('Failed to submit reimbursement claim:', err);
+            throw err;
+        }
+    },
+
+    async updateClaimStatus(id, newStatus) {
+        if (!supabaseClient) {
+            const localData = localStorage.getItem('demo_reimbursements');
+            let list = localData ? JSON.parse(localData) : this.getSampleReimbursements();
+            list = list.map(c => c.id === id ? { ...c, status: newStatus, updated_at: new Date().toISOString() } : c);
+            localStorage.setItem('demo_reimbursements', JSON.stringify(list));
+            State.reimbursements = list;
+            this.renderReimbursementsTable();
+            return;
+        }
+
+        try {
+            const { error } = await supabaseClient
+                .from('reimbursements')
+                .update({ status: newStatus, updated_at: new Date().toISOString() })
+                .eq('id', id);
+
+            if (error) throw error;
+            Toast.show('success', 'Status Updated', `Claim status changed to ${newStatus}`);
+            this.loadReimbursements();
+        } catch (err) {
+            console.error('Failed to update status:', err);
+            Toast.show('error', 'Update Error', 'Failed to update claim status');
+        }
+    },
+
+    getSampleReimbursements() {
+        return [
+            {
+                id: 'claim-1',
+                paper_title: 'Optimized Convolutional Neural Networks for Disease Detection',
+                host_inst: 'Vignan University',
+                conf_name: 'IEEE International Conference on AI',
+                conf_dates: '2026-05-10 to 2026-05-12',
+                fee_paid: 8500,
+                roll_no: '211FA04001',
+                student_name: 'V. Mahendra',
+                branch: 'CSE',
+                dept: 'CSE',
+                bank_acc_holder: 'V. Mahendra',
+                bank_acc_no: '30459203945',
+                bank_name: 'State Bank of India',
+                bank_branch: 'Vignan Vadlamudi',
+                ifsc: 'SBIN0012345',
+                status: 'Approved',
+                created_at: new Date(Date.now() - 5 * 86400000).toISOString()
+            },
+            {
+                id: 'claim-2',
+                paper_title: 'A Decentralized Blockchain Framework for Electronic Health Records',
+                host_inst: 'NIT Trichy',
+                conf_name: 'National Conference on Cyber Security',
+                conf_dates: '2026-06-15 to 2026-06-16',
+                fee_paid: 5000,
+                roll_no: '211FA04002',
+                student_name: 'K. Rakesh',
+                branch: 'CSE',
+                dept: 'CSE',
+                bank_acc_holder: 'K. Rakesh',
+                bank_acc_no: '10928374656',
+                bank_name: 'Union Bank',
+                bank_branch: 'Tenali Main',
+                ifsc: 'UBIN0532145',
+                status: 'Under Review',
+                created_at: new Date(Date.now() - 2 * 86400000).toISOString()
             }
         ];
     }

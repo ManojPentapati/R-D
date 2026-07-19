@@ -84,14 +84,14 @@ Object.assign(App, {
             card.addEventListener('click', () => {
                 const valueEl = card.querySelector('.stat-card-value');
                 if (!valueEl) return;
-                
+
                 const id = valueEl.id;
                 // Target 'home' for public view, 'publications' if logged in as admin
                 const targetView = State.userRole ? 'publications' : 'home';
-                
+
                 // Clear all filters first
                 this.clearAllFilters();
-                
+
                 if (id === 'statUG') {
                     State.filters.program = 'UG';
                     const select = document.getElementById('filterProgram');
@@ -109,7 +109,7 @@ Object.assign(App, {
                     const select = document.getElementById('filterType');
                     if (select) select.value = 'Conference';
                 }
-                
+
                 this.switchView(targetView);
             });
         });
@@ -222,8 +222,30 @@ Object.assign(App, {
             });
         }
 
+        // Public Search Input listeners
+        const publicSearchInput = document.getElementById('publicSearchInput');
+        const publicSearchClear = document.getElementById('publicSearchClear');
+        let publicSearchTimeout;
+        if (publicSearchInput) {
+            publicSearchInput.addEventListener('input', () => {
+                clearTimeout(publicSearchTimeout);
+                publicSearchTimeout = setTimeout(() => {
+                    const q = publicSearchInput.value.trim();
+                    if (publicSearchClear) publicSearchClear.style.display = q ? 'flex' : 'none';
+                    this.applyFilters();
+                }, 300);
+            });
+        }
+        if (publicSearchClear) {
+            publicSearchClear.addEventListener('click', () => {
+                if (publicSearchInput) publicSearchInput.value = '';
+                publicSearchClear.style.display = 'none';
+                this.applyFilters();
+            });
+        }
+
         // Filter triggers
-        ['filterProgram', 'filterBranch', 'filterType', 'filterIndexing'].forEach(filterId => {
+        ['filterProgram', 'filterBranch', 'filterType', 'filterIndexing', 'filterTier'].forEach(filterId => {
             const el = document.getElementById(filterId);
             if (el) {
                 el.addEventListener('change', (e) => {
@@ -475,22 +497,17 @@ Object.assign(App, {
                 const receiptFile = receiptInput ? receiptInput.files[0] : null;
                 const proofFile = proofInput ? proofInput.files[0] : null;
 
-                const readAsDataURL = (file) => {
-                    return new Promise((resolve) => {
-                        if (!file || !file.type.startsWith('image/')) {
-                            resolve('');
-                            return;
-                        }
-                        const reader = new FileReader();
-                        reader.onload = (event) => resolve(event.target.result);
-                        reader.readAsDataURL(file);
-                    });
-                };
-
-                Promise.all([readAsDataURL(receiptFile), readAsDataURL(proofFile)]).then(([receiptDataUrl, proofDataUrl]) => {
-                    this.renderAndOpenPrintModal(formData, receiptDataUrl, proofDataUrl);
+                if (file && file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        this.renderAndOpenPrintModal(formData, event.target.result);
+                        this.clearReimbursementDraft();
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    this.renderAndOpenPrintModal(formData, '');
                     this.clearReimbursementDraft();
-                });
+                }
             });
         }
 

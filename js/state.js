@@ -22,14 +22,16 @@ const State = {
         program: '',
         branch: '',
         type: '',
-        indexing: ''
+        indexing: '',
+        tier: ''
     },
     charts: {},
     editingId: null,
     deletingId: null,
     session: null,
     userRole: null, // 'super_admin', 'admin', or null
-    pendingImports: []
+    pendingImports: [],
+    reimbursements: []
 };
 
 // Global App Object
