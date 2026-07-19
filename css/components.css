@@ -32,6 +32,24 @@
     gap: 16px;
 }
 
+.section-header.centered {
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+}
+
+.section-header.centered > div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.section-header.centered h2 {
+    justify-content: center;
+    width: 100%;
+}
+
 .section-header h2 {
     font-size: 24px;
     font-weight: 700;
