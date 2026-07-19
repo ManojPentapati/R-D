@@ -117,6 +117,34 @@ Object.assign(App, {
         localStorage.removeItem('reimbursement_draft');
     },
 
+    handleReimbursementReset() {
+        this.clearReimbursementDraft();
+
+        const receiptLabel = document.getElementById('reimbReceiptFileLabel');
+        if (receiptLabel) receiptLabel.textContent = 'Choose Fee Receipt';
+
+        const proofLabel = document.getElementById('reimbPaperProofFileLabel');
+        if (proofLabel) proofLabel.textContent = 'Choose Paper Proof';
+
+        const receiptPreview = document.getElementById('reimbReceiptPreview');
+        const receiptImg = document.getElementById('reimbReceiptImg');
+        if (receiptPreview) receiptPreview.style.display = 'none';
+        if (receiptImg) receiptImg.src = '';
+
+        const proofPreview = document.getElementById('reimbPaperProofPreview');
+        const proofImg = document.getElementById('reimbPaperProofImg');
+        if (proofPreview) proofPreview.style.display = 'none';
+        if (proofImg) proofImg.src = '';
+
+        const studentCount = document.getElementById('reimbStudentCount');
+        if (studentCount) studentCount.value = '0';
+
+        const facultyCount = document.getElementById('reimbFacultyCount');
+        if (facultyCount) facultyCount.value = '0';
+
+        this.generateAuthorInputs();
+    },
+
     handlePubTypeChange() {
         const pubType = document.getElementById('reimbPubType')?.value;
         const nameLabel = document.querySelector('label[for="reimbConfName"]');
@@ -254,6 +282,25 @@ Object.assign(App, {
     },
 
     renderAndOpenPrintModal(formData, receiptDataUrl, proofDataUrl) {
+        State.currentReimbursementData = formData;
+
+        const printBtn = document.getElementById('reimbPrintBtn');
+        if (printBtn) printBtn.style.setProperty('display', 'none', 'important');
+
+        const checkbox = document.getElementById('claimDeclarationCheckbox');
+        if (checkbox) checkbox.checked = false;
+
+        const submitBtn = document.getElementById('reimbRDSubmitBtn');
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="ri-send-plane-line"></i> Submit to R&D';
+        }
+
+        const preSubmit = document.getElementById('reimbPreSubmitActions');
+        const postSubmit = document.getElementById('reimbPostSubmitActions');
+        if (preSubmit) preSubmit.style.display = 'flex';
+        if (postSubmit) postSubmit.style.display = 'none';
+
         const previewContent = document.getElementById('print-preview-content');
         if (!previewContent) return;
 
@@ -525,5 +572,72 @@ Object.assign(App, {
 
     printApplication() {
         window.print();
+    },
+
+    handleDeclarationChange() {
+        const checkbox = document.getElementById('claimDeclarationCheckbox');
+        const submitBtn = document.getElementById('reimbRDSubmitBtn');
+        if (checkbox && submitBtn) {
+            submitBtn.disabled = !checkbox.checked;
+        }
+    },
+
+    async handleReimbursementRDSubmit() {
+        const formData = State.currentReimbursementData;
+        if (!formData) {
+            Toast.show('error', 'Error', 'No reimbursement data found.');
+            return;
+        }
+
+        const submitBtn = document.getElementById('reimbRDSubmitBtn');
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="ri-loader-4-line ri-spin"></i> Submitting...';
+        }
+
+        const primaryStudent = formData.authors.find(a => a.role === 'student');
+        const claimData = {
+            paper_title: formData.paperTitle,
+            host_inst: formData.hostInst,
+            conf_name: formData.confName,
+            conf_dates: formData.confDates,
+            fee_paid: formData.feePaid,
+            roll_no: primaryStudent ? primaryStudent.rollNo : '',
+            student_name: primaryStudent ? primaryStudent.name : '',
+            branch: primaryStudent ? primaryStudent.branch : '',
+            dept: primaryStudent ? primaryStudent.dept : '',
+            bank_acc_holder: formData.bank.accHolder,
+            bank_acc_no: formData.bank.accNo,
+            bank_name: formData.bank.bankName,
+            bank_branch: formData.bank.branchName,
+            ifsc: formData.bank.ifsc,
+            status: 'Submitted'
+        };
+
+        try {
+            await this.submitReimbursementClaim(claimData);
+
+            // Hide pre-submit and show post-submit UI
+            const preSubmit = document.getElementById('reimbPreSubmitActions');
+            const postSubmit = document.getElementById('reimbPostSubmitActions');
+            if (preSubmit) preSubmit.style.display = 'none';
+            if (postSubmit) postSubmit.style.display = 'flex';
+
+            // Show Print/Save PDF button in the header
+            const printBtn = document.getElementById('reimbPrintBtn');
+            if (printBtn) printBtn.style.setProperty('display', 'flex', 'important');
+
+            // Force rendering of the admin claims table to reflect the new submission
+            this.renderReimbursementsTable();
+
+            Toast.show('success', 'Claim Submitted', 'Your fee reimbursement application has been registered.');
+        } catch (err) {
+            console.error('Submission failed:', err);
+            Toast.show('error', 'Submission Failed', err.message || 'Could not register reimbursement claim.');
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="ri-send-plane-line"></i> Submit to R&D';
+            }
+        }
     }
 });

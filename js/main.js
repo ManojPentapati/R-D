@@ -497,17 +497,22 @@ Object.assign(App, {
                 const receiptFile = receiptInput ? receiptInput.files[0] : null;
                 const proofFile = proofInput ? proofInput.files[0] : null;
 
-                if (file && file.type.startsWith('image/')) {
-                    const reader = new FileReader();
-                    reader.onload = (event) => {
-                        this.renderAndOpenPrintModal(formData, event.target.result);
-                        this.clearReimbursementDraft();
-                    };
-                    reader.readAsDataURL(file);
-                } else {
-                    this.renderAndOpenPrintModal(formData, '');
+                const readAsDataURL = (file) => {
+                    return new Promise((resolve) => {
+                        if (!file || !file.type.startsWith('image/')) {
+                            resolve('');
+                            return;
+                        }
+                        const reader = new FileReader();
+                        reader.onload = (event) => resolve(event.target.result);
+                        reader.readAsDataURL(file);
+                    });
+                };
+
+                Promise.all([readAsDataURL(receiptFile), readAsDataURL(proofFile)]).then(([receiptDataUrl, proofDataUrl]) => {
+                    this.renderAndOpenPrintModal(formData, receiptDataUrl, proofDataUrl);
                     this.clearReimbursementDraft();
-                }
+                });
             });
         }
 
