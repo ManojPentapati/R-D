@@ -504,7 +504,7 @@ Object.assign(App, {
             item.classList.toggle('active', item.dataset.view === viewName);
         });
 
-        const activeViewId = viewName === 'home' ? 'publications' : viewName;
+        const activeViewId = viewName;
 
         // Toggle active views
         document.querySelectorAll('.view').forEach(view => {
@@ -517,16 +517,32 @@ Object.assign(App, {
         const heroSection = document.getElementById('heroSection');
         const mainWrapper = document.querySelector('.main-wrapper');
         const viewPublications = document.getElementById('view-publications');
+        const footer = document.querySelector('.site-footer');
 
-        const shouldShowHero = (viewName === 'dashboard') || (viewName === 'home');
-
-        if (shouldShowHero) {
-            if (heroSection) heroSection.style.display = 'block';
-            if (mainWrapper) mainWrapper.style.paddingTop = '32px';
-            if (viewPublications) viewPublications.classList.remove('centered-layout');
+        if (viewName === 'home') {
+            if (heroSection) {
+                heroSection.style.display = 'block';
+                heroSection.style.height = 'calc(100vh - var(--nav-height))';
+            }
+            if (mainWrapper) mainWrapper.style.display = 'none';
+            if (footer) footer.style.display = 'none';
+        } else if (viewName === 'dashboard') {
+            if (heroSection) {
+                heroSection.style.display = 'block';
+                heroSection.style.height = '';
+            }
+            if (mainWrapper) {
+                mainWrapper.style.display = 'block';
+                mainWrapper.style.paddingTop = '32px';
+            }
+            if (footer) footer.style.display = '';
         } else {
             if (heroSection) heroSection.style.display = 'none';
-            if (mainWrapper) mainWrapper.style.paddingTop = 'calc(var(--nav-height) + 32px)';
+            if (mainWrapper) {
+                mainWrapper.style.display = 'block';
+                mainWrapper.style.paddingTop = 'calc(var(--nav-height) + 32px)';
+            }
+            if (footer) footer.style.display = '';
             if (activeViewId === 'publications' && viewPublications) {
                 viewPublications.classList.add('centered-layout');
             }
