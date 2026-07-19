@@ -3,11 +3,18 @@
    ============================================ */
 
 /* ============ DASHBOARD SPECIFICS ============ */
-.stats-row {
+.stats-row, .super-admin-stats-row {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
     gap: 18px;
     margin-bottom: 28px;
+}
+
+.stats-row {
+    grid-template-columns: repeat(5, 1fr);
+}
+
+.super-admin-stats-row {
+    grid-template-columns: repeat(4, 1fr);
 }
 
 .stat-card {
@@ -26,15 +33,29 @@
 }
 
 .stat-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
+    transform: translateY(-6px);
 }
 
-.stat-card:has(.accent-total):hover { border-color: var(--blue); }
-.stat-card:has(.accent-ug):hover { border-color: var(--teal); }
-.stat-card:has(.accent-pg):hover { border-color: var(--purple); }
-.stat-card:has(.accent-journal):hover { border-color: var(--orange); }
-.stat-card:has(.accent-conf):hover { border-color: var(--coral); }
+.stat-card:has(.accent-total):hover { 
+    border-color: var(--blue-light); 
+    box-shadow: 0 12px 30px rgba(21, 101, 192, 0.15);
+}
+.stat-card:has(.accent-ug):hover { 
+    border-color: var(--teal-light); 
+    box-shadow: 0 12px 30px rgba(0, 137, 123, 0.15);
+}
+.stat-card:has(.accent-pg):hover { 
+    border-color: #b39ddb; 
+    box-shadow: 0 12px 30px rgba(126, 87, 194, 0.15);
+}
+.stat-card:has(.accent-journal):hover { 
+    border-color: #ffa726; 
+    box-shadow: 0 12px 30px rgba(239, 108, 0, 0.15);
+}
+.stat-card:has(.accent-conf):hover { 
+    border-color: #ff8a80; 
+    box-shadow: 0 12px 30px rgba(232, 65, 92, 0.15);
+}
 
 .stat-card-icon {
     width: 48px;
@@ -95,6 +116,10 @@
     grid-template-columns: repeat(3, 1fr);
     gap: 18px;
     margin-bottom: 28px;
+}
+
+.charts-row.two-cols {
+    grid-template-columns: 1fr 1fr;
 }
 
 .chart-card {
@@ -438,6 +463,9 @@ body:not(.admin-mode):not(.super-admin-mode) #pubTable td:first-child {
     .stats-row {
         grid-template-columns: repeat(3, 1fr);
     }
+    .super-admin-stats-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
     .charts-row {
         grid-template-columns: 1fr 1fr;
     }
@@ -473,7 +501,7 @@ body:not(.admin-mode):not(.super-admin-mode) #pubTable td:first-child {
     .hero-section { height: 280px; }
 
     .main-wrapper { padding: 20px 16px 48px; }
-    .stats-row { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .stats-row, .super-admin-stats-row { grid-template-columns: repeat(2, 1fr); gap: 12px; }
     .charts-row { grid-template-columns: 1fr; }
 
     .form-card { padding: 24px 20px; }
@@ -488,7 +516,7 @@ body:not(.admin-mode):not(.super-admin-mode) #pubTable td:first-child {
 }
 
 @media (max-width: 480px) {
-    .stats-row { grid-template-columns: 1fr; }
+    .stats-row, .super-admin-stats-row { grid-template-columns: 1fr; }
     .hero-stats { flex-direction: column; gap: 12px; }
     .hero-stat-divider { width: 40px; height: 1px; }
     .nav-container { padding: 0 16px; }
