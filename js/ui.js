@@ -37,7 +37,7 @@ Object.assign(App, {
     },
 
     updateDashboard() {
-        const data = State.publications;
+        const data = State.publications || [];
         const total = data.length;
         const ug = data.filter(p => p.program === 'UG').length;
         const pg = data.filter(p => p.program === 'PG').length;
@@ -150,10 +150,168 @@ Object.assign(App, {
 
     // ── Charts Rendering ──
     renderCharts() {
-        const data = State.publications;
+        const data = State.publications || [];
         this.renderTypeChart(data);
         this.renderBranchChart(data);
         this.renderIndexingChart(data);
+        this.renderFundingBranchChart(data);
+        this.renderFundingYearChart(data);
+    },
+
+    renderFundingBranchChart(data) {
+        const ctx = document.getElementById('chartFundingBranch');
+        if (!ctx) return;
+        if (State.charts.fundingBranch) State.charts.fundingBranch.destroy();
+
+        if (State.userRole !== 'super_admin') return;
+
+        const branchFunding = {};
+        data.forEach(p => {
+            if (p.branch) {
+                const branch = p.branch.trim().toUpperCase();
+                const amt = parseFloat(p.funding_amount || 0);
+                branchFunding[branch] = (branchFunding[branch] || 0) + amt;
+            }
+        });
+
+        // Sort branches by funding amount descending
+        const sortedBranches = Object.entries(branchFunding)
+            .sort((a, b) => b[1] - a[1]);
+
+        const labels = sortedBranches.map(entry => entry[0]);
+        const values = sortedBranches.map(entry => entry[1]);
+
+        const colors = [
+            'rgba(6, 214, 160, 0.7)',
+            'rgba(59, 130, 246, 0.7)',
+            'rgba(124, 58, 237, 0.7)',
+            'rgba(249, 115, 22, 0.7)',
+            'rgba(236, 72, 153, 0.7)',
+            'rgba(6, 182, 212, 0.7)'
+        ];
+
+        State.charts.fundingBranch = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels,
+                datasets: [{
+                    label: 'Funding Amount',
+                    data: values,
+                    backgroundColor: colors.slice(0, labels.length),
+                    borderColor: colors.slice(0, labels.length).map(c => c.replace('0.7', '1')),
+                    borderWidth: 1,
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                indexAxis: 'y', // Horizontal Bar Chart
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return ' Funding: ₹' + context.raw.toLocaleString();
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        ticks: {
+                            color: 'rgba(255,255,255,0.75)',
+                            font: { family: 'Inter', size: 10 },
+                            callback: function(value) {
+                                return '₹' + value.toLocaleString();
+                            }
+                        },
+                        grid: { color: 'rgba(255,255,255,0.08)' }
+                    },
+                    y: {
+                        ticks: {
+                            color: 'rgba(255,255,255,0.75)',
+                            font: { family: 'Inter', size: 11 }
+                        },
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    },
+
+    renderFundingYearChart(data) {
+        const ctx = document.getElementById('chartFundingYear');
+        if (!ctx) return;
+        if (State.charts.fundingYear) State.charts.fundingYear.destroy();
+
+        if (State.userRole !== 'super_admin') return;
+
+        const yearFunding = {};
+        data.forEach(p => {
+            if (p.created_at) {
+                const year = new Date(p.created_at).getFullYear();
+                const amt = parseFloat(p.funding_amount || 0);
+                yearFunding[year] = (yearFunding[year] || 0) + amt;
+            }
+        });
+
+        // Sort years chronologically
+        const sortedYears = Object.entries(yearFunding)
+            .sort((a, b) => a[0] - b[0]);
+
+        const labels = sortedYears.map(entry => entry[0]);
+        const values = sortedYears.map(entry => entry[1]);
+
+        State.charts.fundingYear = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels,
+                datasets: [{
+                    label: 'Funding',
+                    data: values,
+                    backgroundColor: 'rgba(240, 180, 41, 0.7)',
+                    borderColor: 'rgba(240, 180, 41, 1)',
+                    borderWidth: 1,
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return ' Funding: ₹' + context.raw.toLocaleString();
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: {
+                            color: 'rgba(255,255,255,0.75)',
+                            font: { family: 'Inter', size: 11 }
+                        },
+                        grid: { display: false }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            color: 'rgba(255,255,255,0.75)',
+                            font: { family: 'Inter', size: 11 },
+                            callback: function(value) {
+                                return '₹' + value.toLocaleString();
+                            }
+                        },
+                        grid: { color: 'rgba(255,255,255,0.08)' }
+                    }
+                }
+            }
+        });
     },
 
     renderTypeChart(data) {
