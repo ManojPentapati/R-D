@@ -857,31 +857,33 @@
 
         <!-- ==================== MANAGE ADMINS VIEW ==================== -->
         <section class="view" id="view-manage-admins">
-            <div class="section-header">
-                <div>
-                    <h2><i class="ri-user-add-line"></i> Manage Admins</h2>
+            <div class="section-header" style="justify-content: center; text-align: center; width: 100%;">
+                <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
+                    <h2 style="justify-content: center; width: 100%;"><i class="ri-user-add-line"></i> Manage Admins</h2>
                     <p>Create and register new admin credentials for the system</p>
                 </div>
             </div>
-            <div class="card" style="max-width: 500px; margin: 0 auto; padding: 24px;">
-                <form id="createAdminForm" autocomplete="off">
-                    <div class="field" style="margin-bottom: 20px;">
-                        <label for="adminEmail">Admin Email Address <span class="req">*</span></label>
-                        <div class="field-input">
-                            <i class="ri-mail-line"></i>
-                            <input type="email" id="adminEmail" required placeholder="admin@vignan.ac.in"
-                                autocomplete="off">
+            <div class="card" style="max-width: 500px; margin: 0 auto; padding: 32px; min-height: 300px; display: flex; flex-direction: column; justify-content: space-between;">
+                <form id="createAdminForm" autocomplete="off" style="display: flex; flex-direction: column; justify-content: space-between; flex: 1;">
+                    <div style="display: flex; flex-direction: column; gap: 20px;">
+                        <div class="field">
+                            <label for="adminEmail">Admin Email Address <span class="req">*</span></label>
+                            <div class="field-input">
+                                <i class="ri-mail-line"></i>
+                                <input type="email" id="adminEmail" required placeholder="admin@vignan.ac.in"
+                                    autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label for="adminPassword">Temporary Password <span class="req">*</span></label>
+                            <div class="field-input">
+                                <i class="ri-key-line"></i>
+                                <input type="password" id="adminPassword" required placeholder="Min 6 characters"
+                                    autocomplete="off" minlength="6">
+                            </div>
                         </div>
                     </div>
-                    <div class="field" style="margin-bottom: 24px;">
-                        <label for="adminPassword">Temporary Password <span class="req">*</span></label>
-                        <div class="field-input">
-                            <i class="ri-key-line"></i>
-                            <input type="password" id="adminPassword" required placeholder="Min 6 characters"
-                                autocomplete="off" minlength="6">
-                        </div>
-                    </div>
-                    <div style="display: flex; justify-content: flex-end; gap: 12px;">
+                    <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
                         <button type="reset" class="btn btn-ghost">Reset</button>
                         <button type="submit" class="btn btn-primary" id="createAdminSubmitBtn">
                             <i class="ri-user-shared-line"></i> Register Admin
@@ -889,6 +891,7 @@
                     </div>
                 </form>
             </div>
+        </section>
         <!-- ==================== MANAGE CLAIMS VIEW ==================== -->
         <section class="view" id="view-manage-claims">
             <div class="section-header">
