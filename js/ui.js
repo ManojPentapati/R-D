@@ -824,8 +824,10 @@ Object.assign(App, {
         const currentView = document.querySelector('.view.active');
         if (currentView) {
             const viewId = currentView.id.replace('view-', '');
-            if (role === 'super_admin' && (viewId === 'home' || viewId === 'reimbursement')) {
-                this.switchView('dashboard');
+            if (role === 'super_admin') {
+                if (viewId !== 'dashboard' && viewId !== 'manage-admins' && viewId !== 'publications') {
+                    this.switchView('dashboard');
+                }
             } else if (viewId === 'dashboard' && role !== 'super_admin') {
                 this.switchView('home');
             } else if (viewId === 'manage-admins' && role !== 'super_admin') {
@@ -837,7 +839,7 @@ Object.assign(App, {
             } else if (viewId === 'manage-claims' && !role) {
                 this.switchView('home');
             } else if (viewId === 'reimbursement' && role) {
-                this.switchView(role === 'super_admin' ? 'dashboard' : 'home');
+                this.switchView('home');
             }
         } else if (role === 'super_admin') {
             this.switchView('dashboard');
@@ -858,6 +860,7 @@ Object.assign(App, {
             isConnected = false;
         }
         if (span) span.textContent = text;
+        el.title = text;
     },
 
     renderReimbursementsTable() {

@@ -116,13 +116,16 @@
 .connection-badge {
     display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 5px 12px;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
     background: rgba(255, 255, 255, 0.06);
-    border-radius: var(--radius-full);
-    font-size: 11px;
-    color: rgba(255, 255, 255, 0.5);
-    font-weight: 500;
+    border-radius: 50%;
+    cursor: help;
+}
+
+.connection-badge span {
+    display: none;
 }
 
 .conn-dot {
