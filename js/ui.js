@@ -363,7 +363,19 @@ Object.assign(App, {
     applyFilters() {
         let data = [...State.publications];
 
-        // Search
+        // Public search (visible to all users)
+        const publicSearchEl = document.getElementById('publicSearchInput');
+        const publicQuery = publicSearchEl ? publicSearchEl.value.trim().toLowerCase() : '';
+        if (publicQuery) {
+            data = data.filter(p =>
+                (p.roll_no || '').toLowerCase().includes(publicQuery) ||
+                (p.article_title || '').toLowerCase().includes(publicQuery) ||
+                (p.mentor_name || '').toLowerCase().includes(publicQuery) ||
+                (p.name || '').toLowerCase().includes(publicQuery)
+            );
+        }
+
+        // Admin search
         if (State.searchQuery) {
             const q = State.searchQuery.toLowerCase();
             data = data.filter(p =>
@@ -380,6 +392,7 @@ Object.assign(App, {
         if (State.filters.branch) data = data.filter(p => p.branch === State.filters.branch);
         if (State.filters.type) data = data.filter(p => p.publication_type === State.filters.type);
         if (State.filters.indexing) data = data.filter(p => p.indexing === State.filters.indexing);
+        if (State.filters.tier) data = data.filter(p => p.journal_tier === State.filters.tier);
 
         // Sort
         data.sort((a, b) => {
@@ -399,12 +412,16 @@ Object.assign(App, {
         const container = document.getElementById('activeFilters');
         if (!container) return;
 
+        const searchEl = document.getElementById('searchInput');
+        const publicSearchEl = document.getElementById('publicSearchInput');
         const filters = [
-            { id: 'searchInput', label: 'Search', value: document.getElementById('searchInput').value },
-            { id: 'filterProgram', label: 'Program', value: document.getElementById('filterProgram').value },
-            { id: 'filterBranch', label: 'Branch', value: document.getElementById('filterBranch').value },
-            { id: 'filterType', label: 'Type', value: document.getElementById('filterType').value },
-            { id: 'filterIndexing', label: 'Indexing', value: document.getElementById('filterIndexing').value }
+            { id: 'publicSearchInput', label: 'Search', value: publicSearchEl ? publicSearchEl.value : '' },
+            { id: 'searchInput', label: 'Admin Search', value: searchEl ? searchEl.value : '' },
+            { id: 'filterProgram', label: 'Program', value: document.getElementById('filterProgram') ? document.getElementById('filterProgram').value : '' },
+            { id: 'filterBranch', label: 'Branch', value: document.getElementById('filterBranch') ? document.getElementById('filterBranch').value : '' },
+            { id: 'filterType', label: 'Type', value: document.getElementById('filterType') ? document.getElementById('filterType').value : '' },
+            { id: 'filterIndexing', label: 'Indexing', value: document.getElementById('filterIndexing') ? document.getElementById('filterIndexing').value : '' },
+            { id: 'filterTier', label: 'Tier', value: document.getElementById('filterTier') ? document.getElementById('filterTier').value : '' }
         ];
 
         const activeFilters = filters.filter(f => f.value && f.value.trim() !== '');
@@ -437,6 +454,9 @@ Object.assign(App, {
                 const clearBtn = document.getElementById('searchClear');
                 if (clearBtn) clearBtn.style.display = 'none';
                 State.searchQuery = '';
+            } else if (id === 'publicSearchInput') {
+                const clearBtn = document.getElementById('publicSearchClear');
+                if (clearBtn) clearBtn.style.display = 'none';
             } else {
                 const key = id.replace('filter', '').toLowerCase();
                 State.filters[key] = '';
@@ -446,18 +466,21 @@ Object.assign(App, {
     },
 
     clearAllFilters() {
-        ['searchInput', 'filterProgram', 'filterBranch', 'filterType', 'filterIndexing'].forEach(id => {
+        ['searchInput', 'publicSearchInput', 'filterProgram', 'filterBranch', 'filterType', 'filterIndexing', 'filterTier'].forEach(id => {
             const el = document.getElementById(id);
             if (el) el.value = '';
         });
         const clearBtn = document.getElementById('searchClear');
         if (clearBtn) clearBtn.style.display = 'none';
+        const publicClearBtn = document.getElementById('publicSearchClear');
+        if (publicClearBtn) publicClearBtn.style.display = 'none';
 
         State.searchQuery = '';
         State.filters.program = '';
         State.filters.branch = '';
         State.filters.type = '';
         State.filters.indexing = '';
+        State.filters.tier = '';
 
         this.applyFilters();
     },

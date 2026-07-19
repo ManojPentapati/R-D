@@ -22,7 +22,8 @@ const State = {
         program: '',
         branch: '',
         type: '',
-        indexing: ''
+        indexing: '',
+        tier: ''
     },
     charts: {},
     editingId: null,

@@ -552,7 +552,19 @@
                 </div>
             </div>
 
-            <!-- Search & Filters -->
+            <!-- Public Search Bar (visible to public only) -->
+            <div class="card filter-bar public-search-bar public-only">
+                <div class="search-field" style="position: relative; flex: 1;">
+                    <i class="ri-search-line"></i>
+                    <input type="text" id="publicSearchInput" placeholder="Search publications by title, roll no, or mentor..."
+                        autocomplete="off">
+                    <button class="clear-btn" id="publicSearchClear" style="display:none;">
+                        <i class="ri-close-circle-fill"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Admin Filters (admin-only) -->
             <div class="card filter-bar admin-only">
                 <div class="search-field" style="position: relative;">
                     <i class="ri-search-line"></i>
@@ -601,6 +613,13 @@
                         <option value="Elsevier">Elsevier</option>
                         <option value="Google Scholar">Google Scholar</option>
                         <option value="Others">Others</option>
+                    </select>
+                    <select class="filter-select" id="filterTier">
+                        <option value="">All Tiers</option>
+                        <option value="Q1">Q1</option>
+                        <option value="Q2">Q2</option>
+                        <option value="Q3">Q3</option>
+                        <option value="Q4">Q4</option>
                     </select>
                 </div>
                 <button class="btn btn-primary btn-sm" id="downloadFilteredBtn" onclick="App.exportFilteredXLSX()"

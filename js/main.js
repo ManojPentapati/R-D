@@ -222,8 +222,30 @@ Object.assign(App, {
             });
         }
 
+        // Public Search Input listeners
+        const publicSearchInput = document.getElementById('publicSearchInput');
+        const publicSearchClear = document.getElementById('publicSearchClear');
+        let publicSearchTimeout;
+        if (publicSearchInput) {
+            publicSearchInput.addEventListener('input', () => {
+                clearTimeout(publicSearchTimeout);
+                publicSearchTimeout = setTimeout(() => {
+                    const q = publicSearchInput.value.trim();
+                    if (publicSearchClear) publicSearchClear.style.display = q ? 'flex' : 'none';
+                    this.applyFilters();
+                }, 300);
+            });
+        }
+        if (publicSearchClear) {
+            publicSearchClear.addEventListener('click', () => {
+                if (publicSearchInput) publicSearchInput.value = '';
+                publicSearchClear.style.display = 'none';
+                this.applyFilters();
+            });
+        }
+
         // Filter triggers
-        ['filterProgram', 'filterBranch', 'filterType', 'filterIndexing'].forEach(filterId => {
+        ['filterProgram', 'filterBranch', 'filterType', 'filterIndexing', 'filterTier'].forEach(filterId => {
             const el = document.getElementById(filterId);
             if (el) {
                 el.addEventListener('change', (e) => {
