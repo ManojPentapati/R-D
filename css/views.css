@@ -493,3 +493,14 @@ body:not(.admin-mode):not(.super-admin-mode) #pubTable td:first-child {
     .hero-stat-divider { width: 40px; height: 1px; }
     .nav-container { padding: 0 16px; }
 }
+
+#view-add .section-header {
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+    align-items: center;
+}
+
+#view-add .section-header h2 {
+    justify-content: center;
+}
