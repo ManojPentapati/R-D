@@ -41,7 +41,7 @@
             </a>
 
             <div class="nav-links" id="navLinks">
-                <a href="#" class="nav-link active public-only" data-view="home" id="nav-home">
+                <a href="#" class="nav-link active" data-view="home" id="nav-home">
                     <i class="ri-home-4-line"></i> Home
                 </a>
                 <a href="#" class="nav-link super-admin-only" data-view="dashboard" id="nav-dashboard">
@@ -103,67 +103,7 @@
     <main class="main-wrapper">
 
         <!-- ==================== HOME VIEW ==================== -->
-        <section class="view" id="view-home">
-            <!-- Research Leaderboard Section -->
-            <div class="section-header" style="justify-content: center; text-align: center; margin-top: 20px;">
-                <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
-                    <h2 style="justify-content: center; width: 100%;"><i class="ri-trophy-line" style="color: #f0b429; font-size: 26px;"></i> R&D Research Leaderboard</h2>
-                    <p>Celebrating outstanding research achievements at Vignan University</p>
-                </div>
-            </div>
-
-            <div class="leaderboard-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; margin-bottom: 40px;">
-                <!-- Top Branches Card -->
-                <div class="card" style="padding: 24px;">
-                    <h3 style="margin-bottom: 16px; color: var(--navy); border-bottom: 2px solid var(--border-light); padding-bottom: 8px; display: flex; align-items: center; gap: 8px;">
-                        <i class="ri-git-branch-line" style="color: var(--blue);"></i> Top Departments
-                    </h3>
-                    <ul id="leaderboardBranches" style="list-style: none; padding: 0;">
-                        <!-- Dynamically populated -->
-                    </ul>
-                </div>
-
-                <!-- Star Student Researchers Card -->
-                <div class="card" style="padding: 24px;">
-                    <h3 style="margin-bottom: 16px; color: var(--navy); border-bottom: 2px solid var(--border-light); padding-bottom: 8px; display: flex; align-items: center; gap: 8px;">
-                        <i class="ri-user-star-line" style="color: #f0b429;"></i> Star Researchers (Students)
-                    </h3>
-                    <ul id="leaderboardStudents" style="list-style: none; padding: 0;">
-                        <!-- Dynamically populated -->
-                    </ul>
-                </div>
-
-                <!-- Distinguished Mentors Card -->
-                <div class="card" style="padding: 24px;">
-                    <h3 style="margin-bottom: 16px; color: var(--navy); border-bottom: 2px solid var(--border-light); padding-bottom: 8px; display: flex; align-items: center; gap: 8px;">
-                        <i class="ri-medal-2-line" style="color: #24b47e;"></i> Distinguished Mentors
-                    </h3>
-                    <ul id="leaderboardMentors" style="list-style: none; padding: 0;">
-                        <!-- Dynamically populated -->
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Fee Reimbursement Status Tracker Search Section -->
-            <div class="section-header" style="justify-content: center; text-align: center; margin-top: 40px;">
-                <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
-                    <h2 style="justify-content: center; width: 100%;"><i class="ri-refund-2-line" style="color: var(--blue); font-size: 26px;"></i> Track Fee Reimbursement Claim</h2>
-                    <p>Enter your student Roll Number to view the status of your submitted claim</p>
-                </div>
-            </div>
-
-            <div class="card" style="max-width: 600px; margin: 0 auto 60px; padding: 32px; text-align: center;">
-                <div style="display: flex; gap: 12px; margin-bottom: 24px;">
-                    <input type="text" id="trackerRollNo" class="form-input" placeholder="e.g. 211FA04001" style="flex: 1;">
-                    <button class="btn btn-primary" onclick="App.trackReimbursementStatus()">
-                        <i class="ri-search-2-line"></i> Track Status
-                    </button>
-                </div>
-                <div id="trackerResults" style="display: none; text-align: left;">
-                    <!-- Dynamically populated claim status details and progress stepper -->
-                </div>
-            </div>
-        </section>
+        <section class="view" id="view-home"></section>
 
         <!-- ==================== DASHBOARD VIEW ==================== -->
         <section class="view" id="view-dashboard">

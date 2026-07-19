@@ -303,15 +303,19 @@
 
 /* ============ HOME LAYOUT SPECIFIC ============ */
 body.home-layout {
-    overflow-x: hidden;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 body.home-layout #heroSection {
-    height: 70vh !important;
+    flex: 1;
+    height: auto !important;
     margin-top: var(--nav-height);
     margin-bottom: 0;
 }
 
 body.home-layout .site-footer {
-    margin-top: 40px;
+    flex-shrink: 0;
 }

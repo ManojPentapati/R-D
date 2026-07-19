@@ -646,11 +646,10 @@ Object.assign(App, {
             document.body.classList.add('home-layout');
             if (heroSection) {
                 heroSection.style.display = 'block';
-                heroSection.style.height = '70vh';
+                heroSection.style.height = '';
             }
             if (mainWrapper) {
-                mainWrapper.style.display = 'block';
-                mainWrapper.style.paddingTop = '32px';
+                mainWrapper.style.display = 'none';
             }
             if (footer) footer.style.display = 'block';
         } else if (viewName === 'dashboard') {
