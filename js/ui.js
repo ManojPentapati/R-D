@@ -547,6 +547,9 @@ Object.assign(App, {
                                 <button class="act-btn edit" onclick="App.openEditModal('${p.id}')" title="Edit">
                                     <i class="ri-edit-line"></i>
                                 </button>
+                                <button class="act-btn print" onclick="App.generateAppreciationCertificate('${p.id}')" title="Generate Certificate" style="color: var(--gold, #f0b429);">
+                                    <i class="ri-award-line"></i>
+                                </button>
                                 <button class="act-btn delete" onclick="App.openDeleteModal('${p.id}')" title="Delete">
                                     <i class="ri-delete-bin-line"></i>
                                 </button>
@@ -1023,6 +1026,130 @@ Object.assign(App, {
         } else {
             runTrack();
         }
+    },
+
+    generateAppreciationCertificate(id) {
+        const pub = State.publications.find(p => p.id === id);
+        if (!pub) {
+            Toast.show('error', 'Error', 'Publication not found');
+            return;
+        }
+
+        const dateStr = new Date(pub.created_at || Date.now()).toLocaleDateString(undefined, {
+            year: 'numeric', month: 'long', day: 'numeric'
+        });
+
+        // Set class on body to trigger landscape @page printing
+        document.body.classList.add('print-landscape-mode');
+
+        const titleHeader = document.querySelector('#printPreviewModal h3');
+        if (titleHeader) {
+            titleHeader.innerHTML = `<i class="ri-award-line" style="color: var(--gold);"></i> Certificate of Appreciation`;
+        }
+
+        // Build premium certificate HTML
+        const html = `
+            <div class="print-page certificate-container" style="
+                width: 100%;
+                box-sizing: border-box;
+                padding: 40px;
+                background: #fff;
+                color: #1a202c;
+                font-family: 'Times New Roman', Times, serif;
+                text-align: center;
+                border: 15px solid #d4af37;
+                outline: 3px double #d4af37;
+                outline-offset: -10px;
+                position: relative;
+                min-height: 520px;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                align-items: center;
+                overflow: hidden;
+            ">
+                <!-- Top Header -->
+                <div style="width: 100%;">
+                    <div style="font-size: 26px; font-weight: bold; color: #7b1113; letter-spacing: 1.5px; text-transform: uppercase;">
+                        Vignan's Foundation for Science, Technology & Research
+                    </div>
+                    <div style="font-size: 13px; color: #4a5568; margin-top: 4px; font-style: italic;">
+                        (Deemed to be University estd. u/s 3 of UGC Act 1956) | Accredited by NAAC with A+ Grade
+                    </div>
+                    <div style="margin: 15px auto 5px; width: 80px; height: 3px; background-color: #d4af37;"></div>
+                </div>
+
+                <!-- Main Certificate Title -->
+                <div style="width: 100%; margin-top: 10px;">
+                    <div style="font-family: 'Times New Roman', serif; font-size: 38px; font-weight: bold; color: #7b1113; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 15px;">
+                        Certificate of Appreciation
+                    </div>
+                    <div style="font-size: 16px; font-style: italic; color: #4a5568; margin-bottom: 15px;">
+                        This certificate is proudly presented to
+                    </div>
+                    <div style="font-size: 26px; font-weight: bold; color: #1a202c; border-bottom: 1px solid #d4af37; display: inline-block; padding: 0 30px 5px; margin-bottom: 8px;">
+                        ${this.escapeHtml(pub.name)}
+                    </div>
+                    <div style="font-size: 15px; color: #4a5568; margin-bottom: 15px;">
+                        Roll No: <strong>${this.escapeHtml(pub.roll_no)}</strong> | Branch: <strong>${this.escapeHtml(pub.branch)}</strong>
+                    </div>
+                </div>
+
+                <!-- Core Appreciation Body -->
+                <div style="width: 90%; max-width: 750px; font-size: 16px; line-height: 1.8; color: #2d3748; margin: 0 auto 20px;">
+                    in recognition of their outstanding research contribution by successfully publishing the paper titled
+                    <div style="font-size: 18px; font-weight: bold; color: #7b1113; margin: 8px 0; font-style: italic; line-height: 1.4;">
+                        "${this.escapeHtml(pub.article_title)}"
+                    </div>
+                    in the publication index <strong>${this.escapeHtml(pub.indexing || 'Scopus')}</strong> - <strong>${this.escapeHtml(pub.publication_type)}</strong> forum 
+                    (${this.escapeHtml(pub.journal_conference_title || '—')}) during the academic year 2025-2026.
+                </div>
+
+                <!-- Bottom Footer (Signatures) -->
+                <div style="width: 90%; display: flex; justify-content: space-between; align-items: flex-end; margin-top: 10px; padding: 0 40px;">
+                    <div style="text-align: center; width: 180px;">
+                        <div style="height: 35px; border-bottom: 1px solid #a0aec0; margin-bottom: 6px; position: relative;">
+                            <span style="position: absolute; bottom: 0; left: 0; right: 0; font-family: cursive; color: #4a5568; font-size: 14px;">R&D Cell</span>
+                        </div>
+                        <div style="font-size: 12px; font-weight: bold; color: #4a5568; text-transform: uppercase;">Dean, R&D</div>
+                    </div>
+                    
+                    <!-- Gold Seal Emblem -->
+                    <div style="position: relative; width: 80px; height: 80px; display: flex; align-items: center; justify-content: center;">
+                        <svg viewBox="0 0 100 100" style="width: 100%; height: 100%; fill: #d4af37;">
+                            <path d="M50,5 C25.1,5 5,25.1 5,50 C5,74.9 25.1,95 50,95 C74.9,95 95,74.9 95,50 C95,25.1 74.9,5 50,5 Z M50,90 C27.9,90 10,72.1 10,50 C10,27.9 27.9,10 50,10 C72.1,10 90,27.9 90,50 C90,72.1 72.1,90 50,90 Z" />
+                            <polygon points="50,18 54,30 67,30 56,38 60,50 50,42 40,50 44,38 33,30 46,30" />
+                        </svg>
+                        <div style="position: absolute; font-size: 8px; font-weight: bold; color: #7b1113; text-transform: uppercase; text-align: center; line-height: 1.2;">
+                            VIGNAN<br>R&D
+                        </div>
+                    </div>
+
+                    <div style="text-align: center; width: 180px;">
+                        <div style="height: 35px; border-bottom: 1px solid #a0aec0; margin-bottom: 6px; position: relative;">
+                            <span style="position: absolute; bottom: 0; left: 0; right: 0; font-family: cursive; color: #4a5568; font-size: 14px;">Registrar Office</span>
+                        </div>
+                        <div style="font-size: 12px; font-weight: bold; color: #4a5568; text-transform: uppercase;">Registrar</div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.getElementById('print-preview-content').innerHTML = html;
+        this.openModal('printPreviewModal');
+
+        // Override closeModal to remove landscape class
+        const originalClose = this.closeModal;
+        this.closeModal = (modalId) => {
+            if (modalId === 'printPreviewModal') {
+                document.body.classList.remove('print-landscape-mode');
+                if (titleHeader) {
+                    titleHeader.innerHTML = `<i class="ri-printer-line" style="color: var(--gold);"></i> Reimbursement Application Preview`;
+                }
+                this.closeModal = originalClose;
+            }
+            originalClose.call(this, modalId);
+        };
     },
 
     // ── Utility Helpers ──
