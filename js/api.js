@@ -121,6 +121,7 @@ Object.assign(App, {
         this.updateDashboard();
         this.renderCharts();
         this.renderRecentTable();
+        this.renderLeaderboard();
     },
 
     async addPublication(formData) {

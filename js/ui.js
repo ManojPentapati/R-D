@@ -51,6 +51,103 @@ Object.assign(App, {
         this.animateNumber('statConference', conferences);
     },
 
+    renderLeaderboard() {
+        const data = State.publications || [];
+        
+        // 1. Top Branches Calculation
+        const branchCounts = {};
+        data.forEach(p => {
+            if (p.branch) {
+                const branch = p.branch.trim().toUpperCase();
+                branchCounts[branch] = (branchCounts[branch] || 0) + 1;
+            }
+        });
+        const sortedBranches = Object.entries(branchCounts)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 5);
+
+        const branchesEl = document.getElementById('leaderboardBranches');
+        if (branchesEl) {
+            if (sortedBranches.length === 0) {
+                branchesEl.innerHTML = `<li style="color: var(--text-muted); text-align: center; padding: 20px 0;">No publications recorded yet.</li>`;
+            } else {
+                branchesEl.innerHTML = sortedBranches.map(([branch, count], index) => `
+                    <li style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-weight: 500; font-size: 14px;">
+                        <span style="color: var(--navy); display: flex; align-items: center; gap: 8px;">
+                            <span style="background: rgba(0, 119, 182, 0.1); color: var(--blue); width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold;">${index + 1}</span>
+                            ${this.escapeHtml(branch)}
+                        </span>
+                        <span class="badge" style="background: rgba(0, 119, 182, 0.1); color: var(--blue); font-weight: 600; padding: 4px 8px; border-radius: 4px;">${count} Pubs</span>
+                    </li>
+                `).join('');
+            }
+        }
+
+        // 2. Star Student Researchers Calculation
+        const studentCounts = {};
+        data.forEach(p => {
+            if (p.roll_no && p.name) {
+                const key = `${p.roll_no.trim()}|${p.name.trim()}|${p.branch || ''}`;
+                studentCounts[key] = (studentCounts[key] || 0) + 1;
+            }
+        });
+        const sortedStudents = Object.entries(studentCounts)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 5);
+
+        const studentsEl = document.getElementById('leaderboardStudents');
+        if (studentsEl) {
+            if (sortedStudents.length === 0) {
+                studentsEl.innerHTML = `<li style="color: var(--text-muted); text-align: center; padding: 20px 0;">No student researchers recorded yet.</li>`;
+            } else {
+                studentsEl.innerHTML = sortedStudents.map(([key, count], index) => {
+                    const [rollNo, name, branch] = key.split('|');
+                    return `
+                        <li style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-weight: 500; font-size: 14px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="background: rgba(240, 180, 41, 0.1); color: #b48500; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold;">${index + 1}</span>
+                                <div>
+                                    <div style="color: var(--navy); font-weight: 600; text-align: left;">${this.escapeHtml(name)}</div>
+                                    <div style="font-size: 11px; color: var(--text-muted); text-align: left;">${this.escapeHtml(rollNo)} (${this.escapeHtml(branch)})</div>
+                                </div>
+                            </div>
+                            <span class="badge" style="background: rgba(240, 180, 41, 0.1); color: #b48500; font-weight: 600; padding: 4px 8px; border-radius: 4px;">${count} Pubs</span>
+                        </li>
+                    `;
+                }).join('');
+            }
+        }
+
+        // 3. Distinguished Mentors Calculation
+        const mentorCounts = {};
+        data.forEach(p => {
+            if (p.mentor_name) {
+                const mentor = p.mentor_name.trim();
+                mentorCounts[mentor] = (mentorCounts[mentor] || 0) + 1;
+            }
+        });
+        const sortedMentors = Object.entries(mentorCounts)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 5);
+
+        const mentorsEl = document.getElementById('leaderboardMentors');
+        if (mentorsEl) {
+            if (sortedMentors.length === 0) {
+                mentorsEl.innerHTML = `<li style="color: var(--text-muted); text-align: center; padding: 20px 0;">No mentors recorded yet.</li>`;
+            } else {
+                mentorsEl.innerHTML = sortedMentors.map(([mentor, count], index) => `
+                    <li style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-weight: 500; font-size: 14px;">
+                        <span style="color: var(--navy); display: flex; align-items: center; gap: 8px;">
+                            <span style="background: rgba(36, 180, 126, 0.1); color: #1e8a60; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold;">${index + 1}</span>
+                            ${this.escapeHtml(mentor)}
+                        </span>
+                        <span class="badge" style="background: rgba(36, 180, 126, 0.1); color: #1e8a60; font-weight: 600; padding: 4px 8px; border-radius: 4px;">${count} Pubs</span>
+                    </li>
+                `).join('');
+            }
+        }
+    },
+
     // ── Charts Rendering ──
     renderCharts() {
         const data = State.publications;
