@@ -1,5 +1,6 @@
 # Local credentials / environment configuration
 config.env
+.config.env
 .env
 
 # OS files

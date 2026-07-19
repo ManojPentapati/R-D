@@ -44,7 +44,7 @@ Object.assign(App, {
             if (!SUPABASE_URL || !SUPABASE_ANON_KEY || SUPABASE_URL === 'YOUR_SUPABASE_URL') {
                 console.warn('⚠️ Supabase credentials not configured. Using demo mode.');
                 this.updateConnectionStatus('error', 'Not Configured');
-                Toast.show('warning', 'Setup Required', 'Please configure your Supabase credentials in app.js');
+                Toast.show('warning', 'Setup Required', 'Please configure your Supabase credentials in config.env');
                 return;
             }
             supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
