@@ -670,6 +670,15 @@ Object.assign(App, {
                     ? `<a href="${p.paper_link}" target="_blank" style="color: var(--accent-light, #2196f3); text-decoration: none; font-weight: 500;" class="paper-link" title="View Publication">${this.escapeHtml(this.truncate(p.article_title, 35))} <i class="ri-external-link-line" style="font-size: 11px;"></i></a>`
                     : this.escapeHtml(this.truncate(p.article_title, 35));
 
+                if (!State.session) {
+                    return `
+                        <tr>
+                            <td class="clickable-copy" onclick="App.copyToClipboard('${p.roll_no}', 'Paper ID')" title="Click to copy Paper ID"><strong>${this.escapeHtml(p.roll_no)}</strong> <i class="ri-file-copy-line copy-ico"></i></td>
+                            <td title="${this.escapeHtml(p.article_title)}">${titleHtml}</td>
+                        </tr>
+                    `;
+                }
+
                 // Quality badges
                 let qualityBadges = '';
                 if (p.journal_tier) {
@@ -982,24 +991,26 @@ Object.assign(App, {
         const currentView = document.querySelector('.view.active');
         if (currentView) {
             const viewId = currentView.id.replace('view-', '');
-            if (role === 'super_admin') {
-                if (viewId !== 'dashboard' && viewId !== 'manage-admins' && viewId !== 'publications') {
+            if (role === 'super_admin' || role === 'admin') {
+                // If they are on home, reimbursement, or no active view, redirect to dashboard
+                if (viewId === 'home' || viewId === 'reimbursement') {
                     this.switchView('dashboard');
                 }
-            } else if (viewId === 'dashboard' && role !== 'super_admin') {
-                this.switchView('home');
-            } else if (viewId === 'manage-admins' && role !== 'super_admin') {
-                this.switchView('home');
-            } else if (viewId === 'add' && !role) {
-                this.switchView('home');
-            } else if (viewId === 'export' && !role) {
-                this.switchView('home');
-            } else if (viewId === 'manage-claims' && !role) {
-                this.switchView('home');
-            } else if (viewId === 'reimbursement' && role) {
-                this.switchView('home');
+                // Super Admin specific view restrictions
+                if (role === 'super_admin' && viewId !== 'dashboard' && viewId !== 'manage-admins' && viewId !== 'publications') {
+                    this.switchView('dashboard');
+                }
+                // Admin specific view restrictions (cannot view manage-admins)
+                if (role === 'admin' && viewId === 'manage-admins') {
+                    this.switchView('dashboard');
+                }
+            } else {
+                // Public user restrictions (no role)
+                if (viewId === 'dashboard' || viewId === 'manage-admins' || viewId === 'add' || viewId === 'export' || viewId === 'manage-claims') {
+                    this.switchView('home');
+                }
             }
-        } else if (role === 'super_admin') {
+        } else if (role === 'super_admin' || role === 'admin') {
             this.switchView('dashboard');
         }
     },
