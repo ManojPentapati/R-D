@@ -14,3 +14,4 @@ dist/
 
 # SQL Setup
 supabase_setup.sql
+add_quality_metrics.sql
