@@ -26,15 +26,29 @@
 }
 
 .stat-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
+    transform: translateY(-6px);
 }
 
-.stat-card:has(.accent-total):hover { border-color: var(--blue); }
-.stat-card:has(.accent-ug):hover { border-color: var(--teal); }
-.stat-card:has(.accent-pg):hover { border-color: var(--purple); }
-.stat-card:has(.accent-journal):hover { border-color: var(--orange); }
-.stat-card:has(.accent-conf):hover { border-color: var(--coral); }
+.stat-card:has(.accent-total):hover { 
+    border-color: var(--blue-light); 
+    box-shadow: 0 12px 30px rgba(21, 101, 192, 0.15);
+}
+.stat-card:has(.accent-ug):hover { 
+    border-color: var(--teal-light); 
+    box-shadow: 0 12px 30px rgba(0, 137, 123, 0.15);
+}
+.stat-card:has(.accent-pg):hover { 
+    border-color: #b39ddb; 
+    box-shadow: 0 12px 30px rgba(126, 87, 194, 0.15);
+}
+.stat-card:has(.accent-journal):hover { 
+    border-color: #ffa726; 
+    box-shadow: 0 12px 30px rgba(239, 108, 0, 0.15);
+}
+.stat-card:has(.accent-conf):hover { 
+    border-color: #ff8a80; 
+    box-shadow: 0 12px 30px rgba(232, 65, 92, 0.15);
+}
 
 .stat-card-icon {
     width: 48px;
