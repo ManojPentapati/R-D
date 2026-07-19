@@ -38,11 +38,13 @@ Object.assign(App, {
 
         const draft = {
             paperTitle: document.getElementById('reimbPaperTitle')?.value.trim() || '',
+            pubType: document.getElementById('reimbPubType')?.value || 'Conference',
             hostInst: document.getElementById('reimbHostInst')?.value.trim() || '',
             confName: document.getElementById('reimbConfName')?.value.trim() || '',
             confDates: document.getElementById('reimbConfDates')?.value.trim() || '',
-            studentCount: document.getElementById('reimbStudentCount')?.value || '1',
-            facultyCount: document.getElementById('reimbFacultyCount')?.value || '1',
+            paperDoi: document.getElementById('reimbPaperDoi')?.value.trim() || '',
+            studentCount: document.getElementById('reimbStudentCount')?.value || '0',
+            facultyCount: document.getElementById('reimbFacultyCount')?.value || '0',
             feePaid: document.getElementById('reimbFeePaid')?.value || '',
             accHolder: document.getElementById('reimbAccHolder')?.value.trim() || '',
             accNo: document.getElementById('reimbAccNo')?.value.trim() || '',
@@ -62,9 +64,14 @@ Object.assign(App, {
         try {
             const draft = JSON.parse(raw);
             if (document.getElementById('reimbPaperTitle')) document.getElementById('reimbPaperTitle').value = draft.paperTitle;
+            if (document.getElementById('reimbPubType')) {
+                document.getElementById('reimbPubType').value = draft.pubType || 'Conference';
+                this.handlePubTypeChange();
+            }
             if (document.getElementById('reimbHostInst')) document.getElementById('reimbHostInst').value = draft.hostInst;
             if (document.getElementById('reimbConfName')) document.getElementById('reimbConfName').value = draft.confName;
             if (document.getElementById('reimbConfDates')) document.getElementById('reimbConfDates').value = draft.confDates;
+            if (document.getElementById('reimbPaperDoi')) document.getElementById('reimbPaperDoi').value = draft.paperDoi || '';
             if (document.getElementById('reimbStudentCount')) document.getElementById('reimbStudentCount').value = draft.studentCount;
             if (document.getElementById('reimbFacultyCount')) document.getElementById('reimbFacultyCount').value = draft.facultyCount;
             if (document.getElementById('reimbFeePaid')) document.getElementById('reimbFeePaid').value = draft.feePaid;
@@ -110,6 +117,32 @@ Object.assign(App, {
         localStorage.removeItem('reimbursement_draft');
     },
 
+    handlePubTypeChange() {
+        const pubType = document.getElementById('reimbPubType')?.value;
+        const nameLabel = document.querySelector('label[for="reimbConfName"]');
+        const nameInput = document.getElementById('reimbConfName');
+        const datesLabel = document.querySelector('label[for="reimbConfDates"]');
+        const datesInput = document.getElementById('reimbConfDates');
+        const hostLabel = document.querySelector('label[for="reimbHostInst"]');
+        const hostInput = document.getElementById('reimbHostInst');
+
+        if (pubType === 'Journal') {
+            if (nameLabel) nameLabel.innerHTML = `Name of Journal <span class="req">*</span>`;
+            if (nameInput) nameInput.placeholder = 'e.g. IEEE Transactions on Medical Imaging';
+            if (datesLabel) datesLabel.innerHTML = `Date of Publication <span class="req">*</span>`;
+            if (datesInput) datesInput.placeholder = 'e.g. June 2026';
+            if (hostLabel) hostLabel.innerHTML = `Publisher / Host Institute <span class="req">*</span>`;
+            if (hostInput) hostInput.placeholder = 'e.g. IEEE or Elsevier';
+        } else {
+            if (nameLabel) nameLabel.innerHTML = `Name of Conference <span class="req">*</span>`;
+            if (nameInput) nameInput.placeholder = 'e.g. IEEE SPICES 2026';
+            if (datesLabel) datesLabel.innerHTML = `Dates of Conference <span class="req">*</span>`;
+            if (datesInput) datesInput.placeholder = 'e.g. June 15-17, 2026';
+            if (hostLabel) hostLabel.innerHTML = `Host Institute / Organizer <span class="req">*</span>`;
+            if (hostInput) hostInput.placeholder = 'e.g. IIT Madras or IEEE Madras Section';
+        }
+    },
+
     // ── Fee Reimbursement Logic ──
     generateAuthorInputs() {
         const studentSelect = document.getElementById('reimbStudentCount');
@@ -127,7 +160,7 @@ Object.assign(App, {
         // Generate student inputs
         for (let i = 1; i <= studentCount; i++) {
             html += `
-                <div class="card author-row" style="background: var(--bg-dark-card); border: 1px solid var(--border); padding: 16px; border-radius: 8px; display: grid; grid-template-columns: 2fr 1.2fr 1.2fr 1.2fr; gap: 12px; align-items: end;">
+                <div class="card author-row" style="background: var(--bg-dark-card); border: 1px solid var(--border); padding: 16px; border-radius: 8px; display: grid; grid-template-columns: 1.5fr 1fr; gap: 16px 20px; align-items: end;">
                     <input type="hidden" class="reimb-author-role" value="student">
                     
                     <div class="field" style="margin: 0; padding: 0;">
@@ -139,7 +172,7 @@ Object.assign(App, {
                     </div>
                     
                     <div class="field" style="margin: 0; padding: 0;">
-                        <label style="font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 6px;">Roll Number <span class="req">*</span></label>
+                        <label style="font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 6px;">Registration Number <span class="req">*</span></label>
                         <div class="field-input">
                             <i class="ri-id-card-line"></i>
                             <input type="text" class="reimb-author-roll" required placeholder="e.g. 22DS022">
@@ -220,7 +253,7 @@ Object.assign(App, {
         }
     },
 
-    renderAndOpenPrintModal(formData, receiptDataUrl) {
+    renderAndOpenPrintModal(formData, receiptDataUrl, proofDataUrl) {
         const previewContent = document.getElementById('print-preview-content');
         if (!previewContent) return;
 
@@ -242,7 +275,7 @@ Object.assign(App, {
                 
                 <div style="margin-bottom: 30px;">
                     <strong>From:</strong><br>
-                    ${students.map(s => `${s.name} (Roll No: ${s.rollNo || ''}, ${s.branch || ''}, Dept. of ${s.dept || ''})`).join('<br>')}<br>
+                    ${students.map(s => `${s.name} (Regd. No: ${s.rollNo || ''}, ${s.branch || ''}, Dept. of ${s.dept || ''})`).join('<br>')}<br>
                     Vignan's Foundation for Science, Technology & Research<br>
                     Vadlamudi, Guntur (Dist.), AP
                 </div>
@@ -275,17 +308,27 @@ Object.assign(App, {
                         <td style="padding: 8px; border: 1px solid #000;">${formData.paperTitle}</td>
                     </tr>
                     <tr>
-                        <td style="font-weight: bold; padding: 8px; border: 1px solid #000; background: #fcfcfc;">Journal/Conference Name:</td>
+                        <td style="font-weight: bold; padding: 8px; border: 1px solid #000; background: #fcfcfc;">Publication Type:</td>
+                        <td style="padding: 8px; border: 1px solid #000;">${formData.pubType}</td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: bold; padding: 8px; border: 1px solid #000; background: #fcfcfc;">${formData.pubType === 'Journal' ? 'Journal Name' : 'Conference Name'}:</td>
                         <td style="padding: 8px; border: 1px solid #000;">${formData.confName}</td>
                     </tr>
                     <tr>
-                        <td style="font-weight: bold; padding: 8px; border: 1px solid #000; background: #fcfcfc;">Host Institute / Organizer:</td>
+                        <td style="font-weight: bold; padding: 8px; border: 1px solid #000; background: #fcfcfc;">${formData.pubType === 'Journal' ? 'Publisher' : 'Host Institute / Organizer'}:</td>
                         <td style="padding: 8px; border: 1px solid #000;">${formData.hostInst}</td>
                     </tr>
                     <tr>
-                        <td style="font-weight: bold; padding: 8px; border: 1px solid #000; background: #fcfcfc;">Dates of Conference:</td>
+                        <td style="font-weight: bold; padding: 8px; border: 1px solid #000; background: #fcfcfc;">${formData.pubType === 'Journal' ? 'Date of Publication' : 'Dates of Conference'}:</td>
                         <td style="padding: 8px; border: 1px solid #000;">${formData.confDates}</td>
                     </tr>
+                    ${formData.paperDoi ? `
+                    <tr>
+                        <td style="font-weight: bold; padding: 8px; border: 1px solid #000; background: #fcfcfc;">DOI Link:</td>
+                        <td style="padding: 8px; border: 1px solid #000;"><a href="${formData.paperDoi}" target="_blank" style="color: #000; text-decoration: none;">${formData.paperDoi}</a></td>
+                    </tr>
+                    ` : ''}
                     <tr>
                         <td style="font-weight: bold; padding: 8px; border: 1px solid #000; background: #fcfcfc;">Registration Fee Paid:</td>
                         <td style="padding: 8px; border: 1px solid #000; font-weight: bold;">₹${parseFloat(formData.feePaid).toLocaleString()}</td>
@@ -328,14 +371,22 @@ Object.assign(App, {
                         <td style="border: 1px solid #000; padding: 5px;" colspan="3">${formData.paperTitle}</td>
                     </tr>
                     <tr>
-                        <td style="border: 1px solid #000; padding: 5px; font-weight: bold; background: #f9f9f9;">Conference/Journal Name:</td>
+                        <td style="border: 1px solid #000; padding: 5px; font-weight: bold; background: #f9f9f9;">Publication Type:</td>
+                        <td style="border: 1px solid #000; padding: 5px;" colspan="3">${formData.pubType}</td>
+                    </tr>
+                    <tr>
+                        <td style="border: 1px solid #000; padding: 5px; font-weight: bold; background: #f9f9f9;">${formData.pubType === 'Journal' ? 'Journal Name' : 'Conference Name'}:</td>
                         <td style="border: 1px solid #000; padding: 5px;" colspan="3">${formData.confName}</td>
                     </tr>
                     <tr>
-                        <td style="border: 1px solid #000; padding: 5px; font-weight: bold; background: #f9f9f9;">Host Institute:</td>
+                        <td style="border: 1px solid #000; padding: 5px; font-weight: bold; background: #f9f9f9;">${formData.pubType === 'Journal' ? 'Publisher' : 'Host Institute'}:</td>
                         <td style="border: 1px solid #000; padding: 5px; width: 30%;">${formData.hostInst}</td>
-                        <td style="border: 1px solid #000; padding: 5px; font-weight: bold; background: #f9f9f9; width: 15%;">Dates:</td>
+                        <td style="border: 1px solid #000; padding: 5px; font-weight: bold; background: #f9f9f9; width: 15%;">${formData.pubType === 'Journal' ? 'Publication Date' : 'Dates'}:</td>
                         <td style="border: 1px solid #000; padding: 5px; width: 30%;">${formData.confDates}</td>
+                    </tr>
+                    <tr>
+                        <td style="border: 1px solid #000; padding: 5px; font-weight: bold; background: #f9f9f9;">DOI Link:</td>
+                        <td style="border: 1px solid #000; padding: 5px;" colspan="3">${formData.paperDoi || '—'}</td>
                     </tr>
                     <tr>
                         <td style="border: 1px solid #000; padding: 5px; font-weight: bold; background: #f9f9f9;">Branch / Program:</td>
@@ -351,7 +402,7 @@ Object.assign(App, {
                         <tr style="background: #f2f2f2; font-weight: bold;">
                             <th style="border: 1px solid #000; padding: 5px; width: 6%;">S.No</th>
                             <th style="border: 1px solid #000; padding: 5px; width: 32%; text-align: left;">Full Name</th>
-                            <th style="border: 1px solid #000; padding: 5px; width: 18%;">Roll No / Emp Code</th>
+                            <th style="border: 1px solid #000; padding: 5px; width: 18%;">Regd. No / Emp Code</th>
                             <th style="border: 1px solid #000; padding: 5px; width: 14%;">Role</th>
                             <th style="border: 1px solid #000; padding: 5px; width: 15%; text-align: left;">Branch</th>
                             <th style="border: 1px solid #000; padding: 5px; width: 15%; text-align: left;">Department</th>
@@ -446,7 +497,29 @@ Object.assign(App, {
             </div>
         `;
 
-        previewContent.innerHTML = coverLetterHtml + formHtml + receiptHtml;
+        // 4. Proof Attachment Page
+        let proofHtml = `
+            <div class="print-page proof-attachment-page" style="padding: 20px; color: #000; font-family: 'Arial', sans-serif; font-size: 13px; page-break-before: always;">
+                <div style="text-align: center; margin-bottom: 20px; border-bottom: 1px solid #000; padding-bottom: 8px;">
+                    <h3 style="margin: 0; text-transform: uppercase; font-size: 14px; font-weight: bold;">Attachment: First Page of Paper (Proof)</h3>
+                    <p style="margin: 4px 0 0 0; font-size: 11px; color: #555;">Title: ${formData.paperTitle}</p>
+                </div>
+                
+                ${proofDataUrl ? `
+                    <div style="text-align: center; margin-top: 20px; border: 1px solid #ccc; padding: 10px; border-radius: 6px; background: #fff;">
+                        <img src="${proofDataUrl}" style="max-width: 100%; max-height: 70vh; height: auto; object-fit: contain; box-shadow: 0 1px 5px rgba(0,0,0,0.1);">
+                    </div>
+                ` : `
+                    <div style="border: 2px dashed #999; height: 450px; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top: 30px; background: #fbfbfb; border-radius: 6px; text-align: center; color: #555; padding: 20px;">
+                        <i class="ri-article-line" style="font-size: 40px; color: #888; margin-bottom: 10px;"></i>
+                        <h4 style="margin: 0 0 6px 0; color: #222; font-weight: bold;">Staple / Paste First Page of Paper Here</h4>
+                        <p style="margin: 0; font-size: 12px; line-height: 1.4;">(Please attach the first page of the published journal or conference paper showing title and authors list)</p>
+                    </div>
+                `}
+            </div>
+        `;
+
+        previewContent.innerHTML = coverLetterHtml + formHtml + receiptHtml + proofHtml;
         this.openModal('printPreviewModal');
     },
 

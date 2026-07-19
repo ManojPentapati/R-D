@@ -648,28 +648,43 @@
                                 </div>
                             </div>
                             <div class="field" style="margin-bottom: 0;">
+                                <label for="reimbPubType">Publication Type <span class="req">*</span></label>
+                                <div class="field-input">
+                                    <i class="ri-book-open-line"></i>
+                                    <select id="reimbPubType" onchange="App.handlePubTypeChange()">
+                                        <option value="Conference" selected>Conference</option>
+                                        <option value="Journal">Journal</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="field" style="margin-bottom: 0;">
+                                <label for="reimbConfName">Name of Conference <span class="req">*</span></label>
+                                <div class="field-input">
+                                    <i class="ri-map-pin-line"></i>
+                                    <input type="text" id="reimbConfName" required
+                                        placeholder="e.g. IEEE SPICES 2026">
+                                </div>
+                            </div>
+                            <div class="field" style="margin-bottom: 0;">
+                                <label for="reimbConfDates">Dates of Conference <span class="req">*</span></label>
+                                <div class="field-input">
+                                    <i class="ri-calendar-line"></i>
+                                    <input type="text" id="reimbConfDates" required placeholder="e.g. June 15-17, 2026">
+                                </div>
+                            </div>
+                            <div class="field" style="margin-bottom: 0;">
+                                <label for="reimbPaperDoi">DOI Link <span class="req">*</span></label>
+                                <div class="field-input">
+                                    <i class="ri-link"></i>
+                                    <input type="text" id="reimbPaperDoi" required placeholder="e.g. https://doi.org/10.1109/...">
+                                </div>
+                            </div>
+                            <div class="field" style="grid-column: span 2; margin-bottom: 0;">
                                 <label for="reimbHostInst">Host Institute / Organizer <span class="req">*</span></label>
                                 <div class="field-input">
                                     <i class="ri-building-line"></i>
                                     <input type="text" id="reimbHostInst" required
                                         placeholder="e.g. IIT Madras or IEEE Madras Section">
-                                </div>
-                            </div>
-                            <div class="field" style="margin-bottom: 0;">
-                                <label for="reimbConfName">Name of Journal / Conference <span
-                                        class="req">*</span></label>
-                                <div class="field-input">
-                                    <i class="ri-map-pin-line"></i>
-                                    <input type="text" id="reimbConfName" required
-                                        placeholder="e.g. IEEE SPICES 2026 or Springer Journal">
-                                </div>
-                            </div>
-                            <div class="field" style="margin-bottom: 0;">
-                                <label for="reimbConfDates">Dates of Conference / Publication <span
-                                        class="req">*</span></label>
-                                <div class="field-input">
-                                    <i class="ri-calendar-line"></i>
-                                    <input type="text" id="reimbConfDates" required placeholder="e.g. June 15-17, 2026">
                                 </div>
                             </div>
                         </div>
@@ -688,9 +703,10 @@
                                 <div class="field-input">
                                     <i class="ri-user-line"></i>
                                     <select id="reimbStudentCount" onchange="App.generateAuthorInputs()">
+                                        <option value="0" selected>0</option>
                                         <option value="1">1</option>
                                         <option value="2">2</option>
-                                        <option value="3" selected>3</option>
+                                        <option value="3">3</option>
                                         <option value="4">4</option>
                                         <option value="5">5</option>
                                         <option value="6">6</option>
@@ -703,8 +719,8 @@
                                 <div class="field-input">
                                     <i class="ri-user-star-line"></i>
                                     <select id="reimbFacultyCount" onchange="App.generateAuthorInputs()">
-                                        <option value="0">0</option>
-                                        <option value="1" selected>1</option>
+                                        <option value="0" selected>0</option>
+                                        <option value="1">1</option>
                                         <option value="2">2</option>
                                         <option value="3">3</option>
                                     </select>
@@ -723,7 +739,7 @@
                             Receipt
                         </h3>
                         <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                            <div class="field" style="margin-bottom: 0;">
+                            <div class="field" style="grid-column: span 2; margin-bottom: 0;">
                                 <label for="reimbFeePaid">Registration Fee Paid (₹) <span class="req">*</span></label>
                                 <div class="field-input">
                                     <i class="ri-money-rupee-circle-line"></i>
@@ -733,13 +749,28 @@
                             <div class="field" style="margin-bottom: 0;">
                                 <label for="reimbReceiptFile">Upload Registration Fee Receipt <span
                                         class="req">*</span></label>
-                                <div class="field-input" style="padding: 4px;">
-                                    <input type="file" id="reimbReceiptFile" required accept="image/*,application/pdf"
-                                        style="border: none; padding: 4px; background: transparent; color: inherit; width: 100%;">
-                                </div>
+                                <label class="custom-file-upload">
+                                    <i class="ri-upload-cloud-2-line" style="font-size: 18px; color: var(--text-muted);"></i>
+                                    <span id="reimbReceiptFileLabel" style="font-size: 13px; color: var(--text-secondary); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; max-width: 250px;">Choose Fee Receipt</span>
+                                    <input type="file" id="reimbReceiptFile" required accept="image/*,application/pdf" style="display: none;">
+                                </label>
                                 <div id="reimbReceiptPreview"
                                     style="margin-top: 8px; display: none; max-width: 150px; max-height: 150px; overflow: hidden; border: 1px solid var(--border); border-radius: 6px;">
                                     <img id="reimbReceiptImg" src=""
+                                        style="width: 100%; height: auto; object-fit: cover;">
+                                </div>
+                            </div>
+                            <div class="field" style="margin-bottom: 0;">
+                                <label for="reimbPaperProofFile">Upload First Page of Paper (Proof) <span
+                                        class="req">*</span></label>
+                                <label class="custom-file-upload">
+                                    <i class="ri-upload-cloud-2-line" style="font-size: 18px; color: var(--text-muted);"></i>
+                                    <span id="reimbPaperProofFileLabel" style="font-size: 13px; color: var(--text-secondary); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; max-width: 250px;">Choose Paper Proof</span>
+                                    <input type="file" id="reimbPaperProofFile" required accept="image/*,application/pdf" style="display: none;">
+                                </label>
+                                <div id="reimbPaperProofPreview"
+                                    style="margin-top: 8px; display: none; max-width: 150px; max-height: 150px; overflow: hidden; border: 1px solid var(--border); border-radius: 6px;">
+                                    <img id="reimbPaperProofImg" src=""
                                         style="width: 100%; height: auto; object-fit: cover;">
                                 </div>
                             </div>

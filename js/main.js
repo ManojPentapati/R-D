@@ -392,6 +392,27 @@ Object.assign(App, {
             });
         }
 
+        // Reimbursement Paper Proof file change previewer
+        const proofInput = document.getElementById('reimbPaperProofFile');
+        if (proofInput) {
+            proofInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                const preview = document.getElementById('reimbPaperProofPreview');
+                const img = document.getElementById('reimbPaperProofImg');
+                if (file && file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        if (img) img.src = event.target.result;
+                        if (preview) preview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    if (preview) preview.style.display = 'none';
+                    if (img) img.src = '';
+                }
+            });
+        }
+
         // Reimbursement Form submit claim builder
         const reimbursementForm = document.getElementById('reimbursementForm');
         if (reimbursementForm) {
@@ -434,9 +455,11 @@ Object.assign(App, {
 
                 const formData = {
                     paperTitle: document.getElementById('reimbPaperTitle').value.trim(),
+                    pubType: document.getElementById('reimbPubType')?.value || 'Conference',
                     hostInst: document.getElementById('reimbHostInst').value.trim(),
                     confName: document.getElementById('reimbConfName').value.trim(),
                     confDates: document.getElementById('reimbConfDates').value.trim(),
+                    paperDoi: document.getElementById('reimbPaperDoi')?.value.trim() || '',
                     branch: combinedBranch,
                     feePaid: parseFloat(document.getElementById('reimbFeePaid').value) || 0,
                     authors: authors,
@@ -449,20 +472,25 @@ Object.assign(App, {
                     }
                 };
 
-                const fileInput = document.getElementById('reimbReceiptFile');
-                const file = fileInput ? fileInput.files[0] : null;
+                const receiptFile = receiptInput ? receiptInput.files[0] : null;
+                const proofFile = proofInput ? proofInput.files[0] : null;
 
-                if (file && file.type.startsWith('image/')) {
-                    const reader = new FileReader();
-                    reader.onload = (event) => {
-                        this.renderAndOpenPrintModal(formData, event.target.result);
-                        this.clearReimbursementDraft();
-                    };
-                    reader.readAsDataURL(file);
-                } else {
-                    this.renderAndOpenPrintModal(formData, '');
+                const readAsDataURL = (file) => {
+                    return new Promise((resolve) => {
+                        if (!file || !file.type.startsWith('image/')) {
+                            resolve('');
+                            return;
+                        }
+                        const reader = new FileReader();
+                        reader.onload = (event) => resolve(event.target.result);
+                        reader.readAsDataURL(file);
+                    });
+                };
+
+                Promise.all([readAsDataURL(receiptFile), readAsDataURL(proofFile)]).then(([receiptDataUrl, proofDataUrl]) => {
+                    this.renderAndOpenPrintModal(formData, receiptDataUrl, proofDataUrl);
                     this.clearReimbursementDraft();
-                }
+                });
             });
         }
 
